@@ -67,6 +67,7 @@ export const sidebarItems: SidebarItem[] = [
 export const AppSidebar = () => {
     const pathname = usePathname()
 
+    
     return (
         <>
             <section

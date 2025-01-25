@@ -1,8 +1,12 @@
-import { AuthScreen } from "@/components/auth/auth-screen";
+
+import Hero from "./_components/Hero";
 
 
-const AuthPage = () => {
-  return <AuthScreen />
+const LandingPage = () => {
+  return (
+    <div className="">
+        <Hero/>
+    </div>
+  )
 }
-
-export default AuthPage;
+export default LandingPage;

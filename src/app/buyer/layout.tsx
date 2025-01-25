@@ -30,15 +30,18 @@ export default function RootLayout({
           <body
             className={`${poppinsFont.className} antialiased`}
           >
-            <AdminGuard>
+         
               <SidebarProvider>
                 <div className="flex min-h-screen flex-col antialiased w-full">
-                  <AppSidebar />
+                  <AppSidebar
+                      header="Buyer Portal"
+                      value="buyer"
+                  />
                   <main className="flex-1 min-h-screen pt-[70px]">{children}</main>
                   <Toaster />
                 </div>
               </SidebarProvider>
-            </AdminGuard>
+           
           </body>
         </html>
       </ConvexClientProvider>

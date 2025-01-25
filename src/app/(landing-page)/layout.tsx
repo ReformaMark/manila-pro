@@ -1,4 +1,5 @@
 import { ConvexClientProvider } from "@/components/convex-client-provider";
+import Header from "@/components/header";
 import "@/lib/globals.css";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import type { Metadata } from "next";
@@ -26,6 +27,7 @@ export default function RootLayout({
           className={`${poppinsFont.className} antialiased flex flex-col min-h-screen mx-auto`}
         >
           <ConvexClientProvider>
+            <Header/>
             {children}
           </ConvexClientProvider>
         </body>

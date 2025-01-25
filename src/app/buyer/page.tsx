@@ -2,7 +2,7 @@ import React from 'react'
 
 function BuyerPage() {
   return (
-    <div>page</div>
+    <div>aasdasd</div>
   )
 }
 

@@ -77,7 +77,7 @@ export const createSeller = mutation({
         street: v.string(),
         barangay: v.string(),
         city: v.string(),
-        realtyId: v.optional(v.id("realty"))
+        // realtyId: v.optional(v.id("realty"))
     },
     handler: async (ctx, args) => {
         try {

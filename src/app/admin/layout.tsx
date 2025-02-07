@@ -28,7 +28,7 @@ export default function RootLayout({
       <ConvexClientProvider>
         <html lang="en">
           <body
-            className={`${poppinsFont.className} antialiased`}
+            className={`${poppinsFont.className} antialiased bg-[#F6F6F6]`}
           >
 
             {/* <AdminGuard> */}

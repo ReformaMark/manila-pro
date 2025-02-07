@@ -1,9 +1,11 @@
 import React from 'react'
 
-function page() {
+function AdminPage() {
   return (
-    <div>page</div>
+    <div>
+      Dashboard Page
+    </div>
   )
 }
 
-export default page
+export default AdminPage;

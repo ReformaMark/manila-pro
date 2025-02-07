@@ -21,12 +21,12 @@ export const UserDropdown = ({
     return (
         <DropdownMenu>
             <DropdownMenuTrigger className="focus-visible:outline-none">
-                <div className="flex items-center gap-2 bg-accent rounded-md px-2 text-accent-foreground cursor-pointer">
-                    <Avatar className="h-6 w-6 p-[15px] bg-dark rounded-full">
+                <div className="flex items-center gap-2 bg-accent rounded-md px-2 text-accent-foreground cursor-pointer p-2">
+                    <Avatar className="h-6 w-6 p-[15px] bg-sky-500 text-sm rounded-full">
                         <AvatarImage src={avatarUrl} alt={name} />
-                        <AvatarFallback className="text-white font-normal">{name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                        <AvatarFallback className="text-white font-normal bg-sky-500">{name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                     </Avatar>
-                    <div className="hidden md:block text-sm mr-5">
+                    <div className="block text-sm mr-5">
                         <div className="font-medium">{name}</div>
                         <div className="text-xs text-muted-foreground">{role}</div>
                     </div>

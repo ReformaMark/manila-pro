@@ -2,7 +2,7 @@ import Link from "next/link"
 
 const HomeAvatar = () => {
     return (
-        <Link href="/" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2 w-fit">
             {/* <Avatar
                 className="hidden md:block"
             >

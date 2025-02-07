@@ -10,10 +10,11 @@ import {
 import { UserDropdown } from "@/components/user-dropdown"
 import { useCurrentUser } from "@/hooks/use-current-user"
 import { cn } from "@/lib/utils"
-import { Loader2Icon, MenuIcon } from 'lucide-react'
+import { ChevronDown, Loader2Icon, MenuIcon } from 'lucide-react'
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { adminSidebarItems } from "./admin-sidebar"
+import { useState } from "react"
 // import HomeAvatar from "./home-avatar"
 // import { adminSidebarItems } from './sidebar'
 // import { UserDropdown } from "./user-dropdown"
@@ -70,6 +71,11 @@ import { adminSidebarItems } from "./admin-sidebar"
 export function AdminHeader() {
     const { user } = useCurrentUser()
     const pathname = usePathname()
+    const [expandedItem, setExpandedItem] = useState<string | null>(null);
+
+    const toggleExpand = (label: string) => {
+        setExpandedItem(expandedItem === label ? null : label);
+    };
     // const setSelectedProjectId = useProjectStore(state => state.setSelectedProjectId)
     // const setSelectedPropertyId = usePropertyStore(state => state.setSelectedPropertyId)
 
@@ -205,28 +211,81 @@ export function AdminHeader() {
                             <MenuIcon className='w-6 h-6' />
                         </SheetTrigger>
                         <SheetContent>
-                            <SheetHeader>
-                                <section
-                                    className='bg-[#FFFFFF]'
-                                >
-                                    {adminSidebarItems.map((item) => (
-                                        <Link
-                                            key={item.href}
-                                            href={item.href!}
-                                            className={cn(
-                                                "w-full flex gap-2 justify-start hover:bg-gray-100 hover:rounded-[27px] py-3 px-4 cursor-pointer items-center",
-                                                item.href === pathname && "bg-gray-100 text-dark font-bold text-[16px] rounded-[27px]"
-                                            )}
-                                        >
-                                            <div className='flex items-center gap-2 ml-7'>
-                                                <item.icon className={cn(
-                                                    "h-5 w-5 text-[#A1A7AE]",
-                                                    item.href === pathname && "text-dark"
-                                                )} />
-                                                <span>{item.label}</span>
+                            <SheetHeader className="h-full">
+                                <section className='bg-[#FFFFFF] h-full flex flex-col justify-between'>
+                                    <div>
+                                        <div className="mb-9 w-fit">
+                                            <HomeAvatar />
+                                        </div>
+
+                                        {adminSidebarItems.map((item) => (
+                                            <div key={item.label}>
+                                                {item.href ? (
+                                                    <Link
+                                                        href={item.href}
+                                                        className={cn(
+                                                            "w-full flex gap-2 justify-start hover:bg-gray-100 hover:rounded-[27px] py-3 px-4 cursor-pointer items-center",
+                                                            item.href === pathname && "bg-gray-100 text-dark font-bold text-[16px] rounded-[27px]"
+                                                        )}
+                                                    >
+                                                        <div className='flex items-center gap-2 ml-7'>
+                                                            <item.icon className={cn(
+                                                                "h-5 w-5 text-[#A1A7AE]",
+                                                                item.href === pathname && "text-dark"
+                                                            )} />
+                                                            <span>{item.label}</span>
+                                                        </div>
+                                                    </Link>
+                                                ) : (
+                                                    <>
+                                                        <div
+                                                            onClick={() => toggleExpand(item.label)}
+                                                            className={cn(
+                                                                "w-full flex gap-2 justify-start hover:bg-gray-100 hover:rounded-[27px] py-3 px-4 cursor-pointer items-center",
+                                                                // expandedItem === item.label && "bg-gray-100"
+                                                            )}
+                                                        >
+                                                            <div className='flex items-center gap-2 ml-7'>
+                                                                <item.icon className="h-5 w-5 text-[#A1A7AE]" />
+                                                                <span>{item.label}</span>
+                                                                <ChevronDown className={cn(
+                                                                    "h-4 w-4 transition-transform",
+                                                                    expandedItem === item.label && "transform rotate-180"
+                                                                )} />
+                                                            </div>
+                                                        </div>
+                                                        {expandedItem === item.label && item.subItems && (
+                                                            <div className="">
+                                                                {item.subItems.map((subItem) => (
+                                                                    <Link
+                                                                        key={subItem.href}
+                                                                        href={subItem.href}
+                                                                        className={cn(
+                                                                            "block py-2 px-4 hover:bg-gray-100 hover:rounded-[27px]",
+                                                                            pathname === subItem.href && "bg-gray-100 text-dark font-bold text-[16px] rounded-[27px]"
+                                                                        )}
+                                                                    >
+                                                                        {subItem.label}
+                                                                    </Link>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </>
+                                                )}
                                             </div>
-                                        </Link>
-                                    ))}
+                                        ))}
+                                    </div>
+
+                                    <div className="mt-auto">
+                                        {user ? (
+                                            <UserDropdown
+                                                avatarUrl={user.image!}
+                                                name={fullname}
+                                                role={user.role!}
+                                                key={user.accountId!}
+                                            />
+                                        ) : <Loader2Icon className="w-6 h-6 animate-spin" />}
+                                    </div>
                                 </section>
                             </SheetHeader>
                         </SheetContent>

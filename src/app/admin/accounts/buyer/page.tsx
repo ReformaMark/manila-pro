@@ -1,8 +1,15 @@
+import { BuyerList } from "./_components/buyer-list";
+
 const BuyerPage = () => {
     return (
-        <div>
-            Buyer Page.
-        </div>
+        <>
+            <h2
+                className="text-lg font-semibold mt-[20px] ml-[50px]"
+            >
+                Buyers Account
+            </h2>
+            <BuyerList />
+        </>
     )
 }
 

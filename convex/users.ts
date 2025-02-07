@@ -254,11 +254,37 @@ export const updateSeller = mutation({
     },
 });
 
-export const countUsers = query({
+export const getCounts = query({
     args: {},
     handler: async (ctx) => {
-        return await ctx.db
+        const adminId = await getAuthUserId(ctx)
+        if (!adminId) throw new ConvexError("Not authenticated");
+
+        const admin = await ctx.db.get(adminId);
+        if (!admin || admin.role !== "admin") {
+            throw new ConvexError("Unauthorized");
+        }
+
+        const buyers = await ctx.db
             .query("users")
-            .collect()
+            .filter((q) => q.eq(q.field("role"), "buyer"))
+            .collect();
+
+        const sellers = await ctx.db
+            .query("users")
+            .filter((q) => q.eq(q.field("role"), "seller"))
+            .collect();
+
+        const admins = await ctx.db
+            .query("users")
+            .filter((q) => q.eq(q.field("role"), "admin"))
+            .collect();
+
+        return {
+            total: buyers.length + sellers.length + admins.length,
+            buyers: buyers.length,
+            sellers: sellers.length,
+            admins: admins.length
+        }
     }
-})
+});

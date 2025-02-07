@@ -253,3 +253,12 @@ export const updateSeller = mutation({
         return await ctx.db.get(id);
     },
 });
+
+export const countUsers = query({
+    args: {},
+    handler: async (ctx) => {
+        return await ctx.db
+            .query("users")
+            .collect()
+    }
+})

@@ -9,6 +9,14 @@ const config: Config = {
 	],
 	theme: {
     	extend: {
+			textDecorationThickness: {
+				sm: "1px",
+				md: "2px",
+				lg: "4px",
+			  },
+			fontFamily: {
+				sans: ["Arial", "sans-serif"],
+			},
     		colors: {
     			background: 'hsl(var(--background))',
     			foreground: 'hsl(var(--foreground))',

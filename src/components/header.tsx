@@ -8,9 +8,19 @@ import {
     NavigationMenuList,
     NavigationMenuTrigger,
   } from "@/components/ui/navigation-menu"
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog"
 import { motion } from 'framer-motion'
+import { Menu } from "lucide-react"
+import Link from "next/link"
 
 function Header() {
   const buy: { title: string; href: string; description: string }[] = [
@@ -113,14 +123,14 @@ const locations:  { title: string; href: string; description: string }[] = [
             transition={{
                 duration: 1
             }}
-            className='fixed flex justify-between items-center w-full bg-primary text-white py-2 md:px-10 lg:px-36'
+            className='absolute inset-0 h-fit max-w-full flex justify-between items-center w-full bg-primary text-white py-4 px-10 md:px-10 lg:px-36'
         >
             <div className="logo">
                 <h1>ManilaPro</h1>
             </div>
 
             <nav>
-            <NavigationMenu className="">
+            <NavigationMenu className="hidden md:block">
                 <NavigationMenuList>
                     <NavigationMenuItem  className='w-full'>
                         <NavigationMenuTrigger className="bg-transparent text-white">Buy a property</NavigationMenuTrigger>
@@ -186,15 +196,33 @@ const locations:  { title: string; href: string; description: string }[] = [
             </NavigationMenu>
             </nav>
 
-            <div className=" text-white">
-                <Dialog>
+            <div className="hidden md:block text-white">
+              <Link href={'/auth'}>Login / Register</Link>
+                {/* <Dialog>
                     <DialogTrigger className="text-white">Login / Register</DialogTrigger>
                     <DialogContent className="absolute">
                         <DialogTitle>Login</DialogTitle>
                         asdasd
                     </DialogContent>
-                </Dialog>
-               
+                </Dialog> */}
+            </div>
+
+            <div className="md:hidden">
+                <Sheet>
+                    <SheetTrigger className="text-white"><Menu/></SheetTrigger>
+                    <SheetContent className="absolute">
+                        <SheetHeader>
+                            <SheetTitle>Menu</SheetTitle>
+                            <SheetDescription>Navigation links</SheetDescription>
+                        </SheetHeader>
+                        <ul>
+                            <li className="p-4">Home</li>
+                            <li className="p-4">Buy a property</li>
+                            <li className="p-4">Rent a property</li>
+                            <li className="p-4">Locations</li>
+                        </ul>
+                    </SheetContent>
+                </Sheet>
             </div>
         </motion.div>
   )

@@ -77,7 +77,7 @@ export const createSeller = mutation({
         street: v.string(),
         barangay: v.string(),
         city: v.string(),
-        realtyId: v.optional(v.id("realty"))
+        // realtyId: v.optional(v.id("realty"))
     },
     handler: async (ctx, args) => {
         try {
@@ -252,4 +252,39 @@ export const updateSeller = mutation({
         await ctx.db.patch(id, updates);
         return await ctx.db.get(id);
     },
+});
+
+export const getCounts = query({
+    args: {},
+    handler: async (ctx) => {
+        const adminId = await getAuthUserId(ctx)
+        if (!adminId) throw new ConvexError("Not authenticated");
+
+        const admin = await ctx.db.get(adminId);
+        if (!admin || admin.role !== "admin") {
+            throw new ConvexError("Unauthorized");
+        }
+
+        const buyers = await ctx.db
+            .query("users")
+            .filter((q) => q.eq(q.field("role"), "buyer"))
+            .collect();
+
+        const sellers = await ctx.db
+            .query("users")
+            .filter((q) => q.eq(q.field("role"), "seller"))
+            .collect();
+
+        const admins = await ctx.db
+            .query("users")
+            .filter((q) => q.eq(q.field("role"), "admin"))
+            .collect();
+
+        return {
+            total: buyers.length + sellers.length + admins.length,
+            buyers: buyers.length,
+            sellers: sellers.length,
+            admins: admins.length
+        }
+    }
 });

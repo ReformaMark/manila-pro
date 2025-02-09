@@ -1,9 +1,14 @@
-import React from 'react'
+import { AdminCards } from "./_components/admin-cards";
 
-function page() {
+
+function AdminPage() {
   return (
-    <div>page</div>
+    <div className="p-6 space-y-6">
+      <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+
+      <AdminCards />
+    </div>
   )
 }
 
-export default page
+export default AdminPage;

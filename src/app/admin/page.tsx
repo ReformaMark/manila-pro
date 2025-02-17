@@ -1,4 +1,6 @@
 import { AdminCards } from "./_components/admin-cards";
+import { SoldPropertiesChart } from "./_components/sold-properties-chart";
+import { UserDistributionChart } from "./_components/user-distribution-chart";
 
 
 function AdminPage() {
@@ -7,6 +9,16 @@ function AdminPage() {
       <h1 className="text-2xl font-bold">Admin Dashboard</h1>
 
       <AdminCards />
+
+      <div className="grid grid-cols-3 gap-4">
+        <div className="col-span-2">
+          <SoldPropertiesChart />
+        </div>
+
+        <div className="col-span-1">
+          <UserDistributionChart />
+        </div>
+      </div>
     </div>
   )
 }

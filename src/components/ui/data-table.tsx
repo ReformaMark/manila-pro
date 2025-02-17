@@ -79,7 +79,7 @@ export function DataTable<TData, TValue>({
     <div className="w-full">
       <div className={cn(
         "flex items-center mb-3",
-        isInventory && "justify-end py-4 mr-[120px]"
+        isInventory && "justify-end py-4"
       )}>
         <Input
           placeholder={placeholder || "Search"}
@@ -87,14 +87,14 @@ export function DataTable<TData, TValue>({
           onChange={(event) =>
             table.getColumn(`${search}`)?.setFilterValue(event.target.value)
           }
-          className="max-w-sm"
+          className="max-w-sm border-black"
         />
 
-        {isInventory && (
+        {/* {isInventory && (
           <div
             className="border-l-2 border-lightGray h-6 ml-2"
           />
-        )}
+        )} */}
         {/* <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto text-primary">
@@ -124,11 +124,11 @@ export function DataTable<TData, TValue>({
       </div>
       <div className="rounded-md border">
         <Table>
-          <TableHeader className="bg-lightGray">
+          <TableHeader className="bg-zinc-800">
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow key={headerGroup.id} className="hover:bg-zinc-700">
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
+                  <TableHead key={header.id} className="text-white">
                     {header.isPlaceholder
                       ? null
                       : flexRender(

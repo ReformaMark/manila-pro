@@ -3,7 +3,7 @@ import { Id } from "../../../../../convex/_generated/dataModel";
 export const tempPropertyData = [
     {
         _id: "property1" as Id<"property">,
-        projectId: "project1" as Id<"project">,
+        // projectId: "project1" as Id<"project">,
         lotId: "ABC123",
         block: "1",
         lot: "1",
@@ -21,7 +21,7 @@ export const tempPropertyData = [
     },
     {
         _id: "property2" as Id<"property">,
-        projectId: "project1" as Id<"project">,
+        // projectId: "project1" as Id<"project">,
         lotId: "ABC124",
         block: "1",
         lot: "2",
@@ -39,7 +39,7 @@ export const tempPropertyData = [
     },
     {
         _id: "property3" as Id<"property">,
-        projectId: "project1" as Id<"project">,
+        // projectId: "project1" as Id<"project">,
         lotId: "ABC125",
         block: "1",
         lot: "3",
@@ -57,7 +57,7 @@ export const tempPropertyData = [
     },
     {
         _id: "property4" as Id<"property">,
-        projectId: "project1" as Id<"project">,
+        // projectId: "project1" as Id<"project">,
         lotId: "ABC126",
         block: "1",
         lot: "4",

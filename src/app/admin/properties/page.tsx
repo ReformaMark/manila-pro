@@ -2,38 +2,35 @@
 
 import { DataTable } from "@/components/ui/data-table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useProjectStore } from "@/store/project-store";
-import { useCallback, useState } from "react";
-import { Doc, Id } from "../../../../convex/_generated/dataModel";
+import { useQuery } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
 import { PropertyCard } from "./_components/property-card";
 import { PropertyColumns } from "./_components/property-columns";
-import { tempPropertyData } from "./_components/temp-data";
 
 
 const PropertiesPage = () => {
-    const selectedProjectId = useProjectStore(state => state.selectedProjectId)
-    const [selectedRows, setSelectedRows] = useState<Id<"property">[]>([]);
+    // const selectedProjectId = useProjectStore(state => state.selectedProjectId)
     // const properties = useQuery(api.property.get, {
     //     projectId: selectedProjectId ?? undefined
     // })
+    // const [selectedRows, setSelectedRows] = useState<Id<"property">[]>([]);
+    // const handleRowSelection = useCallback((rows: Doc<"property">[]) => {
+    //     if (!rows.length) {
+    //         setSelectedRows([]);
+    //         return;
+    //     }
 
-    const handleRowSelection = useCallback((rows: Doc<"property">[]) => {
-        if (!rows.length) {
-            setSelectedRows([]);
-            return;
-        }
+    //     const validRows = rows.filter(row => row?._id);
+    //     setSelectedRows(validRows.map(row => row._id));
+    // }, []);
 
-        const validRows = rows.filter(row => row?._id);
-        setSelectedRows(validRows.map(row => row._id));
-    }, []);
+    const properties = useQuery(api.property.get)
 
-    const availableProperties = tempPropertyData?.filter(property => property.status === "available");
+    const availableProperties = properties?.filter(property => property.status === "available");
 
-    const reservedProperties = tempPropertyData?.filter(property => property.status === "reserved");
+    const reservedProperties = properties?.filter(property => property.status === "reserved");
 
-    const soldProperties = tempPropertyData?.filter(property => property.status === "sold");
-
-    const dueProperties = tempPropertyData?.filter(property => property.status === "due");
+    const soldProperties = properties?.filter(property => property.status === "sold");
 
     return (
         <section
@@ -41,7 +38,7 @@ const PropertiesPage = () => {
         >
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 w-full px-[50px]">
                 <PropertyCard
-                    count={tempPropertyData?.length ?? 0}
+                    count={properties?.length ?? 0}
                     title="Total Properties"
                 // difference={stats?.total.difference ?? 0}
                 />
@@ -71,16 +68,16 @@ const PropertiesPage = () => {
                         <TabsTrigger value="available">Available</TabsTrigger>
                         <TabsTrigger value="reserved">Reserved</TabsTrigger>
                         <TabsTrigger value="sold">Sold</TabsTrigger>
-                        <TabsTrigger value="due">Due</TabsTrigger>
+                        {/* <TabsTrigger value="due">Due</TabsTrigger> */}
                     </TabsList>
                     <TabsContent value="all" className="space-y-4">
                         <DataTable
                             columns={PropertyColumns}
-                            data={tempPropertyData ?? []}
+                            data={properties ?? []}
                             isInventory
                             placeholder="Search a property"
                             search="lot"
-                            onRowSelectionChange={handleRowSelection}
+                        // onRowSelectionChange={handleRowSelection}
                         />
                     </TabsContent>
 
@@ -91,7 +88,7 @@ const PropertiesPage = () => {
                             isInventory
                             placeholder="Search a property"
                             search="lot"
-                            onRowSelectionChange={handleRowSelection}
+                        // onRowSelectionChange={handleRowSelection}
                         />
                     </TabsContent>
 
@@ -102,7 +99,7 @@ const PropertiesPage = () => {
                             isInventory
                             placeholder="Search a property"
                             search="lot"
-                            onRowSelectionChange={handleRowSelection}
+                        // onRowSelectionChange={handleRowSelection}
                         />
                     </TabsContent>
 
@@ -113,20 +110,20 @@ const PropertiesPage = () => {
                             isInventory
                             placeholder="Search a property"
                             search="lot"
-                            onRowSelectionChange={handleRowSelection}
+                        // onRowSelectionChange={handleRowSelection}
                         />
                     </TabsContent>
 
-                    <TabsContent value="due" className="space-y-4">
+                    {/* <TabsContent value="due" className="space-y-4">
                         <DataTable
                             columns={PropertyColumns}
                             data={dueProperties ?? []}
                             isInventory
                             placeholder="Search a property"
                             search="lot"
-                            onRowSelectionChange={handleRowSelection}
+                        // onRowSelectionChange={handleRowSelection}
                         />
-                    </TabsContent>
+                    </TabsContent> */}
                 </Tabs>
 
                 {/* <div className="absolute right-0 top-[65px]">

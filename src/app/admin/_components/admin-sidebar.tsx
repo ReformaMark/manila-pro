@@ -96,14 +96,14 @@ export const AdminSidebar = () => {
     // const isDashboard = pathname === "/buyer/owned-properties" || pathname === "/buyer/active-advertisements"
     return (
         <>
-            <section className='border-r bg-[#FFFFFF] w-[263px] pt-[85px] px-5 hidden lg:block'>
+            <section className='border-r bg-bg1 border-none w-[263px] pt-[85px] px-5 hidden lg:block'>
                 {adminSidebarItems?.map((item) => (
                     <div key={item.label}>
                         {item.href ? (
                             <Link
                                 href={item.href}
                                 className={cn(
-                                    "w-full flex gap-2 justify-start hover:bg-gray-100 hover:rounded-[27px] py-3 px-4 cursor-pointer items-center",
+                                    "w-full flex gap-2 justify-start hover:bg-gray-100 hover:text-black text-white hover:rounded-[27px] py-3 px-4 cursor-pointer items-center",
                                     item.href === pathname && "bg-gray-100 text-dark font-bold text-[16px] rounded-[27px]",
                                 )}
                             >
@@ -120,7 +120,7 @@ export const AdminSidebar = () => {
                                 <div
                                     onClick={() => toggleExpand(item.label)}
                                     className={cn(
-                                        "w-full flex gap-2 justify-start hover:bg-gray-100 hover:rounded-[27px] rounded-[27px] py-3 px-4 cursor-pointer items-center",
+                                        "w-full flex gap-2 justify-start hover:bg-gray-100 hover:text-black text-white hover:rounded-[27px] rounded-[27px] py-3 px-4 cursor-pointer items-center",
                                         // expandedItem === item.label && "bg-gray-100"
                                     )}
                                 >
@@ -140,7 +140,7 @@ export const AdminSidebar = () => {
                                                 key={subItem.href}
                                                 href={subItem.href}
                                                 className={cn(
-                                                    "block py-2 px-4 hover:bg-gray-100 hover:rounded-[27px]",
+                                                    "block py-2 px-4 hover:bg-gray-100 hover:text-black text-white hover:rounded-[27px]",
                                                     pathname === subItem.href && "bg-gray-100 text-dark font-bold text-[16px] rounded-[27px]"
                                                 )}
                                             >

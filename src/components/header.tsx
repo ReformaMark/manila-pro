@@ -17,10 +17,10 @@ import {
   SheetTrigger,
   } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog"
 import { motion } from 'framer-motion'
 import { Menu } from "lucide-react"
 import Link from "next/link"
+import { Button } from "./ui/button"
 
 function Header() {
   const buy: { title: string; href: string; description: string }[] = [
@@ -123,10 +123,10 @@ const locations:  { title: string; href: string; description: string }[] = [
             transition={{
                 duration: 1
             }}
-            className='absolute inset-0 h-fit max-w-full flex justify-between items-center w-full bg-primary text-white py-4 px-10 md:px-10 lg:px-36'
+            className='absolute z-50 inset-0 h-fit max-w-full flex justify-between items-center w-full bg-primary text-white py-4 px-10 md:px-10 lg:px-36'
         >
             <div className="logo">
-                <h1>ManilaPro</h1>
+                <Link href={'/'}>Manila<span className="text-orange-500 text-xl font-semibold">Pro</span></Link>
             </div>
 
             <nav>
@@ -196,15 +196,13 @@ const locations:  { title: string; href: string; description: string }[] = [
             </NavigationMenu>
             </nav>
 
-            <div className="hidden md:block text-white">
-              <Link href={'/auth'}>Login / Register</Link>
-                {/* <Dialog>
-                    <DialogTrigger className="text-white">Login / Register</DialogTrigger>
-                    <DialogContent className="absolute">
-                        <DialogTitle>Login</DialogTitle>
-                        asdasd
-                    </DialogContent>
-                </Dialog> */}
+            <div className=" flex justify-around gap-5">
+
+        
+            <Button variant={'orange'} className="hidden md:block ">
+              <Link href={'/auth'}>Sign In</Link>
+               
+            </Button>
             </div>
 
             <div className="md:hidden">

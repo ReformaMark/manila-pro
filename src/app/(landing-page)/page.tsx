@@ -1,4 +1,6 @@
 
+
+import FooterComponent from "./_components/FooterComponent";
 import Hero from "./_components/Hero";
 import Locations from "./_components/Locations";
 import Services from "./_components/Services";
@@ -12,6 +14,7 @@ const LandingPage = () => {
         <SubHero/>
         <Services/>
         <Locations/>
+        <FooterComponent/>
     </div>
   )
 }

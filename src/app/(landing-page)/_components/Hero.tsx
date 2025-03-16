@@ -17,11 +17,11 @@ function Hero() {
 
     const [selected, setSelected] = useState<string>('')
   return (
-    <div className="hero flex flex-col justify-center items-center">
-      
-        <div className="flex flex-col justify-center px-5 xl:px-36 w-full xl:w-[65%] size-full space-y-3 z-50">
+    <div className="hero relative ">
+            <div className="absolute inset-0 size-full bg-black/30 flex flex-col justify-center items-center  px-5 sm:px-5 md:px-20 lg:px-40 xl:px-72 2xl:px-80 transition-all duration-300 ease-linear">
+              
             <motion.div 
-                className="z-50 flex h-14 gap-x-2"
+                className="z-50 flex h-14 gap-x-2 w-full"
                 initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{
@@ -29,14 +29,15 @@ function Hero() {
                     delay: 1
                 }}
             >
-                
+                <div className="flex h-10 gap-x-2 ">
+                    <div className="flex h-full">
+
+                        <Button size={'default'} className={cn('hover:bg-gray-300 rounded-none bg-white text-black transition-colors duration-400 ease-in h-full', selected === "buy" && "border-b-4 border-b-blue-500")} onClick={()=> setSelected("buy")}>Buy</Button>
+                        <Button size={'default'} className={cn('hover:bg-gray-300 rounded-none bg-white text-black transition-colors duration-400 ease-in h-full ', selected === "rent" && "border-b-4 border-b-blue-500")} onClick={()=> setSelected("rent")}>Rent</Button>
+                    </div>
                
-                <div className="flex h-14 bg-red-200 border-gray-500 border-2">
-                    <Button className={cn('rounded-none bg-white text-black  transition-colors duration-700 ease-in h-full w-32', selected === "buy" && "border-b-4 border-b-blue-500")} onClick={()=> setSelected("buy")}>Buy</Button>
-                    <Button className={cn('rounded-none bg-white text-black transition-colors duration-700 ease-in h-full w-32', selected === "rent" && "border-b-4 border-b-blue-500")} onClick={()=> setSelected("rent")}>Rent</Button>
-                </div>
                 <Select>
-                    <SelectTrigger className="w-1/4 h-14 border-gray-500 border-2 bg-white/95">
+                    <SelectTrigger className="h-full bg-white">
                         <SelectValue placeholder="Type" />
                     </SelectTrigger>
                     <SelectContent>
@@ -47,30 +48,28 @@ function Hero() {
                         <SelectItem value="condominium">Condominium</SelectItem>
                     </SelectContent>
                 </Select>
+                </div>
             </motion.div>
             <motion.div 
                 initial={{ opacity: 0, y: -50 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{
+                transition={{   
                     duration: 0.5,
                     delay: 1.5
                 }}
-                className="flex gap-x-3 shadow-lg  z-50"> 
-               
-                <div className="relative w-full">
-                   
-                    <Input 
-                        name=''
-                        className='bg-white/95 h-14 border-2 text-xs lg: border-gray-500 shadow-md'
-                        placeholder='Find locations or development names.'
-                    />
-                    <MapPin className='absolute top-3 right-1 size-6 lg:size-8 text-gray-500'/>
-                </div>
-                <Button variant={'default'} className='h-14 w-1/4 text-lg font-semibold tracking-widest'>Search</Button>
+                className="flex  gap-x-3 shadow-lg w-full"
+            > 
+                <Input 
+                    name='location'
+                    className='bg-white text-xs md:text-sm py-5'
+                    placeholder='Find locations or development names.'
+                />
+                <Button variant={'orange'} className='h-full'>Search</Button>
             </motion.div>
-            <h1 className="text-white text-3xl xl:text-5xl font-[1000] text-pretty font-sans "> BROWSE. BUY. RENT.</h1>
-        </div>
-       
+            <h1 className="text-white text-3xl xl:text-5xl font-[1000] w-full text-pretty font-sans mt-5"> BROWSE. BUY. RENT.</h1>
+   
+         
+            </div>
     </div>
   )
 }

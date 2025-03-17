@@ -55,6 +55,11 @@ export default defineSchema({
         totalSellingPrice: v.number(),
         suggestedMonthlyAmortization: v.number(), // initial
         suggestedTermInMonths: v.number(), // initial
+        city: v.union(
+            v.literal("Makati"),
+            v.literal("Pasay"),
+            v.literal("Taguig")
+        ),
         status: v.union(
             v.literal("available"),
             v.literal("reserved"),
@@ -82,6 +87,8 @@ export default defineSchema({
         maximumOccupants: v.optional(v.number()),
         description: v.optional(v.string()),
         transactionType: v.optional(v.string()), // Buy, rent(month to month), Lease(long term rent)
+        forecastedPrice: v.optional(v.number()),
+        forecastedDate: v.optional(v.number()),
         //Price details
     })
         // .searchIndex("by_project", {
@@ -89,6 +96,9 @@ export default defineSchema({
         // })
         .searchIndex("by_status", {
             searchField: "status",
+        })
+        .searchIndex("by_city", {
+            searchField: "city"
         }),
     deal: defineTable({
         propertyId: v.id("property"),
@@ -140,6 +150,21 @@ export default defineSchema({
         )
     }).searchIndex("by_deal", {
         searchField: "dealId"
-    })
-
+    }),
+    historical_prices: defineTable({
+        propertyId: v.id("property"),
+        recordedAt: v.number(),
+        pricePerSqm: v.number(),
+        totalPrice: v.number(),
+    }).searchIndex("by_property", {
+        searchField: "propertyId",
+    }),
+    market_trends: defineTable({
+        city: v.string(),
+        recordedAt: v.number(),
+        avgPricePerSqm: v.number(),
+        demandIndex: v.optional(v.number()),
+    }).searchIndex("by_city", {
+        searchField: "city",
+    }),
 })

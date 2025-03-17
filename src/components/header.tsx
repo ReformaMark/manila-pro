@@ -7,6 +7,7 @@ import {
     NavigationMenuLink,
     NavigationMenuList,
     NavigationMenuTrigger,
+    navigationMenuTriggerStyle,
   } from "@/components/ui/navigation-menu"
 import {
   Sheet,
@@ -16,11 +17,16 @@ import {
   SheetTitle,
   SheetTrigger,
   } from "@/components/ui/sheet"
+  
 import { cn } from "@/lib/utils"
 import { motion } from 'framer-motion'
-import { Menu } from "lucide-react"
+import { Menu, Search } from "lucide-react"
 import Link from "next/link"
-import { Button } from "./ui/button"
+import UserAvatar from "./user-avatar"
+import { Separator } from "./ui/separator"
+import SearchProperty from "./search-property"
+import { usePathname } from "next/navigation"
+import { Input } from "./ui/input"
 
 function Header() {
   const buy: { title: string; href: string; description: string }[] = [
@@ -116,6 +122,8 @@ const locations:  { title: string; href: string; description: string }[] = [
         description: "Explore apartments for rent, from budget-friendly to luxury options.",
     },
     ]
+
+    const pathName = usePathname()
   return (
         <motion.div 
             initial={{y:-100, opacity: 0.5}}
@@ -123,105 +131,114 @@ const locations:  { title: string; href: string; description: string }[] = [
             transition={{
                 duration: 1
             }}
-            className='absolute z-50 inset-0 h-fit max-w-full flex justify-between items-center w-full bg-primary text-white py-4 px-10 md:px-10 lg:px-36'
+            className='absolute z-50 inset-0 h-fit overflow-hidden max-w-full flex justify-between items-center gap-x-5 w-full bg-primary text-white py-4 px-10 md:px-10 lg:px-36'
         >
             <div className="logo">
                 <Link href={'/'}>Manila<span className="text-orange-500 text-xl font-semibold">Pro</span></Link>
             </div>
-
-            <nav>
-            <NavigationMenu className="hidden md:block">
-                <NavigationMenuList>
-                    <NavigationMenuItem  className='w-full'>
-                        <NavigationMenuTrigger className="bg-transparent text-white">Buy a property</NavigationMenuTrigger>
-                        <NavigationMenuContent className=''>
-                        <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-                        {buy.map((component) => (
-                            <ListItem
-                            key={component.title}
-                            title={component.title}
-                            href={component.href}
-                            >
-                            {component.description}
-                            </ListItem>
-                        ))}
-
-                        </ul>
-                        
-                        </NavigationMenuContent>
-                    </NavigationMenuItem>
-                    <NavigationMenuItem  className='w-full'>
-                        <NavigationMenuTrigger className="bg-transparent text-white">Rent a property</NavigationMenuTrigger>
-                        <NavigationMenuContent className=''>
-                        <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-                        {rent.map((component) => (
-                            <ListItem
-                            key={component.title}
-                            title={component.title}
-                            href={component.href}
-                            >
-                            {component.description}
-                            </ListItem>
-                        ))}
-
-                        </ul>
-                        
-                        </NavigationMenuContent>
-                    </NavigationMenuItem>
-                    <NavigationMenuItem  className='w-full'>
-                        <NavigationMenuTrigger className="bg-transparent text-white">Locations</NavigationMenuTrigger>
-                        <NavigationMenuContent className=''>
-                        <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-                        {locations.map((component) => (
-                            <li
-                                key={component.title}
-                                className="cursor-pointer block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                            >
-                                {component.title}
-                            </li>
-                        ))}
-
-                        </ul>
-                        
-                        </NavigationMenuContent>
-                    </NavigationMenuItem>
-                    {/* <NavigationMenuItem>
-                        <Link href="/docs" legacyBehavior passHref>
-                            <NavigationMenuLink className={cn(navigationMenuTriggerStyle(),"bg-transparent text-white" )}>
-                                About Us
-                            </NavigationMenuLink>
-                        </Link>
-                    </NavigationMenuItem> */}
-                </NavigationMenuList>
-            </NavigationMenu>
-            </nav>
-
+               <nav>
+               <NavigationMenu className="hidden md:block">
+                   <NavigationMenuList>
+                     <NavigationMenuItem>
+                       <Link href="/docs" legacyBehavior passHref>
+                         <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "bg-transparent text-white")}>
+                           Buy a property
+                         </NavigationMenuLink>
+                       </Link>
+                     </NavigationMenuItem>
+                     <NavigationMenuItem>
+                       <Link href="/docs" legacyBehavior passHref>
+                         <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "bg-transparent text-white")}>
+                         Rent a property
+                         </NavigationMenuLink>
+                       </Link>
+                     </NavigationMenuItem>
+                     <NavigationMenuItem>
+                       <Link href="/docs" legacyBehavior passHref>
+                         <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "bg-transparent text-white")}>
+                         Lease a property
+                         </NavigationMenuLink>
+                       </Link>
+                     </NavigationMenuItem>
+                  
+                     <NavigationMenuItem  className='w-full'>
+                         <NavigationMenuTrigger className="bg-transparent text-white">Locations</NavigationMenuTrigger>
+                         <NavigationMenuContent className=''>
+                         <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
+                         {locations.map((component) => (
+                             <li
+                                 key={component.title}
+                                 className="cursor-pointer block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                             >
+                                 {component.title}
+                             </li>
+                         ))}
+   
+                         </ul>
+                         
+                         </NavigationMenuContent>
+                     </NavigationMenuItem>
+                     {/* <NavigationMenuItem>
+                         <Link href="/docs" legacyBehavior passHref>
+                             <NavigationMenuLink className={cn(navigationMenuTriggerStyle(),"bg-transparent text-white" )}>
+                                 About Us
+                             </NavigationMenuLink>
+                         </Link>
+                     </NavigationMenuItem> */}
+                 </NavigationMenuList>
+               </NavigationMenu>
+               </nav>
             <div className=" flex justify-around gap-5">
 
-        
-            <Button variant={'orange'} className="hidden md:block ">
-              <Link href={'/auth'}>Sign In</Link>
-               
-            </Button>
+              <div className="hidden md:block">
+                <UserAvatar/>
+              </div>
             </div>
-
-            <div className="md:hidden">
+            {pathName === '/' && (
+                <div className="md:hidden">
                 <Sheet>
                     <SheetTrigger className="text-white"><Menu/></SheetTrigger>
                     <SheetContent className="absolute">
                         <SheetHeader>
                             <SheetTitle>Menu</SheetTitle>
-                            <SheetDescription>Navigation links</SheetDescription>
+                            <SheetDescription className="flex items-start"> <UserAvatar/></SheetDescription>
                         </SheetHeader>
-                        <ul>
-                            <li className="p-4">Home</li>
-                            <li className="p-4">Buy a property</li>
-                            <li className="p-4">Rent a property</li>
-                            <li className="p-4">Locations</li>
+                        <Separator className=" my-5"/>
+                        <ul className="transition-all duration-600 ease-linear mt-5">
+                        <h3 className="text-sm font-semibold">Browse & Acquire</h3>
+                        <Separator/>
+                          <Link href={"/"} >
+                            <li className="p-2 pl-4 hover:bg-orange-500/10">Home</li>
+                          </Link>
+                          <Link href={"/properties/buy"} >
+                            <li className="p-2 pl-4 hover:bg-orange-500/10">Buy a property</li>
+                          </Link>
+                          <Link href={"/properties/rent"} >
+                            <li className="p-2 pl-4 hover:bg-orange-500/10">Rent a property</li>
+                          </Link>
+                          <Link href={"/properties/lease"} >
+                            <li className="p-2 pl-4 hover:bg-orange-500/10">Lease a property</li>
+                          </Link>
+                          <h3 className="text-sm font-semibold">Locations</h3>
+                          <Separator/>
+                          <Link href={"/properties/all/Makati"} >
+                            <li className="p-2 pl-4 hover:bg-orange-500/10">Makati</li>
+                          </Link>
+                          <Link href={"/properties/all//Pasay"} >
+                            <li className="p-2 pl-4 hover:bg-orange-500/10">Pasay</li>
+                          </Link>
+                          <Link href={"/properties/all/Taguig"} >
+                            <li className="p-2 pl-4 hover:bg-orange-500/10">Taguig</li>
+                          </Link>
+                       
                         </ul>
+                       
+                        
                     </SheetContent>
                 </Sheet>
             </div>
+            )}
+          
         </motion.div>
   )
 }

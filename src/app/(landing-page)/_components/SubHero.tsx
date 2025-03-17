@@ -5,6 +5,7 @@ import { containerVariants, itemVariants } from './framerVariants'
 import Image from 'next/image'
 import BG from '@/../public/images/luxury.jpg'
 import { Button } from '@/components/ui/button'
+import Link from 'next/link'
 
 function SubHero() {
   
@@ -30,9 +31,9 @@ function SubHero() {
           <motion.p
             variants={itemVariants}
             className='text-black text-center font-extralight'>Save a few homes you like, and we&apos;ll help you discover more recommendations just for you.</motion.p>
-            <div className="">
-              <Button className='bg-orange-600 hover:bg-orange-400'>Sign In</Button>
-            </div>
+            <Link href={'/buyer'} className="">
+              <Button className='bg-orange-600 hover:bg-orange-400'>Explore</Button>
+            </Link>
         </div>
       
       </motion.div>

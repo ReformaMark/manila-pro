@@ -34,3 +34,15 @@ export const remove = mutation({
         return args.propertyId;
     }
 })
+
+export const getProperties = query({
+    args: {},
+    handler: async (ctx) => {
+        const properties = await ctx.db
+            .query("property")
+            .order("desc")
+            .collect();
+
+        return properties;
+    }
+})

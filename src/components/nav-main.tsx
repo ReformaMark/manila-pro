@@ -35,11 +35,11 @@ export function NavMain({
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+      <SidebarGroupLabel>Browse & Acquire</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item) => {
+        { items.map((item) => {
           // Handle Dashboard and Reports as standalone items
-          if (item.label === "Dashboard" || item.label === "Employee List" || item.label === "Vouchers" || item.label === "Payroll Sheet" || item.label === "Support" || item.label === "Farms" || item.label === "Map") {
+          if (item.label === "Dashboard" || item.label === "Properties" || item.label === "Rent a Property" || item.label === "Buy a Property" || item.label === "Lease a Property") {
             return (
               <SidebarMenuItem key={item.label}>
                 <SidebarMenuButton
@@ -53,7 +53,7 @@ export function NavMain({
                   <Link href={item.href}>
                     {item.icon && (
                       <item.icon className={cn("h-5 w-5 mr-3",
-                        pathname === item.href ? "text-[#8BC34A]" : "text-gray-500"
+                        pathname === item.href ? "text-orange-500" : "text-gray-500"
                       )} />
                     )}
                     <span>{item.label}</span>

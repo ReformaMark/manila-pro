@@ -1,5 +1,5 @@
 "use client"
-import { Building2, Calculator, FileCheck, Files, FolderOpen, LayoutGrid, Menu, MessageCircle, Package, PiggyBank, Users } from 'lucide-react';
+import { Building, Building2, Calculator, FileCheck, Files, FolderOpen, Handshake, Key, LayoutGrid, Menu, MessageCircle, Package, PiggyBank, Users } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
@@ -15,6 +15,10 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useCurrentUser } from '@/hooks/use-current-user';
 import { NavUser } from './nav-user';
 import { NavMain } from './nav-main';
+import UserAvatar from './user-avatar';
+import { FaSearchLocation } from 'react-icons/fa';
+import { NavLocation } from './nav-locations';
+import PriceFilter from './price-filter';
 interface SidebarItem {
     icon: React.ElementType;
     label: string;
@@ -90,54 +94,45 @@ export function AppSidebar({
     const buyerNav =  [
         {
             icon: LayoutGrid,
-            label: "Dashboard",
-            href: "/admin",
+            label: "Properties",
+            href: "/properties",
         },
         {
-            icon: FolderOpen,
-            label: "Our Projects",
-            href: "/admin/projects"
+            icon: Handshake,
+            label: "Buy a Property",
+            href: "/properties/buy"
         },
         {
-            icon: Package,
-            label: "Inventory",
-            href: "/admin/inventory"
+            icon: Key,
+            label: "Rent a Property",
+            href: "/properties/rent"
+        },
+        {
+            icon: Building,
+            label: "Lease a Property",
+            href: "/properties/lease"
+        },
+      
+    
+       
+    ]
+
+    const navLocations = [
+        {
+            icon: Building2,
+            label: "Makati City",
+            href: "/properties/all/Makati"
         },
         {
             icon: Building2,
-            label: "Realties",
-            href: "/admin/realties"
+            label: "Pasay City",
+            href: "/properties/all/Pasay"
         },
         {
-            icon: Calculator,
-            label: "Accounting",
-            href: "/admin/accounting"
+            icon: Building2,
+            label: "Taguig City",
+            href: "/properties/all/Taguig"
         },
-        {
-            icon: Users,
-            label: "Users",
-            href: "/admin/accounts",
-        },
-        {
-            icon: FileCheck,
-            label: "Deal Finalization",
-            href: "/admin/deals"
-        },
-        {
-            icon: PiggyBank,
-            label: "Commission",
-            href: "/admin/commission"
-        },
-        {
-            icon: Files,
-            label: "Documents",
-            href: "/admin/documents"
-        },
-        {
-            icon: MessageCircle,
-            label: "Chat Support",
-            href: "/admin/support"
-        }
     ]
 
     const sellerNav = [
@@ -208,22 +203,19 @@ export function AppSidebar({
     const SidebarContents = () => (
         <div className="bg-white h-screen">
           <SidebarHeader>
-            <Link href={baseUrl} className="flex flex-col items-center">
-              <div className="bg-primary w-full py-4 rounded-md flex flex-col items-center">
-                <h1 className="text-sm font-semibold text-center text-white mt-2 px-2">
-                  {header}
-                </h1>
-              </div>
-            </Link>
+            <UserAvatar/>
           </SidebarHeader>
     
-          <SidebarContent className="flex-1 overflow-y-auto">
+          <SidebarContent className="flex-1 overflow-y-auto mt-10">
             <NavMain items={navItems} />
+            {value === "buyer" && (
+                <>
+                 <NavLocation items={navLocations}/>
+                 <PriceFilter/>
+                </>
+            )}
+           
           </SidebarContent>
-    
-          <SidebarFooter>
-            <NavUser />
-          </SidebarFooter>
         </div>
     );
 
@@ -238,14 +230,14 @@ export function AppSidebar({
         </div>
   
         {/* Mobile Sheet */}
-        <div className="md:hidden fixed top-4 left-4 z-[9999]">
+        <div className={cn("md:hidden fixed top-2 right-4 z-[9999]")}>
           <Sheet>
             <SheetTrigger asChild>
-              <button className="p-2 bg-white rounded-md shadow-md">
-                <Menu className="size-6" />
+              <button className="p-2 bg-transparent rounded-md shadow-md">
+                <Menu className="size-6 text-white" />
               </button>
             </SheetTrigger>
-            <SheetContent side="left" className="p-0 w-[300px] z-[9999]">
+            <SheetContent side="right" className="p-0 w-[300px] z-[9999]">
               <SidebarContents />
             </SheetContent>
           </Sheet>

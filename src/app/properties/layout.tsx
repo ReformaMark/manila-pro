@@ -7,6 +7,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import { Poppins } from "next/font/google"
+import Header from "@/components/header";
 
 const poppinsFont = Poppins({
     subsets: ["latin"],
@@ -33,11 +34,18 @@ export default function RootLayout({
          
               <SidebarProvider>
                 <div className="flex min-h-screen flex-col antialiased w-full">
-                  <AppSidebar
-                      header="Buyer Portal"
-                      value="buyer"
-                  />
+                  
+                  <Header/>
+                  <div className="flex">
+                    <div className="max-h-screen bg-black">
+
+                    <AppSidebar
+                        header="Buyer Portal"
+                        value="buyer"
+                        />
+                  </div>
                   <main className="flex-1 min-h-screen pt-[70px]">{children}</main>
+                  </div>
                   <Toaster />
                 </div>
               </SidebarProvider>

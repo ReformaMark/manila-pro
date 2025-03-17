@@ -5,10 +5,24 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function formatPrice(value: number | string): string {
-  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
+export function formatPrice(
+  price: number | string,
+  options: {
+    currency?: "PHP",
+    notation?: Intl.NumberFormatOptions["notation"]
+  } = {}
+) {
+  const { currency = "PHP", notation = "standard" } = options;
 
+  const numericPrice = typeof price === "string" ? parseFloat(price) : price;
+
+  return new Intl.NumberFormat("en-PH", {
+    style: "currency",
+    currency,
+    notation,
+    maximumFractionDigits: 2
+  }).format(numericPrice);
+}
 export function generateBuyerId(): string {
   const prefix = "B-";
   const randomNumber = Math.floor(100000 + Math.random() * 900000);
@@ -61,3 +75,4 @@ export function getConvexErrorMessage(error: Error): string {
     return "Something went wrong";
   }
 }
+

@@ -5,11 +5,11 @@ import Link from 'next/link';
 
 function FooterComponent() {
   return (
-    <div className='grid grid-cols-12 gap-10 items-center bg-black text-white shadow-black shadow-xl p-10'>
+    <div className='grid grid-cols-12 items-center gap-y-10 py-5 bg-black text-white shadow-black shadow-xl p-2 md:p-10'>
         <div className="col-span-12 md:col-span-3 text-center">
         <Link href={'/'}>Manila<span className="text-orange-500 text-xl font-semibold ">Pro</span></Link>
         </div>
-        <div className="col-span-12 md:col-span-6 flex justify-evenly">
+        <div className="col-span-12 md:col-span-6 flex  justify-evenly ">
             {["About Us","Contact Us", "FAQ", "Terms", "Privacy",].map((label)=>(
                 <h3 key={label} className='text-xs font-semibold hover:cursor-pointer'>{label}</h3>
             ))}

@@ -29,81 +29,6 @@ import { usePathname } from "next/navigation"
 import { Input } from "./ui/input"
 
 function Header() {
-  const buy: { title: string; href: string; description: string }[] = [
-  {
-    title: "House and Lot",
-    href: "/docs/primitives/alert-dialog",
-    description: "Explore houses with lots for sale in various locations.",
-  },
-  {
-    title: "Condos",
-    href: "/docs/primitives/hover-card",
-    description: "Discover condominium units for sale with modern amenities.",
-  },
-  {
-    title: "Apartments",
-    href: "/docs/primitives/progress",
-    description: "Find apartment buildings or units available for purchase.",
-  },
-  {
-    title: "Lots",
-    href: "/docs/primitives/scroll-area",
-    description: "Browse empty lots for sale, ideal for building your dream home.",
-  },
-  {
-    title: "Foreclosures",
-    href: "/docs/primitives/tabs",
-    description: "Check out affordable foreclosed properties for sale.",
-  },
-  {
-    title: "Commercial Units",
-    href: "/docs/primitives/tooltip",
-    description: "Explore commercial spaces available for business use.",
-  },
-  {
-    title: "All Properties",
-    href: "/docs/primitives/tooltip",
-    description: "View the full list of all available properties for sale.",
-  },
-];
-
-const rent: { title: string; href: string; description: string }[] = [
-  {
-    title: "House and Lot",
-    href: "/docs/primitives/alert-dialog",
-    description: "Rent houses with spacious lots in your preferred locations.",
-  },
-  {
-    title: "Condos",
-    href: "/docs/primitives/hover-card",
-    description: "Find condominium units for rent in urban and prime areas.",
-  },
-  {
-    title: "Apartments",
-    href: "/docs/primitives/progress",
-    description: "Explore apartments for rent, from budget-friendly to luxury options.",
-  },
-  {
-    title: "Lots",
-    href: "/docs/primitives/scroll-area",
-    description: "Lease vacant lots for short- or long-term use.",
-  },
-  {
-    title: "Foreclosures",
-    href: "/docs/primitives/tabs",
-    description: "Foreclosed properties available for rent at competitive rates.",
-  },
-  {
-    title: "Commercial Units",
-    href: "/docs/primitives/tooltip",
-    description: "Browse commercial units available for lease for your business needs.",
-  },
-  {
-    title: "All Properties",
-    href: "/docs/primitives/tooltip",
-    description: "View the complete list of all rental properties available.",
-  },
-];
 
 const locations:  { title: string; href: string; description: string }[] = [
     {
@@ -131,7 +56,7 @@ const locations:  { title: string; href: string; description: string }[] = [
             transition={{
                 duration: 1
             }}
-            className='absolute z-50 inset-0 h-fit overflow-hidden max-w-full flex justify-between items-center gap-x-5 w-full bg-primary text-white py-4 px-10 md:px-10 lg:px-36'
+            className='absolute z-50 inset-0 h-fit max-w-full flex justify-between items-center gap-x-5 w-full bg-primary text-white py-4 px-10 md:px-10 lg:px-36'
         >
             <div className="logo">
                 <Link href={'/'}>Manila<span className="text-orange-500 text-xl font-semibold">Pro</span></Link>
@@ -162,8 +87,8 @@ const locations:  { title: string; href: string; description: string }[] = [
                      </NavigationMenuItem>
                   
                      <NavigationMenuItem  className='w-full'>
-                         <NavigationMenuTrigger className="bg-transparent text-white">Locations</NavigationMenuTrigger>
-                         <NavigationMenuContent className=''>
+                         <NavigationMenuTrigger className="z-[1000] bg-transparent text-white">Locations</NavigationMenuTrigger>
+                         <NavigationMenuContent className='z-[1000]'>
                          <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
                          {locations.map((component) => (
                              <li

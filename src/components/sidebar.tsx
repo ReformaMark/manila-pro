@@ -2,23 +2,18 @@
 import { Building, Building2, Calculator, FileCheck, Files, FolderOpen, Handshake, Key, LayoutGrid, Menu, MessageCircle, Package, PiggyBank, Users } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
     Sidebar,
     SidebarContent,
-    SidebarFooter,
     SidebarHeader,
     SidebarRail,
 } from "@/components/ui/sidebar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useCurrentUser } from '@/hooks/use-current-user';
-import { NavUser } from './nav-user';
 import { NavMain } from './nav-main';
 import UserAvatar from './user-avatar';
-import { FaSearchLocation } from 'react-icons/fa';
 import { NavLocation } from './nav-locations';
-import PriceFilter from './price-filter';
 interface SidebarItem {
     icon: React.ElementType;
     label: string;
@@ -211,7 +206,7 @@ export function AppSidebar({
                 {value === "buyer" && (
                     <>
                         <NavLocation items={navLocations} />
-                        <PriceFilter />
+
                     </>
                 )}
 

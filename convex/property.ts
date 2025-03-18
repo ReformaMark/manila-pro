@@ -1,6 +1,9 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { mutation, query } from "./_generated/server";
 import { ConvexError, v } from "convex/values";
+import { paginationOptsValidator } from "convex/server";
+import {asyncMap} from 'convex-helpers'
+import { Id } from "./_generated/dataModel";
 
 export const get = query({
     args: {},
@@ -36,13 +39,33 @@ export const remove = mutation({
 })
 
 export const getProperties = query({
-    args: {},
-    handler: async (ctx) => {
+    args: { paginationOpts: paginationOptsValidator },
+    handler: async (ctx, args) => {
         const properties = await ctx.db
             .query("property")
             .order("desc")
-            .collect();
+            .paginate(args.paginationOpts);
 
         return properties;
+    }
+})
+export const getProperty = query({
+    args: { id: v.id('property') },
+    handler: async (ctx, args) => {
+        const property = await ctx.db.get(args.id)
+        if(!property) return
+
+        if(property.otherImage) {
+            property.displayImage ? property.otherImage.push(property.displayImage) : null
+            const imageUrls = await asyncMap(property.otherImage, async (id) => {
+                const url = await ctx.storage.getUrl(id as Id<"_storage">);
+                return url;
+            }).then((data)=> data.filter(url => url !== null));
+
+            return {
+                ...property,
+                imageUrls: imageUrls
+            }
+        } 
     }
 })

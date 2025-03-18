@@ -31,7 +31,7 @@ function SubHero() {
           <motion.p
             variants={itemVariants}
             className='text-black text-center font-extralight'>Save a few homes you like, and we&apos;ll help you discover more recommendations just for you.</motion.p>
-            <Link href={'/buyer'} className="">
+            <Link href={'/properties'} className="">
               <Button className='bg-orange-600 hover:bg-orange-400'>Explore</Button>
             </Link>
         </div>

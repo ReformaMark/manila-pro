@@ -16,7 +16,7 @@ export const PropertyCard = ({
 
     return (
         <Card className="w-full h-full py-3 pt-0">
-            <CardHeader className="bg-bg1 rounded-t-md p-4 mb-3">
+            <CardHeader className="bg-zinc-500 rounded-t-md p-4 mb-3">
                 <CardTitle className="text-white text-sm">{title}</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">

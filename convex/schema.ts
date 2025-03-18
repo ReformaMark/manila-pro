@@ -43,12 +43,13 @@ export default defineSchema({
     // }),
     property: defineTable({
         // projectId: v.id("project"),
+        propertyName: v.string(),
         sellerId: v.id("users"),
         lotId: v.string(),
         block: v.string(),
         lot: v.string(),
-        displayImage: v.optional(v.string()),
-        otherImage: v.array(v.string()),
+        displayImage: v.string(),
+        otherImage: v.optional(v.array(v.string())),
         pricePerSqm: v.number(),
         totalContractPrice: v.number(),
         netContractPrice: v.number(),
@@ -63,14 +64,15 @@ export default defineSchema({
         createdAt: v.number(),
         updatedAt: v.number(),
         //land information
-        address: v.optional(v.string()),
+        address: v.string(),
         location: v.optional(v.string()), // coordinates
         propertyType: v.optional(v.string()), // foreclose, pre owned
+        city: v.string(),
         //Building information
         storeys: v.optional(v.string()),
-        lotArea: v.optional(v.number()),
-        unitType: v.optional(v.string()), // apartment, condominium, duplex, single attached house, single detached house, townhouse/detached row house 
-        bedrooms: v.optional(v.number()),
+        lotArea: v.number(),
+        unitType: v.string(), // apartment, condominium, duplex, single attached house, single detached house, townhouse/detached row house 
+        bedrooms: v.string(),
         facilities: v.optional(v.array(v.object({
             name: v.string(),
             description: v.string()
@@ -79,9 +81,9 @@ export default defineSchema({
             name: v.string(),
             description: v.string()
         }))),
-        maximumOccupants: v.optional(v.number()),
+        maximumOccupants: v.string(),
         description: v.optional(v.string()),
-        transactionType: v.optional(v.string()), // Buy, rent(month to month), Lease(long term rent)
+        transactionType: v.string(), // Buy, rent(month to month), Lease(long term rent)
         //Price details
     })
         // .searchIndex("by_project", {

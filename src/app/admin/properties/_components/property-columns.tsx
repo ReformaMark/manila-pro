@@ -68,7 +68,7 @@ export const PropertyColumns: ColumnDef<Doc<"property">>[] = [
         cell: ({ row }) => {
             return (
                 <p>
-                    {row.original.lotArea.toFixed(2)}
+                    {row.original.lotArea ? row.original.lotArea.toFixed(2) : "N/A"}
                 </p>
             )
         }

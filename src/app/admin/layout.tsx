@@ -7,6 +7,7 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import { AdminHeader } from "./_components/admin-header";
 import { AdminSidebar } from "./_components/admin-sidebar";
+import { AdminGuard } from "@/components/auth/admin-guard";
 
 const poppinsFont = Poppins({
   subsets: ["latin"],
@@ -30,20 +31,18 @@ export default function RootLayout({
           <body
             className={`${poppinsFont.className} antialiased bg-[#F6F6F6]`}
           >
-
-            {/* <AdminGuard> */}
-            <SidebarProvider>
-              <div className="flex min-h-screen flex-col antialiased w-full">
-                <AdminHeader />
-                <div className="md:flex">
-                  <AdminSidebar />
-                  <main className="flex-1 min-h-screen pt-[70px]">{children}</main>
-                  <Toaster />
+            <AdminGuard>
+              <SidebarProvider>
+                <div className="flex min-h-screen flex-col antialiased w-full">
+                  <AdminHeader />
+                  <div className="md:flex">
+                    <AdminSidebar />
+                    <main className="flex-1 min-h-screen pt-[70px]">{children}</main>
+                    <Toaster />
+                  </div>
                 </div>
-              </div>
-            </SidebarProvider>
-            {/* </AdminGuard> */}
-
+              </SidebarProvider>
+            </AdminGuard>
           </body>
         </html>
       </ConvexClientProvider>

@@ -34,11 +34,11 @@ export default function RootLayout({
             <SellerGuard>
               <SidebarProvider>
                 <div className="flex min-h-screen flex-col antialiased w-full">
-                  <AppSidebar
-                    header="Buyer Portal"
-                    value="buyer"
-                  />
-                  <main className="flex-1 min-h-screen pt-[70px]">{children}</main>
+                  {/* <AppSidebar
+                    header="Seller Portal"
+                    value="seller"
+                  /> */}
+                  <main className="flex-1 min-h-screen pt-[70px] overflow-hidden">{children}</main>
                   <Toaster />
                 </div>
               </SidebarProvider>

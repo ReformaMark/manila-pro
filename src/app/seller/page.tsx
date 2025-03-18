@@ -1,9 +1,9 @@
-import React from 'react'
-
-function page() {
+const SellerPage = () => {
   return (
-    <div>page</div>
+    <div>
+      page
+    </div>
   )
 }
 
-export default page
+export default SellerPage;

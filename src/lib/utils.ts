@@ -76,3 +76,24 @@ export function getConvexErrorMessage(error: Error): string {
   }
 }
 
+export function formatDate(timestamp: number) {
+  return new Date(timestamp * 1000).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  })
+}
+
+export function formatCurrency(amount: number) {
+  return new Intl.NumberFormat("en-PH", {
+    style: "currency",
+    currency: "PHP",
+    maximumFractionDigits: 0,
+  }).format(amount)
+}
+
+export const statusColors = {
+  available: "bg-green-100 text-green-800 hover:bg-green-200",
+  reserved: "bg-amber-100 text-amber-800 hover:bg-amber-200",
+  sold: "bg-blue-100 text-blue-800 hover:bg-blue-200",
+}

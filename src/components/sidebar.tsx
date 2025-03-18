@@ -10,7 +10,7 @@ import {
     SidebarFooter,
     SidebarHeader,
     SidebarRail,
-  } from "@/components/ui/sidebar";
+} from "@/components/ui/sidebar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useCurrentUser } from '@/hooks/use-current-user';
 import { NavUser } from './nav-user';
@@ -26,17 +26,17 @@ interface SidebarItem {
 }
 
 export const sidebarItems: SidebarItem[] = [
- 
+
 ]
 
 export function AppSidebar({
     header = "Buyer Portal",
     value = "buyer",
     ...props
-  }: React.ComponentProps<typeof Sidebar> & {
+}: React.ComponentProps<typeof Sidebar> & {
     header?: string,
     value?: "admin" | "buyer" | "seller"
-  }) {
+}) {
     const pathname = usePathname()
 
     const adminNav = [
@@ -91,7 +91,7 @@ export function AppSidebar({
             href: "/admin/support"
         }
     ]
-    const buyerNav =  [
+    const buyerNav = [
         {
             icon: LayoutGrid,
             label: "Properties",
@@ -112,9 +112,9 @@ export function AppSidebar({
             label: "Lease a Property",
             href: "/properties/lease"
         },
-      
-    
-       
+
+
+
     ]
 
     const navLocations = [
@@ -139,12 +139,12 @@ export function AppSidebar({
         {
             icon: LayoutGrid,
             label: "Dashboard",
-            href: "/admin",
+            href: "/seller",
         },
         {
-            icon: FolderOpen,
-            label: "Our Projects",
-            href: "/admin/projects"
+            icon: Building2,
+            label: "Property",
+            href: "/seller/properties"
         },
         {
             icon: Package,
@@ -193,55 +193,55 @@ export function AppSidebar({
         seller: sellerNav,
     };
 
-    const { user: user } = useCurrentUser();
+    const { user } = useCurrentUser();
 
     if (!user) return null;
 
     const navItems = navigationMap[value];
     const baseUrl = value === 'admin' ? '/admin' : value === 'buyer' ? '/buyer' : '/seller';
-    
+
     const SidebarContents = () => (
         <div className="bg-white h-screen">
-          <SidebarHeader>
-            <UserAvatar/>
-          </SidebarHeader>
-    
-          <SidebarContent className="flex-1 overflow-y-auto mt-10">
-            <NavMain items={navItems} />
-            {value === "buyer" && (
-                <>
-                 <NavLocation items={navLocations}/>
-                 <PriceFilter/>
-                </>
-            )}
-           
-          </SidebarContent>
+            <SidebarHeader>
+                <UserAvatar />
+            </SidebarHeader>
+
+            <SidebarContent className="flex-1 overflow-y-auto mt-10">
+                <NavMain items={navItems} />
+                {value === "buyer" && (
+                    <>
+                        <NavLocation items={navLocations} />
+                        <PriceFilter />
+                    </>
+                )}
+
+            </SidebarContent>
         </div>
     );
 
     return (
         <>
-        {/* Desktop Sidebar */}
-        <div className="hidden md:block">
-          <Sidebar collapsible="none" {...props} className="bg-white h-screen sticky top-0 left-0">
-            <SidebarContents />
-            <SidebarRail />
-          </Sidebar>
-        </div>
-  
-        {/* Mobile Sheet */}
-        <div className={cn("md:hidden fixed top-2 right-4 z-[9999]")}>
-          <Sheet>
-            <SheetTrigger asChild>
-              <button className="p-2 bg-transparent rounded-md shadow-md">
-                <Menu className="size-6 text-white" />
-              </button>
-            </SheetTrigger>
-            <SheetContent side="right" className="p-0 w-[300px] z-[9999]">
-              <SidebarContents />
-            </SheetContent>
-          </Sheet>
-        </div>
-      </>
+            {/* Desktop Sidebar */}
+            <div className="hidden md:block">
+                <Sidebar collapsible="none" {...props} className="bg-white h-screen sticky top-0 left-0">
+                    <SidebarContents />
+                    <SidebarRail />
+                </Sidebar>
+            </div>
+
+            {/* Mobile Sheet */}
+            <div className={cn("md:hidden fixed top-2 right-4 z-[9999]")}>
+                <Sheet>
+                    <SheetTrigger asChild>
+                        <button className="p-2 bg-transparent rounded-md shadow-md">
+                            <Menu className="size-6 text-white" />
+                        </button>
+                    </SheetTrigger>
+                    <SheetContent side="right" className="p-0 w-[300px] z-[9999]">
+                        <SidebarContents />
+                    </SheetContent>
+                </Sheet>
+            </div>
+        </>
     )
 }

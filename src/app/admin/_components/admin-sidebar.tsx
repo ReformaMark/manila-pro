@@ -50,39 +50,6 @@ export const adminSidebarItems: SidebarItem[] = [
     },
 ]
 
-// export const buyerSidebarItems: SidebarItem[] = [
-//     {
-//         icon: LayoutGrid,
-//         label: "Dashboard",
-//         href: "/buyer/owned-properties",
-//     },
-//     {
-//         icon: FilePenLine,
-//         label: "SOA",
-//         href: "/buyer/soa"
-//     },
-//     {
-//         icon: CreditCard,
-//         label: "Billing",
-//         href: "/buyer/billing"
-//     },
-//     {
-//         icon: Building2,
-//         label: "Documents",
-//         href: "/buyer/documents"
-//     },
-//     {
-//         icon: MessageCircle,
-//         label: "Chat Support",
-//         href: "/buyer/support"
-//     }
-// ]
-
-// const sellerSideBarItems: SidebarItem[] = [
-
-// ]
-
-
 export const AdminSidebar = () => {
     const pathname = usePathname();
     const [expandedItem, setExpandedItem] = useState<string | null>(null);
@@ -91,9 +58,6 @@ export const AdminSidebar = () => {
         setExpandedItem(expandedItem === label ? null : label);
     };
 
-    // const { data } = useCheckRole()
-    // const sideBarItems = data && data === 'admin' ? adminSidebarItems : data === 'buyer' ? buyerSidebarItems : sellerSideBarItems
-    // const isDashboard = pathname === "/buyer/owned-properties" || pathname === "/buyer/active-advertisements"
     return (
         <>
             <section className='border-r bg-bg1 border-none w-[263px] pt-[85px] px-5 hidden lg:block'>

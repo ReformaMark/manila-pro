@@ -1,4 +1,4 @@
-import { formatCurrency, formatDate, statusColors } from "@/lib/utils";
+import { formatCurrency, formatDate } from "@/lib/utils";
 import { BedDouble, Calendar, Home, MapPin, Ruler, Users } from "lucide-react";
 import { Doc } from "../../../convex/_generated/dataModel";
 import { Badge } from "../ui/badge";
@@ -19,6 +19,12 @@ export const PropertyDetailsModal = ({
     onClose,
     property,
 }: PropertyDetailsModalProps) => {
+    const statusColors = {
+        available: "bg-green-100 text-green-800 hover:bg-green-200",
+        reserved: "bg-amber-100 text-amber-800 hover:bg-amber-200",
+        sold: "bg-blue-100 text-blue-800 hover:bg-blue-200",
+    }
+
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">

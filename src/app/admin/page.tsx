@@ -10,12 +10,12 @@ function AdminPage() {
 
       <AdminCards />
 
-      <div className="grid grid-cols-3 gap-4">
-        <div className="col-span-2">
+      <div className="grid md:grid-cols-3 gap-4">
+        <div className="col-span-3 md:col-span-2">
           <SoldPropertiesChart />
         </div>
 
-        <div className="col-span-1">
+        <div className="col-span-3 md:col-span-1">
           <UserDistributionChart />
         </div>
       </div>

@@ -16,17 +16,14 @@ import {
     FormMessage
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { getConvexErrorMessage } from "@/lib/utils"
+import { useConvexMutation } from "@convex-dev/react-query"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useMutation } from "@tanstack/react-query"
 import { MapPin, Phone, UserIcon, UserPlus } from "lucide-react"
 import { useForm } from "react-hook-form"
-import z from "zod"
-import { useMutation } from "@tanstack/react-query";
-import { useConvexMutation } from "@convex-dev/react-query"
-import { getConvexErrorMessage } from "@/lib/utils"
 import { toast } from "sonner"
-import { useQuery } from "convex/react"
-import { useState } from "react"
+import z from "zod"
 import { api } from "../../../../../../convex/_generated/api"
 
 const formSchema = z.object({
@@ -49,12 +46,9 @@ export const AddSellersModal = ({
     onClose,
     open,
 }: AddSellersModalProps) => {
-    // const [selectedRealtyId, setSelectedRealtyId] = useState<string>("");
-
     const { mutate: createSeller, isPending } = useMutation({
         mutationFn: useConvexMutation(api.users.createSeller)
     })
-    // const realties = useQuery(api.realty.getWithoutImage);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -71,16 +65,10 @@ export const AddSellersModal = ({
     })
 
     const handleSubmit = async (values: z.infer<typeof formSchema>) => {
-        // if (!selectedRealtyId) {
-        //     toast.error("Please select a realty");
-        //     return;
-        // }
-
         try {
 
             await createSeller({
                 ...values,
-                // realtyId: selectedRealtyId as Id<"realty">,
             })
 
             toast.success("Seller created successfully");
@@ -107,22 +95,6 @@ export const AddSellersModal = ({
                             <UserPlus className="h-5 w-5" />
                             Add Seller
                         </div>
-
-                        {/* <div>
-                            <Select onValueChange={(value) => setSelectedRealtyId(value)}>
-                                <SelectTrigger className="w-[180px]">
-                                    <SelectValue placeholder="Realty" className="text-muted-foreground" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {realties?.map((realty) => (
-                                        <SelectItem key={realty._id} value={realty._id}>
-                                            {realty.realtyName}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-
-                        </div> */}
                     </DialogTitle>
                 </DialogHeader>
 

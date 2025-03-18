@@ -7,10 +7,11 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import { Poppins } from "next/font/google"
+import { SellerGuard } from "@/components/auth/seller-guard";
 
 const poppinsFont = Poppins({
-    subsets: ["latin"],
-    weight: "400",
+  subsets: ["latin"],
+  weight: "400",
 })
 
 export const metadata: Metadata = {
@@ -30,18 +31,18 @@ export default function RootLayout({
           <body
             className={`${poppinsFont.className} antialiased`}
           >
-         
+            <SellerGuard>
               <SidebarProvider>
                 <div className="flex min-h-screen flex-col antialiased w-full">
                   <AppSidebar
-                      header="Buyer Portal"
-                      value="buyer"
+                    header="Buyer Portal"
+                    value="buyer"
                   />
                   <main className="flex-1 min-h-screen pt-[70px]">{children}</main>
                   <Toaster />
                 </div>
               </SidebarProvider>
-           
+            </SellerGuard>
           </body>
         </html>
       </ConvexClientProvider>

@@ -9,27 +9,10 @@ import { PropertyColumns } from "./_components/property-columns";
 
 
 const PropertiesPage = () => {
-    // const selectedProjectId = useProjectStore(state => state.selectedProjectId)
-    // const properties = useQuery(api.property.get, {
-    //     projectId: selectedProjectId ?? undefined
-    // })
-    // const [selectedRows, setSelectedRows] = useState<Id<"property">[]>([]);
-    // const handleRowSelection = useCallback((rows: Doc<"property">[]) => {
-    //     if (!rows.length) {
-    //         setSelectedRows([]);
-    //         return;
-    //     }
-
-    //     const validRows = rows.filter(row => row?._id);
-    //     setSelectedRows(validRows.map(row => row._id));
-    // }, []);
-
     const properties = useQuery(api.property.get)
 
     const availableProperties = properties?.filter(property => property.status === "available");
-
     const reservedProperties = properties?.filter(property => property.status === "reserved");
-
     const soldProperties = properties?.filter(property => property.status === "sold");
 
     return (
@@ -68,7 +51,6 @@ const PropertiesPage = () => {
                         <TabsTrigger value="available">Available</TabsTrigger>
                         <TabsTrigger value="reserved">Reserved</TabsTrigger>
                         <TabsTrigger value="sold">Sold</TabsTrigger>
-                        {/* <TabsTrigger value="due">Due</TabsTrigger> */}
                     </TabsList>
                     <TabsContent value="all" className="space-y-4">
                         <DataTable
@@ -77,7 +59,6 @@ const PropertiesPage = () => {
                             isInventory
                             placeholder="Search a property"
                             search="lot"
-                        // onRowSelectionChange={handleRowSelection}
                         />
                     </TabsContent>
 
@@ -88,7 +69,6 @@ const PropertiesPage = () => {
                             isInventory
                             placeholder="Search a property"
                             search="lot"
-                        // onRowSelectionChange={handleRowSelection}
                         />
                     </TabsContent>
 
@@ -99,7 +79,6 @@ const PropertiesPage = () => {
                             isInventory
                             placeholder="Search a property"
                             search="lot"
-                        // onRowSelectionChange={handleRowSelection}
                         />
                     </TabsContent>
 
@@ -110,28 +89,9 @@ const PropertiesPage = () => {
                             isInventory
                             placeholder="Search a property"
                             search="lot"
-                        // onRowSelectionChange={handleRowSelection}
                         />
                     </TabsContent>
-
-                    {/* <TabsContent value="due" className="space-y-4">
-                        <DataTable
-                            columns={PropertyColumns}
-                            data={dueProperties ?? []}
-                            isInventory
-                            placeholder="Search a property"
-                            search="lot"
-                        // onRowSelectionChange={handleRowSelection}
-                        />
-                    </TabsContent> */}
                 </Tabs>
-
-                {/* <div className="absolute right-0 top-[65px]">
-                    <InventoryActions
-                        projectId={selectedProjectId}
-                        selectedRows={selectedRows}
-                    />
-                </div> */}
             </div>
         </section>
     )

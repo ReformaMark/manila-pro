@@ -36,6 +36,11 @@ const formSchema = z.object({
     street: z.string().min(1, "Street is required"),
     barangay: z.string().min(1, "Barangay is required"),
     city: z.string().min(1, "City is required"),
+    password: z.string().min(1, "Password is required").max(20, "Maximum of 20 characters for Password"),
+    confirmPassword: z.string().min(1, "Password confirmation is required"),
+}).refine((data) => data.password === data.confirmPassword, {
+    message: "Password don't match",
+    path: ["confirmPassword"],
 })
 
 interface AddAdminModalProps {
@@ -83,6 +88,7 @@ export const AddAdminModal = ({
                 houseNumber: values.houseNumber,
                 lname: values.lname,
                 street: values.street,
+                password: values.password,
                 // realtyId: selectedRealtyId as Id<"realty">,
             })
 
@@ -203,6 +209,37 @@ export const AddAdminModal = ({
                                         <FormLabel>Contact Number</FormLabel>
                                         <FormControl>
                                             <Input placeholder="Enter Contact Number" {...field} disabled={isPending} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+
+                        <div
+                            className="grid grid-cols-2 gap-4"
+                        >
+                            <FormField
+                                control={form.control}
+                                name="password"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Password</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="Enter Password" {...field} type="password" disabled={isPending} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="confirmPassword"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Confirm Password</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="Confirm your Password" {...field} type="password" disabled={isPending} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>

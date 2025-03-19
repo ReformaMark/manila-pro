@@ -14,7 +14,8 @@ export const createAdmin = mutation({
         street: v.string(),
         barangay: v.string(),
         city: v.string(),
-        realtyId: v.optional(v.id("realty"))
+        realtyId: v.optional(v.id("realty")),
+        password: v.string(),
     },
     handler: async (ctx, args) => {
         try {
@@ -36,10 +37,10 @@ export const createAdmin = mutation({
             if (existingEmail) throw new ConvexError("Email already exists")
 
             const role = "admin"
-            const password = "123456" // generate random password and send it to email
+            // const password = "123456"  TODO: generate random password and send it to email
             const accountId = generateAdminId();
 
-            const { email, ...userData } = args;
+            const { email, password, ...userData } = args;
 
             // @ts-expect-error - type error in convex auth
             const create = await createAccount(ctx, {
@@ -77,6 +78,7 @@ export const createSeller = mutation({
         street: v.string(),
         barangay: v.string(),
         city: v.string(),
+        password: v.string(),
         // realtyId: v.optional(v.id("realty"))
     },
     handler: async (ctx, args) => {
@@ -97,10 +99,10 @@ export const createSeller = mutation({
             if (existingEmail) throw new ConvexError("Email already exists")
 
             const role = "seller"
-            const password = "123456" // TODO: generate random password and send it to email
+            // const password = "123456"  TODO: generate random password and send it to email
             const accountId = generateSellerId();
 
-            const { email, ...userData } = args;
+            const { email, password, ...userData } = args;
 
             // @ts-expect-error - type error in convex auth
             const create = await createAccount(ctx, {

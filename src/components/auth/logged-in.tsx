@@ -18,10 +18,10 @@ export function RoleCheck() {
                     router.push("/admin")
                     break
                 case "buyer":
-                    router.push("/") 
+                    router.push("/")
                     break
                 case "seller":
-                    router.push("/seller")
+                    router.push("/seller/properties")
                     break
                 default:
                     router.push("/")
@@ -29,8 +29,8 @@ export function RoleCheck() {
         }
     }, [isAuthenticated, isAuthLoading, isRoleLoading, role, router])
 
-    if(isAuthLoading && isRoleLoading) {
-         return (
+    if (isAuthLoading && isRoleLoading) {
+        return (
             <div className="flex items-center justify-center min-h-screen">
                 <div className="flex flex-col items-center">
                     <FaSpinner className="text-4xl animate-spin text-blue-500 mb-2" />

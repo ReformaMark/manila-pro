@@ -33,6 +33,8 @@ export function getDummyProperties(): Doc<"property">[] {
             unitType: "single attached house",
             updatedAt: 0,
             _creationTime: 1742297180711.6162,
+            bathrooms: "2",
+            featured: false,
         },
         {
             _id: "prop2" as Id<"property">,
@@ -65,6 +67,8 @@ export function getDummyProperties(): Doc<"property">[] {
             unitType: "condominium",
             updatedAt: 0,
             _creationTime: 1742297180711.6162,
+            bathrooms: "1",
+            featured: true,
         },
         {
             _id: "prop3" as Id<"property">,
@@ -96,7 +100,9 @@ export function getDummyProperties(): Doc<"property">[] {
             transactionType: "Buy",
             unitType: "townhouse",
             updatedAt: 0,
-            _creationTime: 1742297180711.6162
+            _creationTime: 1742297180711.6162,
+            bathrooms: "3",
+            featured: true,
         },
         {
             _id: "prop4" as Id<"property">,
@@ -129,6 +135,8 @@ export function getDummyProperties(): Doc<"property">[] {
             unitType: "single detached house",
             updatedAt: 0,
             _creationTime: 1742297180711.6162,
+            bathrooms: "4",
+            featured: true,
         },
         {
             _id: "prop5" as Id<"property">,
@@ -161,6 +169,8 @@ export function getDummyProperties(): Doc<"property">[] {
             unitType: "condominium",
             updatedAt: 0,
             _creationTime: 1742297180711.6162,
+            bathrooms: "2",
+            featured: false,
         },
     ]
 }

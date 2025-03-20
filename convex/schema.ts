@@ -72,6 +72,8 @@ export default defineSchema({
         address: v.string(),
         location: v.optional(v.string()), // coordinates
         propertyType: v.optional(v.string()), // foreclose, pre owned
+        bathrooms: v.string(),
+        featured: v.boolean(),
         //Building information
         storeys: v.optional(v.string()),
         lotArea: v.number(),

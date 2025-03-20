@@ -1,22 +1,49 @@
 "use client"
 
-import { UseFormReturn } from "react-hook-form"
-import { Input } from "@/components/ui/input"
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import { Slider } from "@/components/ui/slider"
-import { formatCurrency } from "@/lib/utils"
+import { Input } from "@/components/ui/input"
+import { SingleSlider } from "@/components/ui/single-slider"
+import { formatCurrency, formatPriceInput, formattedAmortization, parsePriceInput } from "@/lib/utils"
+import { PropertyFormSchema } from "@/lib/validations/property"
+import { useEffect, useState } from "react"
+import { UseFormReturn } from "react-hook-form"
+import { z } from "zod"
 
 interface PropertyPricingFormProps {
-    form: UseFormReturn<any>
+    form: UseFormReturn<z.infer<typeof PropertyFormSchema>>
 }
 
 export const PropertyPricingForm = ({ form }: PropertyPricingFormProps) => {
+    const [formattedPricePerSqm, setFormattedPricePerSqm] = useState("")
+    const [formattedTotalContractPrice, setFormattedTotalContractPrice] = useState("")
+    const [formattedNetContractPrice, setFormattedNetContractPrice] = useState("")
+    const [formattedTotalSellingPrice, setFormattedTotalSellingPrice] = useState("")
+    const [formattedMonthlyAmortization, setFormattedMonthlyAmortization] = useState("")
+
+    useEffect(() => {
+        const pricePerSqm = form.getValues("pricePerSqm")
+        const totalContractPrice = form.getValues("totalContractPrice")
+        const netContractPrice = form.getValues("netContractPrice")
+        const totalSellingPrice = form.getValues("totalSellingPrice")
+        const suggestedTermInMonths = form.getValues("suggestedTermInMonths")
+
+        if (totalSellingPrice && suggestedTermInMonths) {
+            const monthlyAmortization = totalSellingPrice / suggestedTermInMonths;
+
+            form.setValue("suggestedMonthlyAmortization", monthlyAmortization)
+            setFormattedMonthlyAmortization(formattedAmortization(monthlyAmortization))
+        }
+
+        if (pricePerSqm) setFormattedPricePerSqm(formatPriceInput(pricePerSqm.toString()))
+        if (totalContractPrice) setFormattedTotalContractPrice(formatPriceInput(totalContractPrice.toString()))
+        if (netContractPrice) setFormattedNetContractPrice(formatPriceInput(netContractPrice.toString()))
+        if (totalSellingPrice) setFormattedTotalSellingPrice(formatPriceInput(totalSellingPrice.toString()))
+    }, [form.watch("totalSellingPrice"), form.watch("suggestedTermInMonths")])
+
     return (
         <div className="space-y-6">
             <div>
-                <h2 className="text-xl font-semiboldmb-4">Property Pricing</h2>
+                <h2 className="text-xl font-semibold text-orange-800 mb-4">Property Pricing</h2>
                 <p className="text-muted-foreground mb-6">Set the pricing details for your property.</p>
             </div>
 
@@ -28,10 +55,13 @@ export const PropertyPricingForm = ({ form }: PropertyPricingFormProps) => {
                         <FormLabel>Price per Square Meter</FormLabel>
                         <FormControl>
                             <Input
-                                type="number"
-                                placeholder="e.g. 50000"
-                                {...field}
-                                onChange={(e) => field.onChange(Number.parseFloat(e.target.value) || 0)}
+                                value={formattedPricePerSqm}
+                                onChange={(e) => {
+                                    const formatted = formatPriceInput(e.target.value)
+                                    setFormattedPricePerSqm(formatted)
+                                    field.onChange(parsePriceInput(formatted))
+                                }}
+                                placeholder="e.g. ₱50,000"
                                 className="border-orange-200 focus-visible:ring-orange-500"
                             />
                         </FormControl>
@@ -50,10 +80,13 @@ export const PropertyPricingForm = ({ form }: PropertyPricingFormProps) => {
                             <FormLabel>Total Contract Price</FormLabel>
                             <FormControl>
                                 <Input
-                                    type="number"
-                                    placeholder="e.g. 5000000"
-                                    {...field}
-                                    onChange={(e) => field.onChange(Number.parseFloat(e.target.value) || 0)}
+                                    value={formattedTotalContractPrice}
+                                    onChange={(e) => {
+                                        const formatted = formatPriceInput(e.target.value)
+                                        setFormattedTotalContractPrice(formatted)
+                                        field.onChange(parsePriceInput(formatted))
+                                    }}
+                                    placeholder="e.g. ₱5,000,000"
                                     className="border-orange-200 focus-visible:ring-orange-500"
                                 />
                             </FormControl>
@@ -70,10 +103,13 @@ export const PropertyPricingForm = ({ form }: PropertyPricingFormProps) => {
                             <FormLabel>Net Contract Price</FormLabel>
                             <FormControl>
                                 <Input
-                                    type="number"
-                                    placeholder="e.g. 4800000"
-                                    {...field}
-                                    onChange={(e) => field.onChange(Number.parseFloat(e.target.value) || 0)}
+                                    value={formattedNetContractPrice}
+                                    onChange={(e) => {
+                                        const formatted = formatPriceInput(e.target.value)
+                                        setFormattedNetContractPrice(formatted)
+                                        field.onChange(parsePriceInput(formatted))
+                                    }}
+                                    placeholder="e.g. ₱4,800,000"
                                     className="border-orange-200 focus-visible:ring-orange-500"
                                 />
                             </FormControl>
@@ -91,10 +127,13 @@ export const PropertyPricingForm = ({ form }: PropertyPricingFormProps) => {
                         <FormLabel>Total Selling Price</FormLabel>
                         <FormControl>
                             <Input
-                                type="number"
-                                placeholder="e.g. 4500000"
-                                {...field}
-                                onChange={(e) => field.onChange(Number.parseFloat(e.target.value) || 0)}
+                                value={formattedTotalSellingPrice}
+                                onChange={(e) => {
+                                    const formatted = formatPriceInput(e.target.value)
+                                    setFormattedTotalSellingPrice(formatted)
+                                    field.onChange(parsePriceInput(formatted))
+                                }}
+                                placeholder="e.g. ₱4,500,000"
                                 className="border-orange-200 focus-visible:ring-orange-500"
                             />
                         </FormControl>
@@ -109,33 +148,12 @@ export const PropertyPricingForm = ({ form }: PropertyPricingFormProps) => {
 
                 <FormField
                     control={form.control}
-                    name="suggestedMonthlyAmortization"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Suggested Monthly Amortization</FormLabel>
-                            <FormControl>
-                                <Input
-                                    type="number"
-                                    placeholder="e.g. 30000"
-                                    {...field}
-                                    onChange={(e) => field.onChange(Number.parseFloat(e.target.value) || 0)}
-                                    className="border-orange-200 focus-visible:ring-orange-500 bg-white"
-                                />
-                            </FormControl>
-                            <FormDescription>Recommended monthly payment amount.</FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-
-                <FormField
-                    control={form.control}
                     name="suggestedTermInMonths"
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Term Length (Months): {field.value}</FormLabel>
                             <FormControl>
-                                <Slider
+                                <SingleSlider
                                     min={12}
                                     max={240}
                                     step={12}
@@ -149,6 +167,26 @@ export const PropertyPricingForm = ({ form }: PropertyPricingFormProps) => {
                                 <span>20 years</span>
                             </div>
                             <FormDescription>Suggested length of payment term in months.</FormDescription>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
+                <FormField
+                    control={form.control}
+                    name="suggestedMonthlyAmortization"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Suggested Monthly Amortization</FormLabel>
+                            <FormControl>
+                                <Input
+                                    value={formattedMonthlyAmortization}
+                                    placeholder="e.g. ₱30,000"
+                                    disabled
+                                    className="border-orange-200 focus-visible:ring-orange-500 bg-white"
+                                />
+                            </FormControl>
+                            <FormDescription>Recommended monthly payment amount.</FormDescription>
                             <FormMessage />
                         </FormItem>
                     )}

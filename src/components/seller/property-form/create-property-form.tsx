@@ -1,21 +1,26 @@
 "use client"
 
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Card, CardContent } from "@/components/ui/card"
+import { Form } from "@/components/ui/form"
+import { PropertyBasicInfoForm } from "./property-basic-info-form"
+import { Button } from "@/components/ui/button"
 import { PropertyFormSchema } from "@/lib/validations/property"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import { Card, CardContent } from "@/components/ui/card"
-import { Form } from "@/components/ui/form"
-import { PropertyBasicInfoForm } from "./property-basic-info-form"
-import { Button } from "@/components/ui/button"
 import { ChevronRight } from "lucide-react"
 import { PropertyLocationForm } from "./property-location-form"
 import { PropertyDetailsForm } from "./property-details-form"
 import { PropertyPricingForm } from "./property-pricing-form"
+import { PropertyImagesForm } from "./property-images-form"
+import { useMutation } from "@tanstack/react-query"
+import { useConvexMutation } from "@convex-dev/react-query"
+import { api } from "../../../../convex/_generated/api"
+import { useRouter } from "next/navigation"
 
 const steps = [
     { id: "basic-info", label: "Basic Info" },
@@ -23,11 +28,17 @@ const steps = [
     { id: "details", label: "Property Details" },
     { id: "pricing", label: "Pricing" },
     { id: "images", label: "Images" },
-    { id: "review", label: "Review" },
 ]
 
 export const CreatePropertyForm = () => {
     const [currentStep, setCurrentStep] = useState(0)
+    const [displayImagePreview, setDisplayImagePreview] = useState<string | null>(null)
+    const [otherImagePreviews, setOtherImagePreviews] = useState<string[]>([])
+    const router = useRouter()
+
+    const { mutate: createProperty, isPending } = useMutation({
+        mutationFn: useConvexMutation(api.property.create)
+    })
 
     const form = useForm<z.infer<typeof PropertyFormSchema>>({
         resolver: zodResolver(PropertyFormSchema),
@@ -36,7 +47,7 @@ export const CreatePropertyForm = () => {
     const getFieldsToValidate = (step: number) => {
         switch (step) {
             case 0: // Basic Info (1st Step)
-                return ["propertyName", "unitType", "bedrooms", "maximumOccupants"]
+                return ["propertyName", "unitType", "bedrooms", "maximumOccupants", "bathrooms", "featured"]
             case 1: // Location (2nd Step)
                 return ["address", "city", "block", "lot", "lotId"]
             case 2: // Details (3rd Step)
@@ -72,11 +83,18 @@ export const CreatePropertyForm = () => {
     }
 
     const onSubmit = async (data: z.infer<typeof PropertyFormSchema>) => {
+        console.log("Submitting property data:", data)
+
         try {
-            console.log("Submitting property data:", data)
+            await createProperty({
+                ...data,
+            })
+            // await new Promise((resolve) => setTimeout(resolve, 1500))
+
+            router.push("/seller/properties")
+            router.refresh()
         } catch (error) {
-            console.error(error)
-            toast.error("Error submitting property")
+            console.error("Error submitting property:", error)
         }
     }
 
@@ -133,7 +151,7 @@ export const CreatePropertyForm = () => {
                             Details
                         </TabsTrigger>
                     </TabsList>
-                    <TabsList className="grid grid-cols-3">
+                    <TabsList className="grid grid-cols-2">
                         <TabsTrigger
                             value="pricing"
                             disabled={currentStep !== 3}
@@ -148,13 +166,13 @@ export const CreatePropertyForm = () => {
                         >
                             Images
                         </TabsTrigger>
-                        <TabsTrigger
+                        {/* <TabsTrigger
                             value="review"
                             disabled={currentStep !== 5}
                             className="data-[state=active]:bg-orange-500 data-[state=active]:text-white"
                         >
                             Review
-                        </TabsTrigger>
+                        </TabsTrigger> */}
                     </TabsList>
                 </Tabs>
             </div>
@@ -167,24 +185,14 @@ export const CreatePropertyForm = () => {
                             {currentStep === 1 && <PropertyLocationForm form={form} />}
                             {currentStep === 2 && <PropertyDetailsForm form={form} />}
                             {currentStep === 3 && <PropertyPricingForm form={form} />}
-                            {/* {currentStep === 4 && <PropertyImagesForm form={form} />} */}
-
-                            {currentStep === 5 && (
-                                <div className="space-y-6">
-                                    <div>
-                                        <h2 className="text-xl font-semibold text-orange-800 mb-4">Review your property listings</h2>
-                                        <p className="text-muted-foreground mb-6">
-                                            Please review all the information below before submitting your property listing.
-                                        </p>
-
-                                        <div className="space-y-6">
-                                            <div>
-
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div>
+                            {currentStep === 4 && (
+                                <PropertyImagesForm
+                                    form={form}
+                                    displayImagePreview={displayImagePreview}
+                                    setDisplayImagePreview={setDisplayImagePreview}
+                                    otherImagePreviews={otherImagePreviews}
+                                    setOtherImagePreviews={setOtherImagePreviews}
+                                />
                             )}
 
                             <div className="flex justify-between mt-8">
@@ -193,7 +201,7 @@ export const CreatePropertyForm = () => {
                                     variant="outline"
                                     onClick={prevStep}
                                     disabled={currentStep === 0}
-                                    className="border-orange-200 text-orange-500"
+                                    className="border-orange-200 text-orange-700 hover:bg-orange-50"
                                 >
                                     Back
                                 </Button>
@@ -211,14 +219,13 @@ export const CreatePropertyForm = () => {
                                     <Button
                                         type="submit"
                                         variant="orange"
-                                    // disabled={isSubmitting}
+                                        disabled={isPending}
                                     >
-                                        {/* {isSubmitting ? "Submitting..." : "Submit Property"} */}
-                                        Submit Property
+                                        {isPending ? "Submitting..." : "Submit Property"}
                                     </Button>
                                 )}
-                            </div>
 
+                            </div>
                         </form>
                     </Form>
                 </CardContent>

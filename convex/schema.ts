@@ -45,7 +45,6 @@ export default defineSchema({
         // projectId: v.id("project"),
         propertyName: v.string(),
         sellerId: v.id("users"),
-        lotId: v.string(),
         block: v.string(),
         lot: v.string(),
         displayImage: v.string(),

@@ -18,7 +18,7 @@ export function getDummyProperties(): Doc<"property">[] {
             ],
             lot: "3",
             lotArea: 60,
-            lotId: "L-123",
+            // lotId: "L-123",
             maximumOccupants: "5-10",
             netContractPrice: 1800000,
             pricePerSqm: 30000,
@@ -46,7 +46,7 @@ export function getDummyProperties(): Doc<"property">[] {
             displayImage: "https://xnp6i843pr.ufs.sh/f/0VXm2UCFbuqy7vP0OcBnKIH8ArFdtisRwYo6QhmW51uLDcXC",
             lot: "7",
             lotArea: 45,
-            lotId: "L-456",
+            // lotId: "L-456",
             maximumOccupants: "3-5",
             netContractPrice: 2200000,
             otherImage: [
@@ -80,7 +80,7 @@ export function getDummyProperties(): Doc<"property">[] {
             displayImage: "https://xnp6i843pr.ufs.sh/f/0VXm2UCFbuqy4Dgsi6JmbaOgkYU9rs75BRe12DlA3fztEQFq",
             lot: "9",
             lotArea: 120,
-            lotId: "L-789",
+            // lotId: "L-789",
             maximumOccupants: "8-10",
             netContractPrice: 5500000,
             otherImage: [
@@ -114,7 +114,7 @@ export function getDummyProperties(): Doc<"property">[] {
             displayImage: "https://xnp6i843pr.ufs.sh/f/0VXm2UCFbuqy4lebdV6JmbaOgkYU9rs75BRe12DlA3fztEQF",
             lot: "5",
             lotArea: 80,
-            lotId: "L-321",
+            // lotId: "L-321",
             maximumOccupants: "6-8",
             netContractPrice: 3200000,
             otherImage: [
@@ -148,7 +148,7 @@ export function getDummyProperties(): Doc<"property">[] {
             displayImage: "https://xnp6i843pr.ufs.sh/f/0VXm2UCFbuqyKlunBjiPBf3thrFT8KqjxSQZXgbnswvMINU2",
             lot: "2",
             lotArea: 35,
-            lotId: "L-654",
+            // lotId: "L-654",
             maximumOccupants: "2-3",
             netContractPrice: 1500000,
             otherImage: [

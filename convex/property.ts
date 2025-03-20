@@ -1,6 +1,6 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { mutation, query } from "./_generated/server";
-import { ConvexError, v } from "convex/values";
+import { ConvexError, convexToJson, v } from "convex/values";
 import { paginationOptsValidator } from "convex/server";
 import { asyncMap } from 'convex-helpers'
 import { Id } from "./_generated/dataModel";
@@ -70,6 +70,38 @@ export const getProperty = query({
     }
 })
 
+export const getPropertyBySeller = query({
+    args: {},
+    handler: async (ctx) => {
+        const id = await getAuthUserId(ctx)
+        if (!id) throw new ConvexError("Unauthorized")
+
+        const properties = await ctx.db
+            .query("property")
+            .filter((q) => q.eq(q.field("sellerId"), id))
+            .collect()
+
+        return await asyncMap(properties, async (property) => {
+            const displayImageUrl = property.displayImage
+                ? await ctx.storage.getUrl(property.displayImage)
+                : null;
+
+            const otherImageUrls = property.otherImage
+                ? await asyncMap(property.otherImage, async (image) => {
+                    return await ctx.storage.getUrl(image)
+                }) : []
+
+            const cleanOtherImageUrls = otherImageUrls.filter((url): url is string => url !== null && url !== undefined);
+
+            return {
+                ...property,
+                displayImage: displayImageUrl as string,
+                otherImage: cleanOtherImageUrls,
+            }
+        })
+    }
+})
+
 export const create = mutation({
     args: {
         propertyName: v.string(),
@@ -104,7 +136,6 @@ export const create = mutation({
 
         return await ctx.db.insert("property", {
             sellerId: id,
-            lotId: "1",
             status: "available",
             createdAt: Math.floor(new Date(Date.now()).getTime() / 1000),
             updatedAt: 0,

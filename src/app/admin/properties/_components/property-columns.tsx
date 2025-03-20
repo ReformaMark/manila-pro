@@ -30,17 +30,6 @@ export const PropertyColumns: ColumnDef<Doc<"property">>[] = [
     //     enableHiding: false,
     // },
     {
-        accessorKey: "lotId",
-        header: () => <div className="text-center">LOT ID NO.</div>,
-        cell: ({ row }) => {
-            return (
-                <p>
-                    {row.original.lotId}
-                </p>
-            )
-        }
-    },
-    {
         accessorKey: "block",
         header: () => <div className="text-center">BLOCK</div>,
         cell: ({ row }) => {

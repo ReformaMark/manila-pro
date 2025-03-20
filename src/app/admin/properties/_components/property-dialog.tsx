@@ -32,11 +32,11 @@ export const PropertyDialog = ({
 
                         <BadgeStatus status={data.status} />
                     </DialogTitle>
-                    <DialogDescription
+                    {/* <DialogDescription
                         className="text-white px-8"
                     >
                         Lot ID: {data.lotId}
-                    </DialogDescription>
+                    </DialogDescription> */}
                 </DialogHeader>
 
                 <div className="px-4 pb-4">

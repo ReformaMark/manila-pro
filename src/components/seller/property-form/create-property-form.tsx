@@ -1,26 +1,25 @@
 "use client"
 
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Form } from "@/components/ui/form"
-import { PropertyBasicInfoForm } from "./property-basic-info-form"
-import { Button } from "@/components/ui/button"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { cn } from "@/lib/utils"
 import { PropertyFormSchema } from "@/lib/validations/property"
+import { useConvexMutation } from "@convex-dev/react-query"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useMutation } from "@tanstack/react-query"
+import { ChevronRight } from "lucide-react"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { toast } from "sonner"
-import { cn } from "@/lib/utils"
-import { ChevronRight } from "lucide-react"
-import { PropertyLocationForm } from "./property-location-form"
-import { PropertyDetailsForm } from "./property-details-form"
-import { PropertyPricingForm } from "./property-pricing-form"
-import { PropertyImagesForm } from "./property-images-form"
-import { useMutation } from "@tanstack/react-query"
-import { useConvexMutation } from "@convex-dev/react-query"
 import { api } from "../../../../convex/_generated/api"
-import { useRouter } from "next/navigation"
+import { PropertyBasicInfoForm } from "./property-basic-info-form"
+import { PropertyDetailsForm } from "./property-details-form"
+import { PropertyImagesForm } from "./property-images-form"
+import { PropertyLocationForm } from "./property-location-form"
+import { PropertyPricingForm } from "./property-pricing-form"
 
 const steps = [
     { id: "basic-info", label: "Basic Info" },
@@ -83,8 +82,6 @@ export const CreatePropertyForm = () => {
     }
 
     const onSubmit = async (data: z.infer<typeof PropertyFormSchema>) => {
-        console.log("Submitting property data:", data)
-
         try {
             await createProperty({
                 ...data,

@@ -27,7 +27,6 @@ export const PropertyImagesForm = ({
 }: PropertyImagesFormProps) => {
     const [isOpen, setIsOpen] = useState(false)
     const [isSingleImageUploading, setIsSingleImageUploading] = useState(false)
-    const [isMultipleImageUploading, setIsMultipleImageUploading] = useState(false)
     const generateUploadUrl = useMutation(api.files.generateUploadUrl)
 
     const handleDisplayImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -79,7 +78,6 @@ export const PropertyImagesForm = ({
             }
         }
 
-        setIsMultipleImageUploading(true)
         try {
             const uploadPromises = Array.from(files).map(async (file) => {
                 const postUrl = await generateUploadUrl()
@@ -109,8 +107,6 @@ export const PropertyImagesForm = ({
         } catch (error) {
             console.error("Upload error:", error);
             toast.error("Failed to upload images");
-        } finally {
-            setIsMultipleImageUploading(false)
         }
     }
 
@@ -145,6 +141,7 @@ export const PropertyImagesForm = ({
                     <div className="flex justify-between">
                         <h2 className="text-xl font-semibold text-orange-800 mb-4">Property Images</h2>
                         <Button
+                            type="button"
                             variant="outline"
                             className="text-orange-800 border-orange-200"
                             onClick={() => setIsOpen(true)}

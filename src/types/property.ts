@@ -11,4 +11,5 @@ export interface FilterOptions {
     selectedFacilities: string[]
     maxOccupants: number
     searchTerm: string
+    sort: string
   }

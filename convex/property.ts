@@ -172,7 +172,7 @@ export const create = mutation({
     args: {
         propertyName: v.string(),
         unitType: v.string(),
-        bedrooms: v.string(),
+        bedrooms: v.number(),
         lotArea: v.number(),
         maximumOccupants: v.string(),
         address: v.string(),
@@ -193,7 +193,7 @@ export const create = mutation({
         transactionType: v.optional(v.string()),
         otherImage: v.optional(v.array(v.string())),
         description: v.optional(v.string()),
-        bathrooms: v.string(),
+        bathrooms: v.number(),
         featured: v.boolean(),
     },
     handler: async (ctx, args) => {

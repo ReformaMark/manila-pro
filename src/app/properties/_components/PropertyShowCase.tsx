@@ -68,6 +68,7 @@ export default function PropertyShowcase({properties}:{properties: PropertyTypes
     selectedFacilities: [] as string[],
     maxOccupants: 0,
     searchTerm: "",
+    sort: "newest"
   })
   
 
@@ -160,6 +161,15 @@ export default function PropertyShowcase({properties}:{properties: PropertyTypes
         return !isNaN(maxOccupants) && maxOccupants >= filters.maxOccupants;
       });
     }
+    if (filters.sort === "newest") {
+      result = result.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    } else if (filters.sort === "price-low") {
+      result = result.sort((a, b) => a.totalSellingPrice - b.totalSellingPrice)
+    } else if (filters.sort === "price-high") {
+      result = result.sort((a, b) => b.totalSellingPrice - a.totalSellingPrice)
+    } else if (filters.sort === "featured") {
+      result = result.filter((property) => property.featured)
+    }
 
     setFilteredProperties(result)
   }, [filters])
@@ -220,6 +230,7 @@ export default function PropertyShowcase({properties}:{properties: PropertyTypes
       selectedFacilities: [],
       maxOccupants: 0,
       searchTerm: "",
+      sort: "newest"
     })
   }
 
@@ -350,11 +361,14 @@ export default function PropertyShowcase({properties}:{properties: PropertyTypes
                 <h2 className="text-xl font-semibold text-brand-black">
                   {filteredProperties.length} {filteredProperties.length === 1 ? "Property" : "Properties"} Found
                 </h2>
-                <Select defaultValue="featured" onValueChange={() => {}}>
+                <Select defaultValue="newest" onValueChange={(value) => {handleFilterChange("sort", value)}}>
                   <SelectTrigger className="w-[180px] bg-white  text-brand-black">
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white  text-brand-black">
+                  <SelectContent className="bg-white text-brand-black">
+                    <SelectItem value="newest" className="focus:bg-gray-800 focus:text-white">
+                      Newest
+                    </SelectItem>
                     <SelectItem value="featured" className="focus:bg-gray-800 focus:text-white">
                       Featured
                     </SelectItem>
@@ -364,9 +378,7 @@ export default function PropertyShowcase({properties}:{properties: PropertyTypes
                     <SelectItem value="price-high" className="focus:bg-gray-800 focus:text-white">
                       Price: High to Low
                     </SelectItem>
-                    <SelectItem value="newest" className="focus:bg-gray-800 focus:text-white">
-                      Newest
-                    </SelectItem>
+                   
                   </SelectContent>
                 </Select>
               </div>

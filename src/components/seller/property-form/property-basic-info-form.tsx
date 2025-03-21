@@ -87,7 +87,7 @@ export const PropertyBasicInfoForm = ({ form }: PropertyBasicInfoFormProps) => {
                             </FormLabel>
                             <FormControl>
                                 <Input
-                                    type="text"
+                                    type="number"
                                     placeholder="e.g. 3"
                                     {...field}
                                     className="border-orange-200 focus-visible:ring-orange-500"
@@ -109,7 +109,7 @@ export const PropertyBasicInfoForm = ({ form }: PropertyBasicInfoFormProps) => {
                             </FormLabel>
                             <FormControl>
                                 <Input
-                                    type="text"
+                                    type="number"
                                     placeholder="e.g. 2"
                                     {...field}
                                     className="border-orange-200 focus-visible:ring-orange-500"

@@ -1,5 +1,5 @@
 import { formatCurrency, formatDate } from "@/lib/utils";
-import { BedDouble, Calendar, Home, MapPin, Ruler, Users } from "lucide-react";
+import { BathIcon, BedDouble, Calendar, Home, MapPin, Ruler, Users } from "lucide-react";
 import { Doc } from "../../../convex/_generated/dataModel";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
@@ -55,7 +55,7 @@ export const PropertyDetailsModal = ({
                     </TabsList>
 
                     <TabsContent value="details" className="space-y-4 pt-4">
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                             <div className="flex flex-col">
                                 <span className="text-sm text-muted-foreground">Property Type</span>
                                 <span className="font-medium flex items-center">
@@ -64,10 +64,17 @@ export const PropertyDetailsModal = ({
                                 </span>
                             </div>
                             <div className="flex flex-col">
-                                <span className="text-sm text-muted-foreground">Bedrooms</span>
+                                <span className="text-sm text-muted-foreground">Bedroom/s</span>
                                 <span className="font-medium flex items-center">
                                     <BedDouble className="h-4 w-4 mr-1 text-muted-foreground" />
-                                    {property.bedrooms}
+                                    {property.bedrooms ?? "N/A"}
+                                </span>
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-sm text-muted-foreground">Bathroom/s</span>
+                                <span className="font-medium flex items-center">
+                                    <BathIcon className="h-4 w-4 mr-1 text-muted-foreground" />
+                                    {property.bathrooms ?? "N/A"}
                                 </span>
                             </div>
                             <div className="flex flex-col">
@@ -132,7 +139,7 @@ export const PropertyDetailsModal = ({
 
                     <TabsContent value="pricing" className="space-y-4 pt-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="bg-muted p-4 rounded-lg">
+                            <div className="bg-[#f5f5f5] p-4 rounded-lg">
                                 <h3 className="font-medium mb-2">Price Breakdown</h3>
                                 <div className="space-y-2">
                                     <div className="flex justify-between">
@@ -155,7 +162,7 @@ export const PropertyDetailsModal = ({
                                 </div>
                             </div>
 
-                            <div className="bg-muted p-4 rounded-lg">
+                            <div className="bg-[#f5f5f5] p-4 rounded-lg">
                                 <h3 className="font-medium mb-2">Suggested Payment Terms</h3>
                                 <div className="space-y-2">
                                     <div className="flex justify-between">
@@ -178,7 +185,7 @@ export const PropertyDetailsModal = ({
                     </TabsContent>
 
                     <TabsContent value="transaction" className="space-y-4 pt-4">
-                        <div className="bg-muted p-4 rounded-lg">
+                        <div className="bg-[#f5f5f5] p-4 rounded-lg">
                             <h3 className="font-medium mb-2">Transaction Details</h3>
                             <div className="space-y-2">
                                 <div className="flex justify-between">

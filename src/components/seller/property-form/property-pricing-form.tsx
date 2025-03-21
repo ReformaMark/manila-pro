@@ -154,9 +154,9 @@ export const PropertyPricingForm = ({ form }: PropertyPricingFormProps) => {
                             <FormLabel>Term Length (Months): {field.value}</FormLabel>
                             <FormControl>
                                 <SingleSlider
-                                    min={12}
-                                    max={240}
-                                    step={12}
+                                    min={1}
+                                    max={360}
+                                    step={1}
                                     defaultValue={[field.value]}
                                     onValueChange={(value) => field.onChange(value[0])}
                                     className="[&>.bg-primary]:bg-orange-500"
@@ -164,7 +164,7 @@ export const PropertyPricingForm = ({ form }: PropertyPricingFormProps) => {
                             </FormControl>
                             <div className="flex justify-between text-sm text-muted-foreground mt-2">
                                 <span>1 year</span>
-                                <span>20 years</span>
+                                <span>30 years</span>
                             </div>
                             <FormDescription>Suggested length of payment term in months.</FormDescription>
                             <FormMessage />

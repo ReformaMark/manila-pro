@@ -49,7 +49,7 @@ export const PropertyFormSchema = z.object({
     suggestedMonthlyAmortization: z.number().min(1, {
         message: "Monthly amortization must be greater than 0.",
     }),
-    suggestedTermInMonths: z.number().min(12, {
+    suggestedTermInMonths: z.number().min(1, {
         message: "Term length must be at least 12 months.",
     }),
     // status: z.enum(["available", "reserved", "sold"], {

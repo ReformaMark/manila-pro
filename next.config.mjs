@@ -8,6 +8,10 @@ const nextConfig = {
             },
             {
                 protocol: 'https',
+                hostname: 'reminiscent-pig-976.convex.cloud',
+            },
+            {
+                protocol: 'https',
                 hostname: 'xnp6i843pr.ufs.sh',
             },
         ]

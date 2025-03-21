@@ -88,7 +88,7 @@ export const PropertyLocationForm = ({ form }: PropertyLocationFormProps) => {
                     )}
                 />
 
-                <FormField
+                {/* <FormField
                     control={form.control}
                     name="lotId"
                     render={({ field }) => (
@@ -104,7 +104,7 @@ export const PropertyLocationForm = ({ form }: PropertyLocationFormProps) => {
                             <FormMessage />
                         </FormItem>
                     )}
-                />
+                /> */}
             </div>
         </div>
     )

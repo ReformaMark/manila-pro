@@ -63,7 +63,7 @@ export const PropertyDetailsForm = ({ form }: PropertyDetailsFormProps) => {
                 )}
             />
 
-            <FormField
+            {/* <FormField
                 control={form.control}
                 name="status"
                 render={({ field }) => (
@@ -85,7 +85,7 @@ export const PropertyDetailsForm = ({ form }: PropertyDetailsFormProps) => {
                         <FormMessage />
                     </FormItem>
                 )}
-            />
+            /> */}
 
             <FormField
                 control={form.control}

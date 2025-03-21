@@ -1,6 +1,6 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { mutation, query } from "./_generated/server";
-import { ConvexError, v } from "convex/values";
+import { ConvexError, convexToJson, v } from "convex/values";
 import { paginationOptsValidator } from "convex/server";
 import { asyncMap } from 'convex-helpers'
 import { Id } from "./_generated/dataModel";
@@ -133,5 +133,79 @@ export const getProperty = query({
                 imageUrls: imageUrls
             }
         }
+    }
+})
+
+export const getPropertyBySeller = query({
+    args: {},
+    handler: async (ctx) => {
+        const id = await getAuthUserId(ctx)
+        if (!id) throw new ConvexError("Unauthorized")
+
+        const properties = await ctx.db
+            .query("property")
+            .filter((q) => q.eq(q.field("sellerId"), id))
+            .collect()
+
+        return await asyncMap(properties, async (property) => {
+            const displayImageUrl = property.displayImage
+                ? await ctx.storage.getUrl(property.displayImage)
+                : null;
+
+            const otherImageUrls = property.otherImage
+                ? await asyncMap(property.otherImage, async (image) => {
+                    return await ctx.storage.getUrl(image)
+                }) : []
+
+            const cleanOtherImageUrls = otherImageUrls.filter((url): url is string => url !== null && url !== undefined);
+
+            return {
+                ...property,
+                displayImage: displayImageUrl as string,
+                otherImage: cleanOtherImageUrls,
+            }
+        })
+    }
+})
+
+export const create = mutation({
+    args: {
+        propertyName: v.string(),
+        unitType: v.string(),
+        bedrooms: v.string(),
+        lotArea: v.number(),
+        maximumOccupants: v.string(),
+        address: v.string(),
+        city: v.union(
+            v.literal("Makati"),
+            v.literal("Pasay"),
+            v.literal("Taguig")
+        ),
+        block: v.string(),
+        lot: v.string(),
+        pricePerSqm: v.number(),
+        totalContractPrice: v.number(),
+        netContractPrice: v.number(),
+        totalSellingPrice: v.number(),
+        suggestedMonthlyAmortization: v.number(),
+        suggestedTermInMonths: v.number(),
+        displayImage: v.string(),
+        transactionType: v.optional(v.string()),
+        otherImage: v.optional(v.array(v.string())),
+        description: v.optional(v.string()),
+        bathrooms: v.string(),
+        featured: v.boolean(),
+    },
+    handler: async (ctx, args) => {
+        const id = await getAuthUserId(ctx)
+        if (!id) throw new ConvexError("Unauthorized")
+
+        return await ctx.db.insert("property", {
+            sellerId: id,
+            status: "available",
+            createdAt: Math.floor(new Date(Date.now()).getTime() / 1000),
+            updatedAt: 0,
+            ...args,
+        })
     }
 })

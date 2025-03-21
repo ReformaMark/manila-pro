@@ -10,6 +10,9 @@ export const PropertyFormSchema = z.object({
     bedrooms: z.string({
         required_error: "Please enter the number of bedrooms.",
     }),
+    bathrooms: z.string({
+        required_error: "Please enter the number of bathrooms.",
+    }),
     lotArea: z.number().min(1, {
         message: "Lot area must be greater than 0.",
     }),
@@ -28,9 +31,9 @@ export const PropertyFormSchema = z.object({
     lot: z.string({
         required_error: "Please enter the lot number.",
     }),
-    lotId: z.string({
-        required_error: "Please enter the lot ID.",
-    }),
+    // lotId: z.string({
+    //     required_error: "Please enter the lot ID.",
+    // }),
     pricePerSqm: z.number().min(1, {
         message: "Price per square meter must be greater than 0.",
     }),
@@ -49,15 +52,16 @@ export const PropertyFormSchema = z.object({
     suggestedTermInMonths: z.number().min(12, {
         message: "Term length must be at least 12 months.",
     }),
-    status: z.enum(["available", "reserved", "sold"], {
-        required_error: "Please select a status.",
-    }),
+    // status: z.enum(["available", "reserved", "sold"], {
+    //     required_error: "Please select a status.",
+    // }),
     transactionType: z.string({
         required_error: "Please select a transaction type.",
     }),
     displayImage: z.string().min(1, {
         message: "Please upload a display image.",
     }),
+    featured: z.coerce.boolean(),
     otherImage: z.array(z.string()).optional(),
     description: z.string().optional(),
 })

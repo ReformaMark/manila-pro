@@ -18,7 +18,7 @@ export function getDummyProperties(): Doc<"property">[] {
             ],
             lot: "3",
             lotArea: 60,
-            featured: true,
+           
             maximumOccupants: "5-10",
             netContractPrice: 1800000,
             pricePerSqm: 30000,
@@ -33,6 +33,8 @@ export function getDummyProperties(): Doc<"property">[] {
             unitType: "single attached house",
             updatedAt: 0,
             _creationTime: 1742297180711.6162,
+            bathrooms: 2,
+            featured: false,
         },
         {
             _id: "prop2" as Id<"property">,
@@ -44,7 +46,7 @@ export function getDummyProperties(): Doc<"property">[] {
             displayImage: "https://xnp6i843pr.ufs.sh/f/0VXm2UCFbuqy7vP0OcBnKIH8ArFdtisRwYo6QhmW51uLDcXC",
             lot: "7",
             lotArea: 45,
-            featured: true,
+       
             maximumOccupants: "3-5",
             netContractPrice: 2200000,
             otherImage: [
@@ -65,6 +67,8 @@ export function getDummyProperties(): Doc<"property">[] {
             unitType: "condominium",
             updatedAt: 0,
             _creationTime: 1742297180711.6162,
+            bathrooms: 2,
+            featured: true,
         },
         {
             _id: "prop3" as Id<"property">,
@@ -76,7 +80,7 @@ export function getDummyProperties(): Doc<"property">[] {
             displayImage: "https://xnp6i843pr.ufs.sh/f/0VXm2UCFbuqy4Dgsi6JmbaOgkYU9rs75BRe12DlA3fztEQFq",
             lot: "9",
             lotArea: 120,
-            featured: true,
+           
             maximumOccupants: "8-10",
             netContractPrice: 5500000,
             otherImage: [
@@ -96,7 +100,9 @@ export function getDummyProperties(): Doc<"property">[] {
             transactionType: "Buy",
             unitType: "townhouse",
             updatedAt: 0,
-            _creationTime: 1742297180711.6162
+            _creationTime: 1742297180711.6162,
+            bathrooms: 3,
+            featured: true,
         },
         {
             _id: "prop4" as Id<"property">,
@@ -108,7 +114,7 @@ export function getDummyProperties(): Doc<"property">[] {
             displayImage: "https://xnp6i843pr.ufs.sh/f/0VXm2UCFbuqy4lebdV6JmbaOgkYU9rs75BRe12DlA3fztEQF",
             lot: "5",
             lotArea: 80,
-            featured: true,
+          
             maximumOccupants: "6-8",
             netContractPrice: 3200000,
             otherImage: [
@@ -129,6 +135,8 @@ export function getDummyProperties(): Doc<"property">[] {
             unitType: "single detached house",
             updatedAt: 0,
             _creationTime: 1742297180711.6162,
+            bathrooms: 4,
+            featured: true,
         },
         {
             _id: "prop5" as Id<"property">,
@@ -140,7 +148,7 @@ export function getDummyProperties(): Doc<"property">[] {
             displayImage: "https://xnp6i843pr.ufs.sh/f/0VXm2UCFbuqyKlunBjiPBf3thrFT8KqjxSQZXgbnswvMINU2",
             lot: "2",
             lotArea: 35,
-            featured: true,
+        
             maximumOccupants: "2-3",
             netContractPrice: 1500000,
             otherImage: [
@@ -161,6 +169,8 @@ export function getDummyProperties(): Doc<"property">[] {
             unitType: "condominium",
             updatedAt: 0,
             _creationTime: 1742297180711.6162,
+            bathrooms: 2,
+            featured: false,
         },
     ]
 }

@@ -88,3 +88,35 @@ export function formatCurrency(amount: number) {
     maximumFractionDigits: 0,
   }).format(amount)
 }
+
+export const formatPriceInput = (value: string): string => {
+  // Remove non-numeric characters
+  const numericValue = value.replace(/[^0-9]/g, "")
+
+  // Convert to number and format with commas
+  if (numericValue) {
+    const number = Number.parseInt(numericValue, 10)
+    return new Intl.NumberFormat("en-PH", {
+      style: "currency",
+      currency: "PHP",
+      maximumFractionDigits: 0,
+    }).format(number)
+  }
+
+  return ""
+}
+
+export const parsePriceInput = (formattedValue: string): number => {
+  // Remove currency symbol, commas, and other non-numeric characters
+  const numericValue = formattedValue.replace(/[^0-9]/g, "")
+  return numericValue ? Number.parseInt(numericValue, 10) : 0
+}
+
+export function formattedAmortization(amort: number) {
+  return new Intl.NumberFormat("en-PH", {
+    style: "currency",
+    currency: "PHP",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amort)
+}

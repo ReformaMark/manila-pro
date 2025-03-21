@@ -2,11 +2,12 @@ import { formatCurrency, formatDate } from "@/lib/utils";
 import { BathIcon, BedDouble, Calendar, Home, MapPin, Ruler, Users } from "lucide-react";
 import { Doc } from "../../../convex/_generated/dataModel";
 import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
+import { Button, buttonVariants } from "../ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Separator } from "../ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { PropertyImageGallery } from "./property-image-gallery";
+import Link from "next/link";
 
 interface PropertyDetailsModalProps {
     property: Doc<"property">
@@ -55,7 +56,7 @@ export const PropertyDetailsModal = ({
                     </TabsList>
 
                     <TabsContent value="details" className="space-y-4 pt-4">
-                        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                             <div className="flex flex-col">
                                 <span className="text-sm text-muted-foreground">Property Type</span>
                                 <span className="font-medium flex items-center">
@@ -219,7 +220,15 @@ export const PropertyDetailsModal = ({
                     <Button variant="outline" onClick={onClose}>
                         Close
                     </Button>
-                    <Button variant="orange">Edit Property</Button>
+
+                    <Link
+                        href={`/seller/properties/edit/${property._id}`}
+                        className={buttonVariants({
+                            variant: "orange"
+                        })}
+                    >
+                        Edit Property
+                    </Link>
                 </div>
             </DialogContent>
         </Dialog>

@@ -7,7 +7,8 @@ import { Doc } from "../../../convex/_generated/dataModel";
 import { Badge } from "../ui/badge";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card";
 import { Separator } from "../ui/separator";
-import { Button } from "../ui/button";
+import { Button, buttonVariants } from "../ui/button";
+import Link from "next/link";
 
 interface PropertyCardProps {
     property: Doc<"property">
@@ -74,9 +75,16 @@ export const PropertyCard = ({
 
             <CardFooter>
                 <div className="flex gap-2 w-full">
-                    <Button variant="outline" className="flex-1">
-                        Edit
-                    </Button>
+                    <Link
+                        href={`/seller/properties/edit/${property._id}`}
+                        className={buttonVariants({
+                            variant: "outline",
+                            className: "flex-1"
+                        })}
+                    >
+                        Edit Property
+                    </Link>
+
                     <Button variant="orange" className="flex-1" onClick={onViewDetails}>
                         View Details
                     </Button>

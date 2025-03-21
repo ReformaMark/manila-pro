@@ -11,16 +11,24 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
 import { ChevronRight } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { api } from "../../../../convex/_generated/api"
-import { PropertyBasicInfoForm } from "./property-basic-info-form"
-import { PropertyDetailsForm } from "./property-details-form"
-import { PropertyImagesForm } from "./property-images-form"
-import { PropertyLocationForm } from "./property-location-form"
-import { PropertyPricingForm } from "./property-pricing-form"
+import { Id } from "../../../../convex/_generated/dataModel"
+import { useQuery } from "convex/react"
+import Loading from "@/components/loading"
+import { EditPropertyBasicInfoForm } from "./edit-property-basic-info-form"
+import { EditPropertyLocationForm } from "./edit-property-location-form"
+import { EditPropertyDetailsForm } from "./edit-property-details-form"
+import { EditPropertyPricingForm } from "./edit-property-pricing-form"
+import { EditPropertyImagesForm } from "./edit-property-images-form"
 import { useConfirm } from "@/hooks/use-confirm"
+// import { PropertyBasicInfoForm } from "./property-basic-info-form"
+// import { PropertyDetailsForm } from "./property-details-form"
+// import { PropertyImagesForm } from "./property-images-form"
+// import { PropertyLocationForm } from "./property-location-form"
+// import { PropertyPricingForm } from "./property-pricing-form"
 
 const steps = [
     { id: "basic-info", label: "Basic Info" },
@@ -30,26 +38,52 @@ const steps = [
     { id: "images", label: "Images" },
 ]
 
-export const CreatePropertyForm = () => {
+interface EditPropertyFormProps {
+    params: {
+        propertyId: Id<'property'>
+    }
+}
+
+export const EditPropertyForm = ({ params }: EditPropertyFormProps) => {
     const [currentStep, setCurrentStep] = useState(0)
     const [displayImagePreview, setDisplayImagePreview] = useState<string | null>(null)
     const [otherImagePreviews, setOtherImagePreviews] = useState<string[]>([])
     const [ConfirmDialog, confirm] = useConfirm(
-        "Create property",
+        "Edit property",
         "Please double check and review your property details to avoid errors and transaction failures"
     )
 
     const router = useRouter()
 
-    const { mutate: createProperty, isPending } = useMutation({
-        mutationFn: useConvexMutation(api.property.create)
+    const property = useQuery(api.property.getPropertyByIdSeller, {
+        id: params.propertyId
+    })
+
+    const { mutate: updateProperty, isPending } = useMutation({
+        mutationFn: useConvexMutation(api.property.update)
     })
 
     const form = useForm<z.infer<typeof PropertyFormSchema>>({
         resolver: zodResolver(PropertyFormSchema),
+        defaultValues: property ? {
+            ...property,
+            displayImage: property.displayImage || undefined,
+            otherImage: property.otherImage?.map(img => img || undefined)
+        } : {}
     })
 
-    console.log(currentStep)
+    console.log(form.watch())
+
+    useEffect(() => {
+        if (property) {
+            const formattedProperty = {
+                ...property,
+                displayImage: property.displayImage || undefined,
+                otherImage: property.otherImage?.map(img => img || undefined)
+            }
+            form.reset(formattedProperty)
+        }
+    }, [property, form])
 
     const getFieldsToValidate = (step: number) => {
         switch (step) {
@@ -95,8 +129,9 @@ export const CreatePropertyForm = () => {
 
         if (confirmed) {
             try {
-                await createProperty({
+                await updateProperty({
                     ...data,
+                    id: property?._id as Id<"property">,
                 })
                 // await new Promise((resolve) => setTimeout(resolve, 1500))
 
@@ -106,6 +141,16 @@ export const CreatePropertyForm = () => {
                 console.error("Error submitting property:", error)
             }
         }
+
+
+    }
+
+    if (!property) {
+        return (
+            <div className="h-screen flex items-center justify-center">
+                <Loading />
+            </div>
+        )
     }
 
     return (
@@ -192,12 +237,12 @@ export const CreatePropertyForm = () => {
                     <CardContent className="pt-6">
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                                {currentStep === 0 && <PropertyBasicInfoForm form={form} />}
-                                {currentStep === 1 && <PropertyLocationForm form={form} />}
-                                {currentStep === 2 && <PropertyDetailsForm form={form} />}
-                                {currentStep === 3 && <PropertyPricingForm form={form} />}
+                                {currentStep === 0 && <EditPropertyBasicInfoForm form={form} />}
+                                {currentStep === 1 && <EditPropertyLocationForm form={form} />}
+                                {currentStep === 2 && <EditPropertyDetailsForm form={form} />}
+                                {currentStep === 3 && <EditPropertyPricingForm form={form} />}
                                 {currentStep === 4 && (
-                                    <PropertyImagesForm
+                                    <EditPropertyImagesForm
                                         form={form}
                                         displayImagePreview={displayImagePreview}
                                         setDisplayImagePreview={setDisplayImagePreview}
@@ -230,9 +275,10 @@ export const CreatePropertyForm = () => {
                                         <Button
                                             type="submit"
                                             variant="orange"
-                                            disabled={isPending}
+                                        // disabled={isPending}
                                         >
-                                            {isPending ? "Submitting..." : "Submit Property"}
+                                            {/* {isPending ? "Submitting..." : "Submit Property"} */}
+                                            Submit
                                         </Button>
                                     )}
 

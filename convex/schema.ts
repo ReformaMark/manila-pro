@@ -44,12 +44,7 @@ export default defineSchema({
     property: defineTable({
         // projectId: v.id("project"),
         propertyName: v.string(),
-        featured: v.boolean(),
         sellerId: v.id("users"),
-<<<<<<< HEAD
-       
-=======
->>>>>>> 13c7d8287662df3ff6c217789f39b6fb3063bfc4
         block: v.string(),
         lot: v.string(),
         displayImage: v.string(),
@@ -76,7 +71,6 @@ export default defineSchema({
         address: v.string(),
         location: v.optional(v.string()), // coordinates
         propertyType: v.optional(v.string()), // foreclose, pre owned
-        bathrooms: v.string(),
         featured: v.boolean(),
         //Building information
         storeys: v.optional(v.string()),

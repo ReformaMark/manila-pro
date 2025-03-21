@@ -5,6 +5,7 @@ import { paginationOptsValidator } from "convex/server";
 import { asyncMap } from 'convex-helpers'
 import { Id } from "./_generated/dataModel";
 
+
 export const get = query({
     args: {},
     handler: async (ctx) => {
@@ -39,14 +40,68 @@ export const remove = mutation({
 })
 
 export const getProperties = query({
-    args: { paginationOpts: paginationOptsValidator },
-    handler: async (ctx, args) => {
+    args: { },
+    handler: async (ctx) => {
         const properties = await ctx.db
             .query("property")
             .order("desc")
-            .paginate(args.paginationOpts);
+            .collect();
+      
+        const propertyWithUrls = await asyncMap(properties, async (property) => {
+            let displayImageUrl = null;
+            let imageUrls = property.otherImage ? property.otherImage : [];
+            
+                if (typeof property.displayImage === "string" && property.displayImage.startsWith("https://")) {
+                    displayImageUrl = property.displayImage; // Direct link
+                } else {
+                    displayImageUrl = await ctx.storage.getUrl(property.displayImage as Id<"_storage">); // Storage ID
+                }
+      
+            if(property.otherImage){
+               if(displayImageUrl) {
+                imageUrls.unshift(displayImageUrl)
+                imageUrls = await asyncMap(property.otherImage, async (id) => {
 
-        return properties;
+                    let url = null;
+                    if (typeof id === "string" && id.startsWith("https://")) {
+                        url = id;
+                    } else {
+                        url = await ctx.storage.getUrl(id as Id<"_storage">);
+                    }
+                    return url;
+                }).then((data) => data.filter(url => url !== null));
+            }  else {
+                imageUrls = await asyncMap(property.otherImage, async (id) => {
+
+                    let url = null;
+                    if (typeof id === "string" && id.startsWith("https://")) {
+                        url = id;
+                    } else {
+                        url = await ctx.storage.getUrl(id as Id<"_storage">);
+                    }
+                    return url;
+                }).then((data) => data.filter(url => url !== null));
+            }
+            return{
+                ...property,
+                displayImageUrl: displayImageUrl,
+                imageUrls: imageUrls
+            }
+              
+            } else {
+                return{
+                    ...property,
+                    displayImageUrl: displayImageUrl,
+                    imageUrls: imageUrls
+                }
+            }
+            
+           
+        })
+        
+
+
+        return propertyWithUrls;
     }
 })
 export const getProperty = query({
@@ -54,11 +109,22 @@ export const getProperty = query({
     handler: async (ctx, args) => {
         const property = await ctx.db.get(args.id)
         if (!property) return
-
+        let displayImageUrl = null;
         if (property.otherImage) {
-            property.displayImage ? property.otherImage.push(property.displayImage) : null
+            if (typeof property.displayImage === "string" && property.displayImage.startsWith("https://")) {
+                displayImageUrl = property.displayImage; // Direct link
+            } else {
+                displayImageUrl = await ctx.storage.getUrl(property.displayImage as Id<"_storage">); // Storage ID
+            }
+
+            displayImageUrl ? property.otherImage.push(displayImageUrl) : null
             const imageUrls = await asyncMap(property.otherImage, async (id) => {
-                const url = await ctx.storage.getUrl(id as Id<"_storage">);
+                let url = null;
+                if (typeof id === "string" && id.startsWith("https://")) {
+                    url = id; // Direct link
+                } else {
+                    url = await ctx.storage.getUrl(id as Id<"_storage">); // Storage ID
+                }
                 return url;
             }).then((data) => data.filter(url => url !== null));
 

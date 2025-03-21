@@ -99,10 +99,10 @@ export const PropertyDetailsModal = ({
                                     <span className="text-sm text-muted-foreground">Lot</span>
                                     <p>{property.lot}</p>
                                 </div>
-                                <div>
+                                {/* <div>
                                     <span className="text-sm text-muted-foreground">Lot ID</span>
                                     <p>{property.lotId}</p>
-                                </div>
+                                </div> */}
                                 <div>
                                     <span className="text-sm text-muted-foreground">City</span>
                                     <p>{property.city}</p>

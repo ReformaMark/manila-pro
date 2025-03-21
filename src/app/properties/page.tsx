@@ -3,8 +3,10 @@ import PropertyList from './_components/PropertyList'
 
 function BuyerPage() {
   return (
-    <div>
-      <PropertyList/>
+    <div className='pt-2 pb-20 max-h-screen bg-gray-100'>
+    
+        <PropertyList/>
+  
     </div>
   )
 }

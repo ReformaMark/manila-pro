@@ -44,8 +44,9 @@ export default defineSchema({
     property: defineTable({
         // projectId: v.id("project"),
         propertyName: v.string(),
+        featured: v.boolean(),
         sellerId: v.id("users"),
-        lotId: v.string(),
+       
         block: v.string(),
         lot: v.string(),
         displayImage: v.string(),
@@ -76,7 +77,8 @@ export default defineSchema({
         storeys: v.optional(v.string()),
         lotArea: v.number(),
         unitType: v.string(), // apartment, condominium, duplex, single attached house, single detached house, townhouse/detached row house 
-        bedrooms: v.string(),
+        bedrooms: v.optional(v.number()),
+        bathrooms: v.optional(v.number()), // 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
         facilities: v.optional(v.array(v.object({
             name: v.string(),
             description: v.string()

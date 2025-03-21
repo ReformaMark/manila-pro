@@ -1,5 +1,5 @@
 "use client"
-import { Building, Building2, Calculator, FileCheck, Files, FolderOpen, Handshake, Key, LayoutGrid, Menu, MessageCircle, Package, PiggyBank, Users } from 'lucide-react';
+import { Building, Building2, Calculator, FileCheck, Files, FolderOpen, Handshake, Home, Key, LayoutGrid, Menu, MessageCircle, Package, PiggyBank, Users } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
@@ -14,6 +14,7 @@ import { useCurrentUser } from '@/hooks/use-current-user';
 import { NavMain } from './nav-main';
 import UserAvatar from './user-avatar';
 import { NavLocation } from './nav-locations';
+import { Button } from './ui/button';
 interface SidebarItem {
     icon: React.ElementType;
     label: string;
@@ -88,7 +89,7 @@ export function AppSidebar({
     ]
     const buyerNav = [
         {
-            icon: LayoutGrid,
+            icon: Home,
             label: "Properties",
             href: "/properties",
         },
@@ -196,12 +197,10 @@ export function AppSidebar({
     const baseUrl = value === 'admin' ? '/admin' : value === 'buyer' ? '/buyer' : '/seller';
 
     const SidebarContents = () => (
-        <div className="bg-white h-screen">
-            <SidebarHeader>
-                <UserAvatar />
-            </SidebarHeader>
+        <div className="bg-black h-screen">
+        
 
-            <SidebarContent className="flex-1 overflow-y-auto mt-10">
+            <SidebarContent className="flex-1 overflow-y-auto ">
                 <NavMain items={navItems} />
                 {value === "buyer" && (
                     <>
@@ -225,12 +224,17 @@ export function AppSidebar({
             </div>
 
             {/* Mobile Sheet */}
-            <div className={cn("md:hidden fixed top-2 right-4 z-[9999]")}>
+            <div className={cn("md:hidden fixed top-3 left-4 z-[9999]")}>
                 <Sheet>
                     <SheetTrigger asChild>
-                        <button className="p-2 bg-transparent rounded-md shadow-md">
-                            <Menu className="size-6 text-white" />
-                        </button>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-white hover:bg-gray-800 md:hidden"
+             
+                        >
+                        <Menu className="h-6 w-6" />
+                        </Button>
                     </SheetTrigger>
                     <SheetContent side="right" className="p-0 w-[300px] z-[9999]">
                         <SidebarContents />

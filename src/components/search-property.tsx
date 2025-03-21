@@ -31,7 +31,7 @@ export default function SearchProperty() {
                 
                
                     <motion.div 
-                        className="z-50 flex h-14 gap-x-2 w-full"
+                        className=" flex h-14 gap-x-2 w-full"
                         initial={{ opacity: 0, x: 50 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{

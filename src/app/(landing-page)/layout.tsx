@@ -1,5 +1,5 @@
 import { ConvexClientProvider } from "@/components/convex-client-provider";
-import Header from "@/components/header";
+import { Header } from "@/components/header";
 import "@/lib/globals.css";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import type { Metadata } from "next";
@@ -11,8 +11,8 @@ const poppinsFont = Poppins({
 })
 
 export const metadata: Metadata = {
-  title: "Login Page",
-  description: "Login to omni-portal to access your account and verify authorization",
+  title: "ManilaPro",
+  description: "ManilaPro is a real estate platform for 3 cities in the philippines",
 };
 
 export default function RootLayout({
@@ -20,7 +20,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   return (
+    
     <ConvexAuthNextjsServerProvider>
       <html lang="en">
         <body

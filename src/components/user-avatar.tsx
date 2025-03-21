@@ -10,9 +10,10 @@ import { BiLogOut } from 'react-icons/bi';
 import { FaSpinner } from 'react-icons/fa'
 import { Button } from './ui/button'
 import Link from 'next/link'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu'
 import { useCurrentUser } from '@/hooks/use-current-user'
 import { useAuthActions } from '@convex-dev/auth/react';
+import { LogOut, MessageSquare, Settings, User } from 'lucide-react';
 
 
 export default function UserAvatar() {
@@ -25,35 +26,44 @@ export default function UserAvatar() {
                     </div>
                 </div>)
     return (
-        user ? (  <DropdownMenu>
-                                <DropdownMenuTrigger>
-                                    <div className="flex items-center gap-x-3">
-                                        <Avatar>
-                                            <AvatarImage src={user?.image || ""} />
-                                            <AvatarFallback
-                                                className='bg-orange-500 text-white'
-                                            >{user?.fname?.charAt(0)}{user?.lname?.charAt(0)}</AvatarFallback>
-                                        </Avatar>
-                                        <div className="text-center">
-                                            <h3 className='text-sm'>{user?.lname}, {user?.fname}</h3>
-                                        </div>
-                                    </div>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent>
-                                    <DropdownMenuItem
-                                        onClick={() => signOut()}
-                                        className="cursor-pointer"
-                                    >
-                                        <BiLogOut className="mr-2 h-4 w-4" />
-                                        <span>Logout</span>
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>) : (
-                        <Link href={'/auth'}>
-                            <Button variant={'orange'} className="">
-                                Sign In
-                            </Button>
-                        </Link>
-                        )
+        user ? (  
+            <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="rounded-full">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src="/placeholder.svg" alt="User" />
+                  <AvatarFallback className="bg-gray-800 text-white">{user.fname.charAt(0)} {user.lname.charAt(0)}</AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <User className="mr-2 h-4 w-4" />
+                <span>Profile</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <MessageSquare className="mr-2 h-4 w-4" />
+                <span>Messages</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Settings className="mr-2 h-4 w-4" />
+                <span>Settings</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem  onClick={() =>signOut()}>
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Log out</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+        <Link href={'/auth'}>
+            <Button variant={'orange'} className="">
+                Sign In
+            </Button>
+        </Link>
+        )
     )
 }

@@ -5,23 +5,20 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function formatPrice(
-  price: number | string,
-  options: {
-    currency?: "PHP",
-    notation?: Intl.NumberFormatOptions["notation"]
-  } = {}
-) {
-  const { currency = "PHP", notation = "standard" } = options;
-
-  const numericPrice = typeof price === "string" ? parseFloat(price) : price;
-
-  return new Intl.NumberFormat("en-PH", {
+export function formatPrice(price: number, transactionType?: string) {
+  const formatter = new Intl.NumberFormat("en-PH", {
     style: "currency",
-    currency,
-    notation,
-    maximumFractionDigits: 2
-  }).format(numericPrice);
+    currency: "PHP",
+    maximumFractionDigits: 0,
+  })
+
+  const formattedPrice = formatter.format(price)
+
+  if (transactionType === "Rent" || transactionType === "Lease") {
+    return `${formattedPrice}/month`
+  }
+
+  return formattedPrice
 }
 export function generateBuyerId(): string {
   const prefix = "B-";

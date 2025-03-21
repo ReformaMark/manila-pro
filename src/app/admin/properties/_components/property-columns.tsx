@@ -29,17 +29,7 @@ export const PropertyColumns: ColumnDef<Doc<"property">>[] = [
     //     enableSorting: false,
     //     enableHiding: false,
     // },
-    {
-        accessorKey: "lotId",
-        header: () => <div className="text-center">LOT ID NO.</div>,
-        cell: ({ row }) => {
-            return (
-                <p>
-                    {row.original.lotId}
-                </p>
-            )
-        }
-    },
+ 
     {
         accessorKey: "block",
         header: () => <div className="text-center">BLOCK</div>,
@@ -79,7 +69,7 @@ export const PropertyColumns: ColumnDef<Doc<"property">>[] = [
         cell: ({ row }) => {
             return (
                 <p>
-                    {formatPrice(row.original.pricePerSqm.toFixed(2))}
+                    {formatPrice(row.original.pricePerSqm)}
                 </p>
             )
         }
@@ -90,7 +80,7 @@ export const PropertyColumns: ColumnDef<Doc<"property">>[] = [
         cell: ({ row }) => {
             return (
                 <p>
-                    {formatPrice(row.original.totalSellingPrice.toFixed(2))}
+                    {formatPrice(row.original.totalSellingPrice)}
                 </p>
             )
         }
@@ -101,7 +91,7 @@ export const PropertyColumns: ColumnDef<Doc<"property">>[] = [
         cell: ({ row }) => {
             return (
                 <p>
-                    {formatPrice(row.original.suggestedMonthlyAmortization.toFixed(2))}
+                    {formatPrice(row.original.suggestedMonthlyAmortization)}
                 </p>
             )
         }

@@ -20,7 +20,7 @@ function SubHero() {
         variants={containerVariants}
         className='w-full px-10 xl:px-52 py-40 size-full inset-0 relative'
         > 
-        <div className="absolute inset-0 z-50 flex gap-y-5 flex-col items-center justify-center px-5">
+        <div className="absolute inset-0 flex gap-y-5 flex-col items-center justify-center px-5">
         
           <motion.h1 
             variants={itemVariants}

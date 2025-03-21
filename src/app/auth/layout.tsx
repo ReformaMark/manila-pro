@@ -6,7 +6,8 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import { Poppins } from "next/font/google"
-import Header from "@/components/header";
+import { Header } from "@/components/header";
+import Main from "./_component/main";
 
 const poppinsFont = Poppins({
     subsets: ["latin"],
@@ -30,8 +31,7 @@ export default function RootLayout({
           <body
             className={`${poppinsFont.className} antialiased`}
           > 
-            <Header/>
-            <main className="flex-1 min-h-screen pt-[70px]">{children}</main>
+            <Main children={children}/>
           </body>
         </html>
       </ConvexClientProvider>

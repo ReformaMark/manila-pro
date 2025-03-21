@@ -32,11 +32,11 @@ export const PropertyDialog = ({
 
                         <BadgeStatus status={data.status} />
                     </DialogTitle>
-                    <DialogDescription
+                    {/* <DialogDescription
                         className="text-white px-8"
                     >
                         Lot ID: {data.lotId}
-                    </DialogDescription>
+                    </DialogDescription> */}
                 </DialogHeader>
 
                 <div className="px-4 pb-4">
@@ -45,11 +45,11 @@ export const PropertyDialog = ({
                         <div className="bg-white p-2 text-center">{data.lotArea}</div>
 
                         <div className="bg-[#EDEDED] text-gray p-2">PRICE PER SQM</div>
-                        <div className="bg-white p-2 text-center">{formatPrice(data.pricePerSqm.toFixed(2))}</div>
+                        <div className="bg-white p-2 text-center">{formatPrice(data.pricePerSqm)}</div>
 
                         <div className="bg-[#EDEDED] text-gray p-2">TOTAL CONTRACT PRICE</div>
                         <div className="bg-white p-2 text-center">
-                            {formatPrice(data.totalContractPrice.toFixed(2))}
+                            {formatPrice(data.totalContractPrice)}
                         </div>
 
                         {/* <div className="bg-[#EDEDED] text-gray p-2">MISCELLANEOUS FEE</div>
@@ -60,14 +60,14 @@ export const PropertyDialog = ({
 
                         <div className="bg-[#EDEDED] text-gray p-2">NET CONTRACT PRICE</div>
                         <div className="bg-white p-2 text-center">
-                            {formatPrice(data.netContractPrice.toFixed(2))}
+                            {formatPrice(data.netContractPrice)}
                         </div>
 
                         <div className="bg-[#EDEDED] text-gray p-2">TOTAL SELLING PRICE</div>
-                        <div className="bg-white p-2 text-center">{formatPrice(data.totalSellingPrice.toFixed(2))}</div>
+                        <div className="bg-white p-2 text-center">{formatPrice(data.totalSellingPrice)}</div>
 
                         <div className="bg-[#EDEDED] text-gray p-2">MONTHLY AMORT</div>
-                        <div className="bg-white p-2 text-center">{formatPrice(data.suggestedMonthlyAmortization.toFixed(2))}</div>
+                        <div className="bg-white p-2 text-center">{formatPrice(data.suggestedMonthlyAmortization)}</div>
 
                         <div className="bg-[#EDEDED] text-gray p-2">TERM</div>
                         <div className="bg-white p-2 text-center">

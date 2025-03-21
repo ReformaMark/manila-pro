@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import "@/lib/globals.css"
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server"
 import { ConvexClientProvider } from "@/components/convex-client-provider";
-import { AdminGuard } from "@/components/auth/admin-guard";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import { Poppins } from "next/font/google"
-import Header from "@/components/header";
+import { Header } from "@/components/header";
+import Main from "./_components/Main";
 
 const poppinsFont = Poppins({
     subsets: ["latin"],
@@ -15,8 +15,8 @@ const poppinsFont = Poppins({
 })
 
 export const metadata: Metadata = {
-  title: "ManilaPro - Buyer",
-  description: "This is the buyer page",
+  title: "ManilaPro - Properties",
+  description: "This is the manilaPro property page",
 };
 
 export default function RootLayout({
@@ -32,23 +32,8 @@ export default function RootLayout({
             className={`${poppinsFont.className} antialiased`}
           >
          
-              <SidebarProvider>
-                <div className="flex min-h-screen flex-col antialiased w-full">
-                  
-                  <Header/>
-                  <div className="flex">
-                    <div className="max-h-screen bg-black">
-
-                    <AppSidebar
-                        header="Buyer Portal"
-                        value="buyer"
-                        />
-                  </div>
-                  <main className="flex-1 min-h-screen pt-[70px]">{children}</main>
-                  </div>
-                  <Toaster />
-                </div>
-              </SidebarProvider>
+              <Main children={children} />
+              <Toaster />
            
           </body>
         </html>

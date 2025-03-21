@@ -7,10 +7,10 @@ export const PropertyFormSchema = z.object({
     unitType: z.string({
         required_error: "Please select a property type.",
     }),
-    bedrooms: z.string({
+    bedrooms: z.coerce.number({
         required_error: "Please enter the number of bedrooms.",
     }),
-    bathrooms: z.string({
+    bathrooms: z.coerce.number({
         required_error: "Please enter the number of bathrooms.",
     }),
     lotArea: z.number().min(1, {

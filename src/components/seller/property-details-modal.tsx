@@ -139,7 +139,7 @@ export const PropertyDetailsModal = ({
 
                     <TabsContent value="pricing" className="space-y-4 pt-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="bg-[#f5f5f5] p-4 rounded-lg">
+                            <div className="bg-muted1 p-4 rounded-lg">
                                 <h3 className="font-medium mb-2">Price Breakdown</h3>
                                 <div className="space-y-2">
                                     <div className="flex justify-between">
@@ -162,7 +162,7 @@ export const PropertyDetailsModal = ({
                                 </div>
                             </div>
 
-                            <div className="bg-[#f5f5f5] p-4 rounded-lg">
+                            <div className="bg-muted1 p-4 rounded-lg">
                                 <h3 className="font-medium mb-2">Suggested Payment Terms</h3>
                                 <div className="space-y-2">
                                     <div className="flex justify-between">
@@ -185,7 +185,7 @@ export const PropertyDetailsModal = ({
                     </TabsContent>
 
                     <TabsContent value="transaction" className="space-y-4 pt-4">
-                        <div className="bg-[#f5f5f5] p-4 rounded-lg">
+                        <div className="bg-muted1 p-4 rounded-lg">
                             <h3 className="font-medium mb-2">Transaction Details</h3>
                             <div className="space-y-2">
                                 <div className="flex justify-between">

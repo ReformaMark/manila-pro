@@ -32,7 +32,6 @@ import { Separator } from "../ui/separator";
 import { Slider } from "../ui/slider";
 import { PropertyDetailsModal } from "./property-details-modal";
 import { PropertyGrid } from "./property-grid";
-import { useAuthActions } from "@convex-dev/auth/react";
 
 
 interface PropertiesDashboardProps {
@@ -51,7 +50,6 @@ export function PropertiesDashboard({
     const [selectedProperty, setSelectedProperty] = useState<Doc<"property"> | null>(null)
     const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
     const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false)
-    const { signOut } = useAuthActions()
 
     const allPrices = initialProperties.map((p) => p.totalSellingPrice)
     const minPrice = Math.min(...allPrices)
@@ -126,9 +124,6 @@ export function PropertiesDashboard({
 
     return (
         <>
-            <Button onClick={() => signOut()} variant="orange">
-                Sign Out
-            </Button>
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <div className="space-y-1">
                     <h1 className="text-3xl font-bold tracking-tight">My Properties</h1>

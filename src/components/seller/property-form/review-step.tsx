@@ -149,7 +149,7 @@ export const ReviewStepDialog = ({ form, isOpen, onChange }: ReviewStepDialogPro
                                         </div>
                                         <div>
                                             <span className="text-sm text-muted-foreground">Term Length</span>
-                                            <p className="font-medium">{form.getValues("suggestedTermInMonths")} months</p>
+                                            <p className="font-medium">{form.getValues("suggestedTermInMonths")} month/s</p>
                                         </div>
                                     </div>
                                 </div>

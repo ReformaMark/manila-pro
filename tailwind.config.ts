@@ -25,6 +25,8 @@ const config = {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        bg1: 'hsl(var(--bg1))',
+        muted1: '#f5f5f5',
         primary: {
           DEFAULT: "#ff8c00", // orange-500
           foreground: "#ffffff",
@@ -46,9 +48,9 @@ const config = {
           foreground: "#ffffff",
         },
         popover: {
-        DEFAULT: "#ffffff",
-        black:  "#121212",
-        foreground: "#ffffff",
+          DEFAULT: "#ffffff",
+          black: "#121212",
+          foreground: "#ffffff",
         },
         card: {
           DEFAULT: "#ffffff",

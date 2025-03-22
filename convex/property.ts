@@ -105,6 +105,70 @@ export const getProperties = query({
         return propertyWithUrls;
     }
 })
+
+export const getFeaturedProperties = query({
+    args: {},
+    handler: async (ctx) => {
+        const properties = await ctx.db
+            .query("property")
+            .order("desc")
+            .filter(q => q.eq(q.field('featured'), true))
+            .collect();
+
+        const propertyWithUrls = await asyncMap(properties, async (property) => {
+            let displayImageUrl = null;
+            let imageUrls = property.otherImage ? property.otherImage : [];
+
+            if (typeof property.displayImage === "string" && property.displayImage.startsWith("https://")) {
+                displayImageUrl = property.displayImage; // Direct link
+            } else {
+                displayImageUrl = await ctx.storage.getUrl(property.displayImage as Id<"_storage">); // Storage ID
+            }
+
+            if (property.otherImage) {
+                if (displayImageUrl) {
+                    imageUrls.unshift(displayImageUrl)
+                    imageUrls = await asyncMap(property.otherImage, async (id) => {
+
+                        let url = null;
+                        if (typeof id === "string" && id.startsWith("https://")) {
+                            url = id;
+                        } else {
+                            url = await ctx.storage.getUrl(id as Id<"_storage">);
+                        }
+                        return url;
+                    }).then((data) => data.filter(url => url !== null));
+                } else {
+                    imageUrls = await asyncMap(property.otherImage, async (id) => {
+
+                        let url = null;
+                        if (typeof id === "string" && id.startsWith("https://")) {
+                            url = id;
+                        } else {
+                            url = await ctx.storage.getUrl(id as Id<"_storage">);
+                        }
+                        return url;
+                    }).then((data) => data.filter(url => url !== null));
+                }
+                return {
+                    ...property,
+                    displayImageUrl: displayImageUrl,
+                    imageUrls: imageUrls
+                }
+
+            } else {
+                return {
+                    ...property,
+                    displayImageUrl: displayImageUrl,
+                    imageUrls: imageUrls
+                }
+            }
+
+
+        })
+        return propertyWithUrls;
+    }
+})
 export const getProperty = query({
     args: { id: v.id('property') },
     handler: async (ctx, args) => {
@@ -287,5 +351,17 @@ export const update = mutation({
             ...updates,
             updatedAt: Math.floor(new Date(Date.now()).getTime() / 1000),
         })
+    }
+})
+
+export const unitType = query({
+    args:{
+
+    },
+    handler: async(ctx, args) =>{
+     const properties =  await ctx.db.query('property').collect()
+
+    const unitTypes = Array.from(new Set(properties.map(property => property.unitType)));
+    return unitTypes;
     }
 })

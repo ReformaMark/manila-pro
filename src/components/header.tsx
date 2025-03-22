@@ -14,59 +14,30 @@ import { Bell, Menu, User, LogOut, Settings, MessageSquare } from "lucide-react"
 import { useAuthActions } from "@convex-dev/auth/react"
 import { useCurrentUser } from "@/hooks/use-current-user"
 import Loading from "./loading"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 interface HeaderProps {
   setIsOpen?: (isOpen: boolean) => void,
   isOpen?: boolean 
 }
 
-export function Header({ setIsOpen, isOpen }: HeaderProps) {
+export function Header() {
   const { user, isLoading } = useCurrentUser()
   const { signOut } = useAuthActions()
+  const isMobile = useIsMobile()
+
   return (
     <header className="bg-brand-black text-white sticky top-0 py-2 z-50  border-b border-gray-800">
-      <div className="container mx-auto h-full px-4">
-        <div className="flex items-center justify-between h-full">
-          <div className="flex items-center gap-4">
-            {isOpen && setIsOpen && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-white hover:bg-gray-800 md:hidden"
-                onClick={() => setIsOpen(!isOpen)}
-              >
-                <Menu className="h-6 w-6" />
-              </Button>
-            )}
-          
-
-            <Link href="/" className="flex items-center gap-2">
+      <div className=" px-10  h-full ">
+        <div className="flex items-center justify-between h-full transition-all duration-500 ease-in-out">
+          {isMobile && (
+            <div className="opacity-0">iiiii</div>
+          )}
+          <div className="flex items-center gap-4 ">
+            <Link href="/" className="flex items-center gap-2 text-center">
               <h1 className="font-bold text-xl text-white">Manila<span className="text-xl font-extrabold text-brand-orange">Pro</span></h1>
             </Link>
           </div>
-
-          {/* <div className="hidden md:flex items-center gap-6">
-            <Link href="/" className="text-white hover:text-brand-orange transition-colors">
-              Home
-            </Link>
-            <Link href="/buy" className="text-white hover:text-brand-orange transition-colors">
-              Buy
-            </Link>
-            <Link href="/rent" className="text-white hover:text-brand-orange transition-colors">
-              Rent
-            </Link>
-            <Link href="/lease" className="text-white hover:text-brand-orange transition-colors">
-              Lease
-            </Link>
-            <Link href="/agents" className="text-white hover:text-brand-orange transition-colors">
-              Agents
-            </Link>
-            <Link href="/about" className="text-white hover:text-brand-orange transition-colors">
-              About
-            </Link>
-          </div> */}
-
-          
             {!isLoading ? user ? (
               <div className="flex items-center gap-2">
               <Button variant="ghost" size="icon" className="text-white hover:bg-gray-800 relative">

@@ -19,7 +19,7 @@ import { PropertyDetailModal } from "./PropertyDetailsModal"
 // Filter options
 const locations = ["All Locations", "Makati", "Pasay", "Taguig"]
 const transactionTypes = ["All Types", "Buy", "Rent", "Lease"]
-const unitTypes = ["All Units", "Condominium", "House", "Apartment", "Commercial", "Penthouse"]
+const unitTypes = ["All Units",  "Apartment", "Condominium", "Duplex", "Single Attached House", "Single Detached House", "Townhouse/detached Row House"]
 const amenities = [
   "Balcony",
   "Garden",
@@ -242,7 +242,7 @@ export default function PropertyShowcase({properties}:{properties: PropertyTypes
 
       {/* Main Content */}
       <div className={`transition-all duration-300 `}>
-        <div className="container mx-auto px-4 ">
+        <div className="px-2 md:px-10 ">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
             <div className="flex-1">
               <div className="relative">

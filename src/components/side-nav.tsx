@@ -5,7 +5,6 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import {
-  Home,
   Building,
   Heart,
   Map,
@@ -15,10 +14,9 @@ import {
   Users,
   BarChart,
   ChevronRight,
-  Compass,
   Star,
-  Briefcase,
 } from "lucide-react"
+import { usePathname } from "next/navigation"
 
 interface SidenavProps {
   isOpen: boolean
@@ -56,6 +54,8 @@ export function Sidenav({ isOpen, onClose }: SidenavProps) {
     },
   ]
 
+  const pathname = usePathname()
+
   return (
     <>
       {/* Overlay for mobile */}
@@ -81,7 +81,7 @@ export function Sidenav({ isOpen, onClose }: SidenavProps) {
                         href={item.href}
                         className={cn(
                           "flex items-center gap-3 px-4 py-2 text-sm transition-colors",
-                          activeItem === item.id
+                          pathname === item.href
                             ? "bg-brand-orange text-white"
                             : "text-gray-300 hover:bg-gray-800 hover:text-white",
                         )}

@@ -2,12 +2,11 @@ import type { Metadata } from "next";
 import "@/lib/globals.css"
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server"
 import { ConvexClientProvider } from "@/components/convex-client-provider";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import { Poppins } from "next/font/google"
 import { Header } from "@/components/header";
-import Main from "./_components/Main";
+import { BuyerSideNav } from "@/components/buyer/side-nav";
 
 const poppinsFont = Poppins({
     subsets: ["latin"],
@@ -31,10 +30,20 @@ export default function RootLayout({
           <body
             className={`${poppinsFont.className} antialiased`}
           >
-         
-              <Main children={children} />
-              <Toaster />
-           
+            <SidebarProvider>
+            <div className="flex  flex-col antialiased w-full">
+              <Header/>
+              <div className="flex  ">
+                <BuyerSideNav/> 
+                <main className="flex-1 max-h-full overflow-hidden  bg-transparent relative pt-2">
+                  <SidebarTrigger className="hidden md:block pl-2 rounded-l-none absolute inset-0  "/>
+                    {children}
+                </main>
+              </div>
+             
+              <Toaster/>
+            </div>
+            </SidebarProvider>
           </body>
         </html>
       </ConvexClientProvider>

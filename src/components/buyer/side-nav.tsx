@@ -30,7 +30,7 @@ export function BuyerSideNav({
     if (!user) return null;
 
     const SidebarContents = () => (
-        <div className="bg-brand-black h-screen">
+        <div className="bg-brand-black mt-16" style={{ height: `calc(100vh - var(--header-height))`}}>
         
 
             <SidebarContent className="flex-1 overflow-y-auto ">
@@ -42,21 +42,22 @@ export function BuyerSideNav({
     );
 
     return (
-        <div className='sticky'>
+        <div className='mt-16 bg-brand-black' style={{ maxHeight: `calc(100vh - var(--header-height))`, paddingTop: '4rem'}}>
             {/* Desktop Sidebar */}
             <div 
        
-                className="hidden md:block z-40 h-fit max-h-screen overflow-hidden relative"
+                className="hidden md:block z-40  relative"
+               
        
             >
-                <Sidebar collapsible="icon" {...props} className="bg-white sticky top-0 left-0">
+                <Sidebar collapsible="icon" {...props} className="bg-white">
                     <SidebarContents />
                     <SidebarRail />
                 </Sidebar>
             </div>
 
             {/* Mobile Sheet */}
-            <div className={cn("md:hidden fixed top-2 left-4 z-[9999]")}>
+            <div className={cn("md:hidden fixed top-3 left-4 z-[9999]")}>
                 <Sheet>
                     <SheetTrigger asChild>
                         <Button

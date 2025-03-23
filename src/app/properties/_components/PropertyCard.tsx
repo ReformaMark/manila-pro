@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import {  Heart} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { PropertyDetails } from './PropertyDetails'
+import Link from 'next/link'
 
 interface PropertyCardProps {
   property: PropertyTypes
@@ -46,15 +47,22 @@ export function PropertyCard({ property, onClick, layout = "grid" }: PropertyCar
                 <div className="flex justify-between items-start">
                   <div>
                     <h3 className="text-lg font-semibold text-black">{property.propertyName}</h3>
-                    <div className="flex items-center text-sm text-gray-400 mb-2">{property.city}</div>
+                    <div className="flex items-center text-sm text-gray-400 mb-2">{property.city}
+                    <Link href={`/property/${property._id}`} className="text-black">
+                <Button  variant={'link'}>More details</Button>
+              </Link>
+                    </div>
                   </div>
                   <p className="text-xl font-bold text-brand-orange">
                     {formatPrice(property.totalSellingPrice, property.transactionType ?? "")}
+                    
                   </p>
                 </div>
                 <p className="text-sm text-gray-400 mb-4 line-clamp-2">{property.description}</p>
                 <PropertyDetails property={property} compact />
+                
               </div>
+             
             </div>
           </Card>
         )

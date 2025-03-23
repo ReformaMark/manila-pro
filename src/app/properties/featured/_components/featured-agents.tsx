@@ -6,7 +6,7 @@ import React from 'react'
 
 function FeaturedAgents() {
   return (
-    <div className="mt-12">
+    <div className="mt-12" >
     <div className="flex justify-between items-center mb-6">
       <h2 className="text-xl font-semibold text-gray-900">Our Featured Agents</h2>
       <Button variant="link" className="text-brand-orange hover:text-brand-orange/80 p-0">

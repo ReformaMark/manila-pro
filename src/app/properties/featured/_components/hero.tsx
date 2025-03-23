@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import React from 'react'
 import FeaturedBg from '@/../public/images/featured.jpg'
+import { scrollToSection } from '@/lib/utils'
 
 function Hero() {
   return (
@@ -21,8 +22,8 @@ function Hero() {
         Discover our handpicked selection of premium properties across Manila's most desirable locations.
       </p>
       <div className="flex flex-wrap gap-3">
-        <Button className="bg-brand-orange hover:bg-brand-orange/90 text-white">Explore All</Button>
-        <Button variant="outline" className="bg-white/20 border-white/40 text-white hover:bg-white/30">
+        <Button onClick={() => scrollToSection("featured-properties")} className="bg-brand-orange hover:bg-brand-orange/90 text-white">Explore All</Button>
+        <Button onClick={() => scrollToSection("agents")} variant="outline" className="bg-white/20 border-white/40 text-white hover:bg-white/30">
           Contact an Agent
         </Button>
       </div>

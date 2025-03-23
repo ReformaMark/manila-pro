@@ -120,3 +120,26 @@ export function formattedAmortization(amort: number) {
     maximumFractionDigits: 2,
   }).format(amort)
 }
+
+export  const scrollToSection = (id: string) => {
+  const element = document.getElementById(id);
+
+  if (element) {
+    element.scrollIntoView({ behavior: "smooth" , block: "start"});
+  }
+};
+
+
+export function formatDateListed(convexDate: number) {
+  const roundedTimestamp = Math.floor(convexDate);
+  const readableDate = new Date(roundedTimestamp);
+  const now = new Date();
+  const diffInSeconds = (now.getTime() - readableDate.getTime()) / 1000;
+
+  if (diffInSeconds < 60) return 'just now';
+  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} mins ago`;
+  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+  if (diffInSeconds < 172800) return 'yesterday';
+
+  return readableDate.toDateString();
+}

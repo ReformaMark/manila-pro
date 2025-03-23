@@ -107,15 +107,15 @@ export const getProperties = query({
 })
 
 export const getFeaturedProperties = query({
-    args: {},
-    handler: async (ctx) => {
+    args: { paginationOpts: paginationOptsValidator },
+    handler: async (ctx, args) => {
         const properties = await ctx.db
             .query("property")
             .order("desc")
             .filter(q => q.eq(q.field('featured'), true))
-            .collect();
+            .paginate(args.paginationOpts)
 
-        const propertyWithUrls = await asyncMap(properties, async (property) => {
+        const propertyWithUrls = await asyncMap(properties.page, async (property) => {
             let displayImageUrl = null;
             let imageUrls = property.otherImage ? property.otherImage : [];
 
@@ -166,7 +166,11 @@ export const getFeaturedProperties = query({
 
 
         })
-        return propertyWithUrls;
+           return {
+            page: propertyWithUrls,       // The transformed list
+            isDone: properties.isDone,    // Preserve pagination status
+            continueCursor: properties.continueCursor // Preserve pagination cursor
+        };
     }
 })
 export const getProperty = query({
@@ -175,29 +179,52 @@ export const getProperty = query({
         const property = await ctx.db.get(args.id)
         if (!property) return
         let displayImageUrl = null;
-        if (property.otherImage) {
+            let imageUrls = property.otherImage ? property.otherImage : [];
+
             if (typeof property.displayImage === "string" && property.displayImage.startsWith("https://")) {
                 displayImageUrl = property.displayImage; // Direct link
             } else {
                 displayImageUrl = await ctx.storage.getUrl(property.displayImage as Id<"_storage">); // Storage ID
             }
 
-            displayImageUrl ? property.otherImage.push(displayImageUrl) : null
-            const imageUrls = await asyncMap(property.otherImage, async (id) => {
-                let url = null;
-                if (typeof id === "string" && id.startsWith("https://")) {
-                    url = id; // Direct link
-                } else {
-                    url = await ctx.storage.getUrl(id as Id<"_storage">); // Storage ID
-                }
-                return url;
-            }).then((data) => data.filter(url => url !== null));
+            if (property.otherImage) {
+                if (displayImageUrl) {
+                    imageUrls.unshift(displayImageUrl)
+                    imageUrls = await asyncMap(property.otherImage, async (id) => {
 
-            return {
-                ...property,
-                imageUrls: imageUrls
+                        let url = null;
+                        if (typeof id === "string" && id.startsWith("https://")) {
+                            url = id;
+                        } else {
+                            url = await ctx.storage.getUrl(id as Id<"_storage">);
+                        }
+                        return url;
+                    }).then((data) => data.filter(url => url !== null));
+                } else {
+                    imageUrls = await asyncMap(property.otherImage, async (id) => {
+
+                        let url = null;
+                        if (typeof id === "string" && id.startsWith("https://")) {
+                            url = id;
+                        } else {
+                            url = await ctx.storage.getUrl(id as Id<"_storage">);
+                        }
+                        return url;
+                    }).then((data) => data.filter(url => url !== null));
+                }
+                return {
+                    ...property,
+                    displayImageUrl: displayImageUrl,
+                    imageUrls: imageUrls
+                }
+
+            } else {
+                return {
+                    ...property,
+                    displayImageUrl: displayImageUrl,
+                    imageUrls: imageUrls
+                }
             }
-        }
     }
 })
 

@@ -14,6 +14,7 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { PropertyFilter } from "./PropertyFilter"
 import PropertyCard from "./PropertyCard"
 import { PropertyDetailModal } from "./PropertyDetailsModal"
+import { useRouter } from "next/navigation"
 
 
 // Filter options
@@ -52,7 +53,7 @@ const facilities = [
 ]
 
 export default function PropertyShowcase({properties}:{properties: PropertyTypesWithImageUrls[]}) {
-  
+  const router = useRouter()
   const isMobile = useIsMobile()
   const [activeView, setActiveView] = useState<"grid" | "list" | "map">("grid")
   const [filters, setFilters] = useState<FilterOptions>({
@@ -395,7 +396,7 @@ export default function PropertyShowcase({properties}:{properties: PropertyTypes
                       whileHover={{ y: -5 }}
                       className="h-full"
                     >
-                      <PropertyCard property={property} onClick={() => setSelectedProperty(property)} />
+                      <PropertyCard property={property} onClick={() => router.push(`/properties/${property._id}`)} />
                     </motion.div>
                   ))}
                 </div>
@@ -412,7 +413,7 @@ export default function PropertyShowcase({properties}:{properties: PropertyTypes
                       transition={{ duration: 0.3 }}
                       whileHover={{ y: -2 }}
                     >
-                      <PropertyCard property={property} onClick={() => setSelectedProperty(property)} layout="list" />
+                      <PropertyCard property={property} onClick={() => router.push(`/properties/${property._id}`)} layout="list" />
                     </motion.div>
                   ))}
                 </div>

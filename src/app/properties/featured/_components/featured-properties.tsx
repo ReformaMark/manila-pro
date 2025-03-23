@@ -1,6 +1,6 @@
 'use client'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { useQuery } from 'convex/react'
+import { usePaginatedQuery } from 'convex/react'
 import React, { useEffect, useState } from 'react'
 import { api } from '../../../../../convex/_generated/api'
 import { PropertyTypesWithImageUrls } from '@/lib/types'
@@ -8,25 +8,30 @@ import { motion } from 'framer-motion'
 import PropertyCard from '../../_components/PropertyCard'
 import { Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import Loading from '@/components/loading'
 
 function FeaturedProperties() {
-    const properties = useQuery(api.property.getFeaturedProperties)
-    const [filteredProperties, setFilteredProperties] = useState<PropertyTypesWithImageUrls[] | undefined>(properties)
+    const { results, status, loadMore } = usePaginatedQuery(
+        api.property.getFeaturedProperties,
+        {},
+        { initialNumItems: 5 },
+      );
+    const [filteredProperties, setFilteredProperties] = useState<PropertyTypesWithImageUrls[] | undefined>(results)
     const [activeTab, setActiveTab] = useState("all")
 
     useEffect(() => {
-        if(properties) {
+        if(results) {
             if ( activeTab === "all") {
-                setFilteredProperties(properties)
+                setFilteredProperties(results)
             } else if (activeTab === "buy") {
-                setFilteredProperties(properties.filter((p) => p.transactionType === "Buy"))
+                setFilteredProperties(results.filter((p) => p.transactionType === "Buy"))
             } else if (activeTab === "rent") {
-                setFilteredProperties(properties.filter((p) => p.transactionType === "Rent"))
+                setFilteredProperties(results.filter((p) => p.transactionType === "Rent"))
             } else if (activeTab === "lease") {
-                setFilteredProperties(properties.filter((p) => p.transactionType === "Lease"))
+                setFilteredProperties(results.filter((p) => p.transactionType === "Lease"))
             }
         }
-      }, [activeTab, properties])
+      }, [activeTab, results])
 
       if(!filteredProperties) return <div className="">Loading...</div>
   return (
@@ -91,10 +96,14 @@ function FeaturedProperties() {
             </Button>
         </div>
         )}
+     
 
-        {filteredProperties.length > 0 && (
+         {status === "LoadingMore" ?
+            <Loading/>
+         : status === "CanLoadMore" && (
         <div className="mt-8 text-center">
             <Button
+            onClick={() => loadMore(5)}
             variant="outline"
             className="border-gray-300 text-gray-700 hover:text-gray-900 hover:bg-gray-50"
             >

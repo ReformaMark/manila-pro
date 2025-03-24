@@ -1,5 +1,10 @@
 import * as z from "zod"
 
+const AmenityFacilitySchema = z.object({
+    name: z.string().min(1, "Name is required"),
+    description: z.string().optional(),
+})
+
 export const PropertyFormSchema = z.object({
     propertyName: z.string().min(5, {
         message: "Property name must be at least 5 characters.",
@@ -64,4 +69,6 @@ export const PropertyFormSchema = z.object({
     featured: z.coerce.boolean(),
     otherImage: z.array(z.string()).optional(),
     description: z.string().optional(),
+    amenities: z.array(AmenityFacilitySchema).optional().default([]),
+    facilities: z.array(AmenityFacilitySchema).optional().default([]),
 })

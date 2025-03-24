@@ -21,13 +21,17 @@ import { PropertyImagesForm } from "./property-images-form"
 import { PropertyLocationForm } from "./property-location-form"
 import { PropertyPricingForm } from "./property-pricing-form"
 import { useConfirm } from "@/hooks/use-confirm"
+import { toast } from "sonner"
+import { PropertyAmenitiesForm } from "./property-amenities-form"
 
 const steps = [
     { id: "basic-info", label: "Basic Info" },
     { id: "location", label: "Location" },
     { id: "details", label: "Property Details" },
+    { id: "amenities", label: "Amenities" },
     { id: "pricing", label: "Pricing" },
     { id: "images", label: "Images" },
+    { id: "review", label: "Review" },
 ]
 
 export const CreatePropertyForm = () => {
@@ -39,6 +43,8 @@ export const CreatePropertyForm = () => {
         "Please double check and review your property details to avoid errors and transaction failures"
     )
 
+    console.log(currentStep)
+
     const router = useRouter()
 
     const { mutate: createProperty, isPending } = useMutation({
@@ -49,8 +55,6 @@ export const CreatePropertyForm = () => {
         resolver: zodResolver(PropertyFormSchema),
     })
 
-    console.log(currentStep)
-
     const getFieldsToValidate = (step: number) => {
         switch (step) {
             case 0: // Basic Info (1st Step)
@@ -59,7 +63,9 @@ export const CreatePropertyForm = () => {
                 return ["address", "city", "block", "lot", "lotId"]
             case 2: // Details (3rd Step)
                 return ["lotArea", "transactionType"]
-            case 3: // Pricing (4th Step)
+            case 3: // Amenities (5th Step)
+                return []
+            case 4: // Pricing (4th Step)
                 return [
                     "pricePerSqm",
                     "totalContractPrice",
@@ -68,7 +74,7 @@ export const CreatePropertyForm = () => {
                     "suggestedMonthlyAmortization",
                     "suggestedTermInMonths",
                 ]
-            case 4: // Images (5th Step)
+            case 5: // Images (6th Step)
                 return ["displayImage"]
             default:
                 return []
@@ -90,13 +96,25 @@ export const CreatePropertyForm = () => {
     }
 
     const onSubmit = async (data: z.infer<typeof PropertyFormSchema>) => {
-        if (currentStep !== 4) return;
+        if (currentStep !== 5) {
+            nextStep()
+            return
+        }
+
         const confirmed = await confirm()
 
         if (confirmed) {
             try {
                 await createProperty({
                     ...data,
+                    amenities: data.amenities.map(amenity => ({
+                        name: amenity.name,
+                        description: amenity.description || ''
+                    })),
+                    facilities: data.facilities?.map(facility => ({
+                        name: facility.name,
+                        description: facility.description || ''
+                    })) || []
                 })
                 // await new Promise((resolve) => setTimeout(resolve, 1500))
 
@@ -104,6 +122,7 @@ export const CreatePropertyForm = () => {
                 router.refresh()
             } catch (error) {
                 console.error("Error submitting property:", error)
+                toast.error("Error creating property, please try again.")
             }
         }
     }
@@ -162,17 +181,24 @@ export const CreatePropertyForm = () => {
                                 Details
                             </TabsTrigger>
                         </TabsList>
-                        <TabsList className="grid grid-cols-2">
+                        <TabsList className="grid grid-cols-3">
+                            <TabsTrigger
+                                value="amenities"
+                                disabled={currentStep !== 3}
+                                className="data-[state=active]:bg-orange-500 data-[state=active]:text-white"
+                            >
+                                Amenities
+                            </TabsTrigger>
                             <TabsTrigger
                                 value="pricing"
-                                disabled={currentStep !== 3}
+                                disabled={currentStep !== 4}
                                 className="data-[state=active]:bg-orange-500 data-[state=active]:text-white"
                             >
                                 Pricing
                             </TabsTrigger>
                             <TabsTrigger
                                 value="images"
-                                disabled={currentStep !== 4}
+                                disabled={currentStep !== 5}
                                 className="data-[state=active]:bg-orange-500 data-[state=active]:text-white"
                             >
                                 Images
@@ -195,8 +221,9 @@ export const CreatePropertyForm = () => {
                                 {currentStep === 0 && <PropertyBasicInfoForm form={form} />}
                                 {currentStep === 1 && <PropertyLocationForm form={form} />}
                                 {currentStep === 2 && <PropertyDetailsForm form={form} />}
-                                {currentStep === 3 && <PropertyPricingForm form={form} />}
-                                {currentStep === 4 && (
+                                {currentStep === 3 && <PropertyAmenitiesForm form={form} />}
+                                {currentStep === 4 && <PropertyPricingForm form={form} />}
+                                {currentStep === 5 && (
                                     <PropertyImagesForm
                                         form={form}
                                         displayImagePreview={displayImagePreview}
@@ -212,12 +239,12 @@ export const CreatePropertyForm = () => {
                                         variant="outline"
                                         onClick={prevStep}
                                         disabled={currentStep === 0}
-                                        className="border-orange-200 text-orange-700 hover:bg-orange-50"
+                                        className="border-orange-200 text-orange-700 hover:bg-orange-50 hover:text-orange-500"
                                     >
                                         Back
                                     </Button>
 
-                                    {currentStep < 4 ? (
+                                    {currentStep < 5 ? (
                                         <Button
                                             type="button"
                                             variant="orange"

@@ -257,7 +257,7 @@ export const EditPropertyForm = ({ params }: EditPropertyFormProps) => {
                                         variant="outline"
                                         onClick={prevStep}
                                         disabled={currentStep === 0}
-                                        className="border-orange-200 text-orange-700 hover:bg-orange-50"
+                                        className="border-orange-200 text-orange-700 hover:bg-orange-50 hover:text-orange-500"
                                     >
                                         Back
                                     </Button>

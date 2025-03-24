@@ -45,7 +45,7 @@ export function PropertiesDashboard({
     const [statusFilter, setStatusFilter] = useState("all")
     const [sortBy, setSortBy] = useState("newest")
     const [selectedCity, setSelectedCity] = useState("all")
-    const [priceRange, setPriceRange] = useState([0, 10000000])
+    const [priceRange, setPriceRange] = useState([0, 100000000])
     const [selectedPropertyTypes, setSelectedPropertyTypes] = useState<string[]>([])
     const [selectedProperty, setSelectedProperty] = useState<Doc<"property"> | null>(null)
     const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)

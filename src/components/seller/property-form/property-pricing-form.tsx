@@ -192,14 +192,14 @@ export const PropertyPricingForm = ({ form }: PropertyPricingFormProps) => {
                     )}
                 />
 
-                <div className="mt-4 p-3 bg-white rounded border border-orange-200">
+                {/* <div className="mt-4 p-3 bg-white rounded border border-orange-200">
                     <div className="flex justify-between items-center">
                         <span className="text-sm font-medium">Total Payment Over Term</span>
                         <span className="font-bold text-orange-700">
                             {formatCurrency(form.getValues("suggestedMonthlyAmortization") * form.getValues("suggestedTermInMonths"))}
                         </span>
                     </div>
-                </div>
+                </div> */}
             </div>
         </div>
     )

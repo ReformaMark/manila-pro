@@ -50,6 +50,8 @@ export function PropertiesDashboard({
     const [selectedProperty, setSelectedProperty] = useState<Doc<"property"> | null>(null)
     const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
     const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false)
+    const [selectedAmenities, setSelectedAmenities] = useState<string[]>([])
+    const [selectedFacilities, setSelectedFacilities] = useState<string[]>([])
 
     const allPrices = initialProperties.map((p) => p.totalSellingPrice)
     const minPrice = Math.min(...allPrices)
@@ -69,9 +71,21 @@ export function PropertiesDashboard({
         setSelectedPropertyTypes((prev) => (prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]))
     }
 
+    const toggleAmenity = (amenity: string) => {
+        setSelectedAmenities((prev) => (prev.includes(amenity) ? prev.filter((a) => a !== amenity) : [...prev, amenity]))
+    }
+
+    const toggleFacility = (facility: string) => {
+        setSelectedFacilities((prev) =>
+            prev.includes(facility) ? prev.filter((f) => f !== facility) : [...prev, facility],
+        )
+    }
+
     const resetFilters = () => {
         setPriceRange([minPrice, maxPrice])
         setSelectedPropertyTypes([])
+        setSelectedAmenities([])
+        setSelectedFacilities([])
         setSelectedCity("all")
         setSearchQuery("")
         setSortBy("newest")
@@ -80,6 +94,8 @@ export function PropertiesDashboard({
     const activeFilterCount = [
         priceRange[0] > minPrice || priceRange[1] < maxPrice,
         selectedPropertyTypes.length > 0,
+        selectedAmenities.length > 0,
+        selectedFacilities.length > 0,
         selectedCity !== "all",
         searchQuery.length > 0,
     ].filter(Boolean).length
@@ -99,6 +115,16 @@ export function PropertiesDashboard({
             !property.address.toLowerCase().includes(searchQuery.toLowerCase())
         ) {
             return false
+        }
+
+        if (selectedAmenities.length > 0) {
+            const propertyAmenities = property.amenities?.map((a) => a.name) || []
+            if (!selectedAmenities.some((a) => propertyAmenities.includes(a))) return false
+        }
+
+        if (selectedFacilities.length > 0) {
+            const propertyFacilities = property.facilities?.map((f) => f.name) || []
+            if (!selectedFacilities.some((f) => propertyFacilities.includes(f))) return false
         }
 
         return true
@@ -206,12 +232,63 @@ export function PropertiesDashboard({
                                 </Select>
                             </div>
 
+                            <Separator className="w-full my-3" />
+
+                            <div>
+                                <h3 className="font-medium mb-3 text-orange-700 mt-3">Amenities & Facilities</h3>
+                                <div className="space-y-2">
+                                    <div className="flex items-center space-x-2">
+                                        <Checkbox
+                                            id="filter-pool"
+                                            checked={selectedAmenities.includes("Swimming Pool")}
+                                            onCheckedChange={() => toggleAmenity("Swimming Pool")}
+                                            className="border-orange-300 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
+                                        />
+                                        <Label htmlFor="filter-pool" className="cursor-pointer">
+                                            Swimming Pool
+                                        </Label>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <Checkbox
+                                            id="filter-gym"
+                                            checked={selectedAmenities.includes("Gym/Fitness Center")}
+                                            onCheckedChange={() => toggleAmenity("Gym/Fitness Center")}
+                                            className="border-orange-300 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
+                                        />
+                                        <Label htmlFor="filter-gym" className="cursor-pointer">
+                                            Gym/Fitness Center
+                                        </Label>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <Checkbox
+                                            id="filter-parking"
+                                            checked={selectedFacilities.includes("Parking")}
+                                            onCheckedChange={() => toggleFacility("Parking")}
+                                            className="border-orange-300 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
+                                        />
+                                        <Label htmlFor="filter-parking" className="cursor-pointer">
+                                            Parking
+                                        </Label>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <Checkbox
+                                            id="filter-security"
+                                            checked={selectedFacilities.includes("24/7 Security")}
+                                            onCheckedChange={() => toggleFacility("24/7 Security")}
+                                            className="border-orange-300 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
+                                        />
+                                        <Label htmlFor="filter-security" className="cursor-pointer">
+                                            24/7 Security
+                                        </Label>
+                                    </div>
+                                </div>
+                            </div>
+
                             <Button variant="outline" className="mt-4 w-full" onClick={resetFilters}>
                                 Reset Filters
                             </Button>
                         </CardContent>
                     </Card>
-
                 </div>
 
                 <div className="flex-1">
@@ -381,6 +458,44 @@ export function PropertiesDashboard({
                                         </Button>
                                     </Badge>
                                 )}
+
+                                {selectedAmenities.map((amenity) => (
+                                    <Badge
+                                        key={`amenity-${amenity}`}
+                                        variant="outline"
+                                        className="flex items-center gap-1 "
+                                    >
+                                        Amenity: {amenity}
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-4 w-4 p-0 ml-1 "
+                                            onClick={() => toggleAmenity(amenity)}
+                                        >
+                                            <X className="h-3 w-3" />
+                                            <span className="sr-only">Remove {amenity} filter</span>
+                                        </Button>
+                                    </Badge>
+                                ))}
+
+                                {selectedFacilities.map((facility) => (
+                                    <Badge
+                                        key={`facility-${facility}`}
+                                        variant="outline"
+                                        className="flex items-center gap-1"
+                                    >
+                                        Facility: {facility}
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-4 w-4 p-0 ml-1"
+                                            onClick={() => toggleFacility(facility)}
+                                        >
+                                            <X className="h-3 w-3" />
+                                            <span className="sr-only">Remove {facility} filter</span>
+                                        </Button>
+                                    </Badge>
+                                ))}
 
                                 {searchQuery && (
                                     <Badge variant="outline" className="flex items-center gap-1">

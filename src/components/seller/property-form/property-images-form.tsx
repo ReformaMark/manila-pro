@@ -27,6 +27,7 @@ export const PropertyImagesForm = ({
 }: PropertyImagesFormProps) => {
     const [isOpen, setIsOpen] = useState(false)
     const [isSingleImageUploading, setIsSingleImageUploading] = useState(false)
+    const [isMultipleImagesUploading, setIsMultipleImagesUploading] = useState(false)
     const generateUploadUrl = useMutation(api.files.generateUploadUrl)
 
     const handleDisplayImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,13 +72,7 @@ export const PropertyImagesForm = ({
         const files = e.target.files
         if (!files || files.length === 0) return
 
-        for (let i = 0; i < files.length; i++) {
-            if (!files[i].type.startsWith('image/')) {
-                toast.error("Please select image files only")
-                return
-            }
-        }
-
+        setIsMultipleImagesUploading(true)
         try {
             const uploadPromises = Array.from(files).map(async (file) => {
                 const postUrl = await generateUploadUrl()
@@ -107,6 +102,8 @@ export const PropertyImagesForm = ({
         } catch (error) {
             console.error("Upload error:", error);
             toast.error("Failed to upload images");
+        } finally {
+            setIsMultipleImagesUploading(false)
         }
     }
 
@@ -235,8 +232,17 @@ export const PropertyImagesForm = ({
                                             className="flex flex-col items-center justify-center w-full h-32 border-2 border-orange-200 border-dashed rounded-lg cursor-pointer bg-orange-50 hover:bg-orange-100 transition-colors"
                                         >
                                             <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                                <Upload className="w-8 h-8 mb-2 text-orange-500" />
-                                                <p className="text-sm text-orange-700">Upload additional images</p>
+                                                {isMultipleImagesUploading ? (
+                                                    <div className="flex flex-col items-center justify-center">
+                                                        <Loader2Icon className="animate-spin w-6 h-6" />
+                                                        <p className="text-muted-foreground">Uploading images...</p>
+                                                    </div>
+                                                ) : (
+                                                    <>
+                                                        <Upload className="w-8 h-8 mb-2 text-orange-500" />
+                                                        <p className="text-sm text-orange-700">Upload additional images</p>
+                                                    </>
+                                                )}
                                             </div>
                                             <input
                                                 id="other-images-upload"
@@ -244,6 +250,7 @@ export const PropertyImagesForm = ({
                                                 accept="image/*"
                                                 multiple
                                                 className="hidden"
+                                                disabled={isMultipleImagesUploading}
                                                 onChange={handleOtherImagesUpload}
                                             />
                                         </label>

@@ -49,8 +49,9 @@ export const PropertyDetailsModal = ({
                 </div>
 
                 <Tabs defaultValue="details">
-                    <TabsList className="grid w-full grid-cols-3">
-                        <TabsTrigger value="details">Property Details</TabsTrigger>
+                    <TabsList className="grid w-full grid-cols-4">
+                        <TabsTrigger value="details">Details</TabsTrigger>
+                        <TabsTrigger value="amenities">Amenities</TabsTrigger>
                         <TabsTrigger value="pricing">Pricing</TabsTrigger>
                         <TabsTrigger value="transaction">Transaction</TabsTrigger>
                     </TabsList>
@@ -134,6 +135,46 @@ export const PropertyDetailsModal = ({
                                     <span className="text-sm text-muted-foreground">Last Updated</span>
                                     <p>{property.updatedAt ? formatDate(property.updatedAt) : "Not updated"}</p>
                                 </div>
+                            </div>
+                        </div>
+                    </TabsContent>
+
+                    <TabsContent value="amenities" className="space-y-4 pt-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="bg-orange-50 p-4 rounded-lg border border-orange-100">
+                                <h3 className="font-medium mb-3 text-orange-700">Amenities</h3>
+                                {property.amenities && property.amenities.length > 0 ? (
+                                    <ul className="space-y-2">
+                                        {property.amenities.map((amenity, index) => (
+                                            <li key={index} className="bg-white p-3 rounded border border-orange-100">
+                                                <p className="font-medium">{amenity.name}</p>
+                                                {amenity.description && (
+                                                    <p className="text-sm text-muted-foreground mt-1">{amenity.description}</p>
+                                                )}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <p className="text-muted-foreground">No amenities listed for this property.</p>
+                                )}
+                            </div>
+
+                            <div className="bg-orange-50 p-4 rounded-lg border border-orange-100">
+                                <h3 className="font-medium mb-3 text-orange-700">Facilities</h3>
+                                {property.facilities && property.facilities.length > 0 ? (
+                                    <ul className="space-y-2">
+                                        {property.facilities.map((facility, index) => (
+                                            <li key={index} className="bg-white p-3 rounded border border-orange-100">
+                                                <p className="font-medium">{facility.name}</p>
+                                                {facility.description && (
+                                                    <p className="text-sm text-muted-foreground mt-1">{facility.description}</p>
+                                                )}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <p className="text-muted-foreground">No facilities listed for this property.</p>
+                                )}
                             </div>
                         </div>
                     </TabsContent>

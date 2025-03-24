@@ -24,6 +24,7 @@ import { EditPropertyDetailsForm } from "./edit-property-details-form"
 import { EditPropertyPricingForm } from "./edit-property-pricing-form"
 import { EditPropertyImagesForm } from "./edit-property-images-form"
 import { useConfirm } from "@/hooks/use-confirm"
+import { EditPropertyAmenitiesForm } from "./edit-property-amenities-form"
 // import { PropertyBasicInfoForm } from "./property-basic-info-form"
 // import { PropertyDetailsForm } from "./property-details-form"
 // import { PropertyImagesForm } from "./property-images-form"
@@ -34,8 +35,10 @@ const steps = [
     { id: "basic-info", label: "Basic Info" },
     { id: "location", label: "Location" },
     { id: "details", label: "Property Details" },
+    { id: "amenities", label: "Amenities" },
     { id: "pricing", label: "Pricing" },
     { id: "images", label: "Images" },
+    { id: "review", label: "Review" },
 ]
 
 interface EditPropertyFormProps {
@@ -93,7 +96,9 @@ export const EditPropertyForm = ({ params }: EditPropertyFormProps) => {
                 return ["address", "city", "block", "lot", "lotId"]
             case 2: // Details (3rd Step)
                 return ["lotArea", "transactionType"]
-            case 3: // Pricing (4th Step)
+            case 3: // Amenities (5th Step)
+                return []
+            case 4: // Pricing (4th Step)
                 return [
                     "pricePerSqm",
                     "totalContractPrice",
@@ -102,7 +107,7 @@ export const EditPropertyForm = ({ params }: EditPropertyFormProps) => {
                     "suggestedMonthlyAmortization",
                     "suggestedTermInMonths",
                 ]
-            case 4: // Images (5th Step)
+            case 5: // Images (6th Step)
                 return ["displayImage"]
             default:
                 return []
@@ -124,13 +129,25 @@ export const EditPropertyForm = ({ params }: EditPropertyFormProps) => {
     }
 
     const onSubmit = async (data: z.infer<typeof PropertyFormSchema>) => {
-        if (currentStep !== 4) return;
+        if (currentStep !== 5) {
+            nextStep()
+            return
+        }
+
         const confirmed = await confirm()
 
         if (confirmed) {
             try {
                 await updateProperty({
                     ...data,
+                    amenities: data.amenities.map(amenity => ({
+                        name: amenity.name,
+                        description: amenity.description || ''
+                    })),
+                    facilities: data.facilities?.map(facility => ({
+                        name: facility.name,
+                        description: facility.description || ''
+                    })) || [],
                     id: property?._id as Id<"property">,
                 })
                 // await new Promise((resolve) => setTimeout(resolve, 1500))
@@ -207,17 +224,24 @@ export const EditPropertyForm = ({ params }: EditPropertyFormProps) => {
                                 Details
                             </TabsTrigger>
                         </TabsList>
-                        <TabsList className="grid grid-cols-2">
+                        <TabsList className="grid grid-cols-3">
+                            <TabsTrigger
+                                value="amenities"
+                                disabled={currentStep !== 3}
+                                className="data-[state=active]:bg-orange-500 data-[state=active]:text-white"
+                            >
+                                Amenities
+                            </TabsTrigger>
                             <TabsTrigger
                                 value="pricing"
-                                disabled={currentStep !== 3}
+                                disabled={currentStep !== 4}
                                 className="data-[state=active]:bg-orange-500 data-[state=active]:text-white"
                             >
                                 Pricing
                             </TabsTrigger>
                             <TabsTrigger
                                 value="images"
-                                disabled={currentStep !== 4}
+                                disabled={currentStep !== 5}
                                 className="data-[state=active]:bg-orange-500 data-[state=active]:text-white"
                             >
                                 Images
@@ -240,8 +264,9 @@ export const EditPropertyForm = ({ params }: EditPropertyFormProps) => {
                                 {currentStep === 0 && <EditPropertyBasicInfoForm form={form} />}
                                 {currentStep === 1 && <EditPropertyLocationForm form={form} />}
                                 {currentStep === 2 && <EditPropertyDetailsForm form={form} />}
-                                {currentStep === 3 && <EditPropertyPricingForm form={form} />}
-                                {currentStep === 4 && (
+                                {currentStep === 3 && <EditPropertyAmenitiesForm form={form} />}
+                                {currentStep === 4 && <EditPropertyPricingForm form={form} />}
+                                {currentStep === 5 && (
                                     <EditPropertyImagesForm
                                         form={form}
                                         displayImagePreview={displayImagePreview}
@@ -262,7 +287,7 @@ export const EditPropertyForm = ({ params }: EditPropertyFormProps) => {
                                         Back
                                     </Button>
 
-                                    {currentStep < 4 ? (
+                                    {currentStep < 5 ? (
                                         <Button
                                             type="button"
                                             variant="orange"
@@ -275,10 +300,9 @@ export const EditPropertyForm = ({ params }: EditPropertyFormProps) => {
                                         <Button
                                             type="submit"
                                             variant="orange"
-                                        // disabled={isPending}
+                                            disabled={isPending}
                                         >
-                                            {/* {isPending ? "Submitting..." : "Submit Property"} */}
-                                            Submit
+                                            {isPending ? "Submitting..." : "Submit Property"}
                                         </Button>
                                     )}
 

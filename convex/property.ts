@@ -371,6 +371,14 @@ export const update = mutation({
         description: v.optional(v.string()),
         bathrooms: v.number(),
         featured: v.boolean(),
+        facilities: v.optional(v.array(v.object({
+            name: v.string(),
+            description: v.string()
+        }))),
+        amenities: v.optional(v.array(v.object({
+            name: v.string(),
+            description: v.string()
+        }))),
     },
     handler: async (ctx, args) => {
         const { id, ...updates } = args

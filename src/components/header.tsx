@@ -27,7 +27,7 @@ export function Header() {
   const isMobile = useIsMobile()
 
   return (
-    <header className="bg-brand-black text-white sticky top-0 py-2 z-50  border-b border-gray-800" style={{ height: 'var(--header-height)' }}>
+    <header className="bg-brand-black text-white sticky top-0 py-2 z-40  border-b border-gray-800" style={{ height: 'var(--header-height)' }}>
       <div className=" px-10  h-full ">
         <div className="flex items-center justify-between h-full transition-all duration-500 ease-in-out">
           {isMobile && (

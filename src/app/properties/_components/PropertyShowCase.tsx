@@ -15,6 +15,8 @@ import { PropertyFilter } from "./PropertyFilter"
 import PropertyCard from "./PropertyCard"
 import { PropertyDetailModal } from "./PropertyDetailsModal"
 import { useRouter } from "next/navigation"
+import { useFilterStore } from "../store/useFilter"
+
 
 
 // Filter options
@@ -53,13 +55,14 @@ const facilities = [
 ]
 
 export default function PropertyShowcase({properties}:{properties: PropertyTypesWithImageUrls[]}) {
+  const {unitType, transactionType, location, setLocation, resetFiltersStore} = useFilterStore()
   const router = useRouter()
   const isMobile = useIsMobile()
   const [activeView, setActiveView] = useState<"grid" | "list" | "map">("grid")
   const [filters, setFilters] = useState<FilterOptions>({
-    location: "All Locations",
-    transactionType: "All Types",
-    unitType: "All Units",
+    location: "All Locations" ,
+    transactionType: transactionType ??"All Types",
+    unitType: unitType ,
     priceRange: [0, 100000000],
     bedrooms: 0,
     bathrooms: 0,
@@ -68,7 +71,7 @@ export default function PropertyShowcase({properties}:{properties: PropertyTypes
     selectedAmenities: [] as string[],
     selectedFacilities: [] as string[],
     maxOccupants: 0,
-    searchTerm: "",
+    searchTerm: location,
     sort: "newest"
   })
   
@@ -76,7 +79,7 @@ export default function PropertyShowcase({properties}:{properties: PropertyTypes
   const [filteredProperties, setFilteredProperties] = useState<PropertyTypes[]>(properties)
   const [selectedProperty, setSelectedProperty] = useState<PropertyTypes | null>(null)
   const [isFilterOpen, setIsFilterOpen] = useState(false)
-
+ 
   // Apply filters
   useEffect(() => {
     let result = properties
@@ -104,7 +107,7 @@ export default function PropertyShowcase({properties}:{properties: PropertyTypes
 
     // Unit Type
     if (filters.unitType !== "All Units") {
-      result = result.filter((property) => property.unitType === filters.unitType)
+      result = result.filter((property) => property.unitType.toLowerCase() === filters.unitType.toLowerCase())
     }
 
     // Price Range
@@ -173,7 +176,7 @@ export default function PropertyShowcase({properties}:{properties: PropertyTypes
     }
 
     setFilteredProperties(result)
-  }, [filters])
+  }, [filters, location, transactionType, unitType])
   const handleFilterChange = (key: string, value: any) => {
     setFilters((prev) => ({
       ...prev,
@@ -218,6 +221,7 @@ export default function PropertyShowcase({properties}:{properties: PropertyTypes
   }
 
   const resetFilters = () => {
+    resetFiltersStore()
     setFilters({
       location: "All Locations",
       transactionType: "All Types",
@@ -251,7 +255,10 @@ export default function PropertyShowcase({properties}:{properties: PropertyTypes
                   type="text"
                   placeholder="Search properties by name, location, or description..."
                   value={filters.searchTerm}
-                  onChange={(e) => handleFilterChange("searchTerm", e.target.value)}
+                  onChange={(e) => {
+                    handleFilterChange("searchTerm", e.target.value)
+                    setLocation(e.target.value)
+                  }}
                   className="pl-10 pr-4 py-2 w-full bg-white text-brand-black placeholder:text-gray-500 focus-visible:ring-brand-orange focus-visible:border-brand-orange"
                 />
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />

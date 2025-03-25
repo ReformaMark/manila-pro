@@ -5,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import type { FilterOptions } from "@/types/property"
+import { useFilterStore } from "../store/useFilter"
 
 interface PropertyFilterProps {
   filters: FilterOptions
@@ -33,8 +34,9 @@ export function PropertyFilter({
   facilities,
   formatPrice,
 }: PropertyFilterProps) {
+  const {setLocation, setTransactionType, setUnitType} = useFilterStore()
   return (
-    <div className=" rounded-lg  p-4 space-y-6 text-black bg-white shadow-md ">
+    <div className="z-[9999] rounded-lg  p-4 space-y-6 text-black bg-white shadow-md ">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold">Filters</h3>
         <Button
@@ -50,7 +52,10 @@ export function PropertyFilter({
       <div className="space-y-4">
         <div>
           <label className="text-sm font-medium text-black">Location</label>
-          <Select value={filters.location} onValueChange={(value) => onFilterChange("location", value)}>
+          <Select value={filters.location} onValueChange={(value) => {
+              onFilterChange("location", value)
+              
+            }}>
             <SelectTrigger className=" text-black">
               <SelectValue placeholder="Select location" />
             </SelectTrigger>
@@ -66,7 +71,10 @@ export function PropertyFilter({
 
         <div>
           <label className="text-sm font-medium text-black">Transaction Type</label>
-          <Select value={filters.transactionType} onValueChange={(value) => onFilterChange("transactionType", value)}>
+          <Select value={filters.transactionType} onValueChange={(value) =>{ 
+              setTransactionType(value)
+              onFilterChange("transactionType", value)
+            }}>
             <SelectTrigger className=" text-black">
               <SelectValue placeholder="Select transaction type" />
             </SelectTrigger>
@@ -82,7 +90,10 @@ export function PropertyFilter({
 
         <div>
           <label className="text-sm font-medium text-black">Unit Type</label>
-          <Select value={filters.unitType} onValueChange={(value) => onFilterChange("unitType", value)}>
+          <Select value={filters.unitType} onValueChange={(value) => {
+              setUnitType(value)
+              onFilterChange("unitType", value)
+            }}>
             <SelectTrigger className=" text-black">
               <SelectValue placeholder="Select unit type" />
             </SelectTrigger>

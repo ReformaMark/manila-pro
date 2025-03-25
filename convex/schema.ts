@@ -14,6 +14,9 @@ export default defineSchema({
         image: v.optional(v.string()),
         contact: v.string(),
         houseNumber: v.string(),
+        agentInfo: v.optional(v.object({
+            title: v.string(),
+        })),
         street: v.string(),
         barangay: v.string(),
         city: v.string(),
@@ -23,6 +26,12 @@ export default defineSchema({
             v.literal("seller"),
         ),
 
+    }),
+
+    ratings_reviews: defineTable({
+        agentId: v.id('users'),
+        ratings: v.number(),
+        reviews: v.string(),
     }),
     // project: defineTable({
     //     projectName: v.string(),

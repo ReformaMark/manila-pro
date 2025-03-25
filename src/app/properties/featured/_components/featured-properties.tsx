@@ -9,6 +9,7 @@ import PropertyCard from '../../_components/PropertyCard'
 import { Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Loading from '@/components/loading'
+import { useRouter } from 'next/navigation'
 
 function FeaturedProperties() {
     const { results, status, loadMore } = usePaginatedQuery(
@@ -18,6 +19,7 @@ function FeaturedProperties() {
       );
     const [filteredProperties, setFilteredProperties] = useState<PropertyTypesWithImageUrls[] | undefined>(results)
     const [activeTab, setActiveTab] = useState("all")
+    const router = useRouter()
 
     useEffect(() => {
         if(results) {
@@ -78,7 +80,7 @@ function FeaturedProperties() {
             whileHover={{ y: -5 }}
             className="h-full"
             >
-            <PropertyCard property={property} onClick={() => {}} />
+            <PropertyCard property={property} onClick={() => {router.push(`/properties/${property._id}`)}} />
             </motion.div>
         ))}
         </div>
@@ -89,8 +91,9 @@ function FeaturedProperties() {
             <h3 className="text-lg font-medium mb-2 text-gray-900">No featured properties found</h3>
             <p className="text-gray-500 mb-4">There are currently no featured properties in this category.</p>
             <Button
+            variant={'default'}
             onClick={() => setActiveTab("all")}
-            className="bg-brand-orange hover:bg-brand-orange/90 text-white"
+            className="bg-brand-orange hover:bg-brand-orange/90 text-black"
             >
             View All Featured Properties
             </Button>

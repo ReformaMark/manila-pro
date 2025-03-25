@@ -2,23 +2,38 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Bath, Bed, Building, Calendar, Check, Mail, Maximize, MessageSquare, Phone, Star } from 'lucide-react'
+import { ArrowRight, Bath, Bed, Building, Calendar, Check, Mail, Maximize, MessageSquare, Phone, Star } from 'lucide-react'
 import Image from 'next/image'
 import React from 'react'
 import PropertyCard from '../../_components/PropertyCard'
 import { PropertyTypesWithImageUrls } from '@/lib/types'
-import { formatDateListed } from '@/lib/utils'
+import { calculateRatingsAve, formatDateListed, formatPrice } from '@/lib/utils'
 import { CarouselApi } from '@/components/ui/carousel'
+import { RatingStars } from '@/components/rating-stars'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { useQuery } from 'convex/react'
+import { api } from '../../../../../convex/_generated/api'
+import Link from 'next/link'
+import MortgageCalculator from './mortgage-calculator'
 
 interface PropertyContentProps{
     property: PropertyTypesWithImageUrls
     setCurrentImageIndex: (value: number) => void
     currentImageIndex: number
     setApi: (value: CarouselApi) => void
-    api: CarouselApi
+    carouselApi: CarouselApi
 }
 
-function PropertyContent({property, api, setCurrentImageIndex}: PropertyContentProps) {
+function PropertyContent({property, carouselApi, setCurrentImageIndex}: PropertyContentProps) {
+  const similarProperties = useQuery(api.property.similarProp, {
+    sellerId: property.sellerId,
+    propertyId: property._id
+  })
+  const agent = property.agent
+
+  const shuffledProperties = similarProperties
+    ?.sort(() => Math.random() - 0.5)
+    .slice(0, 2)
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
     {/* Main Content */}
@@ -195,7 +210,7 @@ function PropertyContent({property, api, setCurrentImageIndex}: PropertyContentP
                       className="relative h-32 rounded-md overflow-hidden cursor-pointer shadow-sm"
                       onClick={() => {
                         setCurrentImageIndex(index + 1)
-                        api?.scrollTo(index)
+                        carouselApi?.scrollTo(index)
                     }}
                     >
                       <Image
@@ -296,17 +311,31 @@ function PropertyContent({property, api, setCurrentImageIndex}: PropertyContentP
 
       {/* Similar Properties */}
       <div className="mt-6">
-        <h2 className="text-xl font-bold mb-4 text-gray-900">Similar Properties</h2>
+        <div className="flex justify-between">
+          <h2 className="text-xl font-bold mb-4 text-gray-900">Similar Properties</h2>
+            <Link href={`/properties/${property._id}`} className='contents'>
+              <Button
+                  variant={'link'}
+                  className="text-brand-orange"
+                  >
+                  View More Similar Properties
+                  <ArrowRight  className="text-brand-orange"/>
+              </Button>
+            </Link>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* {similarProperties.map((property) => (
-            <PropertyCard key={property.id} property={property} onClick={() => {}} />
-          ))} */}
+          {shuffledProperties?.map((property) => (
+            <Link key={property._id} href={`/properties/${property._id}`} className='contents'>
+
+              <PropertyCard  property={property} onClick={() => {}} />
+            </Link>
+          ))}
         </div>
       </div>
     </div>
 
     {/* Sidebar */}
-    <div>
+    <aside>
       {/* Agent Contact */}
       <Card className="border border-gray-200 shadow-sm mb-6">
         <CardHeader>
@@ -314,19 +343,24 @@ function PropertyContent({property, api, setCurrentImageIndex}: PropertyContentP
         </CardHeader>
         <CardContent>
           <div className="flex items-center mb-4">
-            <div className="relative h-16 w-16 rounded-full overflow-hidden mr-4">
-              <Image src="/placeholder.svg" alt="Agent" fill className="object-cover" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-900">Maria Santos</h3>
-              <p className="text-sm text-gray-500">Senior Real Estate Agent</p>
-              <div className="flex items-center mt-1">
-                <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                <Star className="h-4 w-4 text-gray-300" />
-                <span className="text-xs text-gray-500 ml-1">(42 reviews)</span>
+            <div className="flex gap-x-3">
+
+              <Avatar className="h-16 w-16 ">
+                <AvatarImage src={agent?.userImageUrl} alt="User" />
+                <AvatarFallback className="bg-gray-800 text-white uppercase">{agent?.fname.charAt(1)} {agent?.lname.charAt(1)}</AvatarFallback>
+              </Avatar>
+              <div className="">
+
+                <h3 className="font-semibold text-gray-900">{agent?.fname} {agent?.lname}</h3>
+                <p className="text-sm text-gray-500">{agent?.agentInfo ? agent.agentInfo.title : "No job title"}</p>
+                <div className="mt-1">
+                <RatingStars 
+                  edit={false}
+                  size={30}
+                  average={calculateRatingsAve(agent?.ratingsAndReviews)}
+                />
+                <span className="text-xs text-gray-500 ml-1">({agent?.ratingsAndReviews.length ?? 0} reviews)</span>
+              </div>
               </div>
             </div>
           </div>
@@ -337,14 +371,14 @@ function PropertyContent({property, api, setCurrentImageIndex}: PropertyContentP
               className="w-full justify-start border-gray-200 text-gray-700 hover:text-gray-900 hover:bg-gray-50"
             >
               <Phone className="h-4 w-4 mr-2 text-brand-orange" />
-              +63 912 345 6789
+              {agent?.contact}
             </Button>
             <Button
               variant="outline"
               className="w-full justify-start border-gray-200 text-gray-700 hover:text-gray-900 hover:bg-gray-50"
             >
               <Mail className="h-4 w-4 mr-2 text-brand-orange" />
-              maria.santos@manilapro.com
+              {agent?.email}
             </Button>
           </div>
 
@@ -363,81 +397,10 @@ function PropertyContent({property, api, setCurrentImageIndex}: PropertyContentP
           </div>
         </CardContent>
       </Card>
-
-      {/* Mortgage Calculator */}
-      <Card className="border border-gray-200 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-gray-900">Mortgage Calculator</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">Property Price</label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">₱</span>
-                <input
-                  type="text"
-                  value="15,000,000"
-                  className="w-full bg-white border border-gray-300 rounded-md py-2 px-8 text-gray-900 focus:outline-none focus:ring-1 focus:ring-brand-orange focus:border-brand-orange"
-                  readOnly
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">Down Payment (20%)</label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">₱</span>
-                <input
-                  type="text"
-                  value="3,000,000"
-                  className="w-full bg-white border border-gray-300 rounded-md py-2 px-8 text-gray-900 focus:outline-none focus:ring-1 focus:ring-brand-orange focus:border-brand-orange"
-                  readOnly
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">Loan Term</label>
-              <select className="w-full bg-white border border-gray-300 rounded-md py-2 px-3 text-gray-900 focus:outline-none focus:ring-1 focus:ring-brand-orange focus:border-brand-orange">
-                <option>15 years</option>
-                <option>20 years</option>
-                <option selected>30 years</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">Interest Rate</label>
-              <select className="w-full bg-white border border-gray-300 rounded-md py-2 px-3 text-gray-900 focus:outline-none focus:ring-1 focus:ring-brand-orange focus:border-brand-orange">
-                <option>4.5%</option>
-                <option selected>5.0%</option>
-                <option>5.5%</option>
-                <option>6.0%</option>
-              </select>
-            </div>
-
-            <Separator className="bg-gray-200" />
-
-            <div>
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-sm text-gray-700">Monthly Payment:</span>
-                <span className="text-lg font-bold text-brand-orange">₱64,282</span>
-              </div>
-              <div className="flex justify-between items-center text-sm text-gray-500">
-                <span>Total Loan Amount:</span>
-                <span>₱12,000,000</span>
-              </div>
-              <div className="flex justify-between items-center text-sm text-gray-500">
-                <span>Total Interest:</span>
-                <span>₱11,141,520</span>
-              </div>
-            </div>
-
-            <Button className="w-full bg-brand-orange hover:bg-brand-orange/90">Apply for Pre-approval</Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+      {property.transactionType?.toLowerCase() === "buy" && (
+        <MortgageCalculator property={property}/>
+      )}
+    </aside>
   </div>
   )
 }

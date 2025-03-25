@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { RatingsAndReviews } from "./types"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -142,4 +143,38 @@ export function formatDateListed(convexDate: number) {
   if (diffInSeconds < 172800) return 'yesterday';
 
   return readableDate.toDateString();
+}
+
+export function calculateRatingsAve(ratings_reviews: RatingsAndReviews[] | undefined): number {
+  if (!ratings_reviews) return 0;
+
+  const total = ratings_reviews.reduce((sum, review) => sum + review.ratings, 0);
+  const average = total / ratings_reviews.length;
+
+  return parseFloat(average.toFixed(1)); // Return average rounded to 2 decimal places
+}
+
+
+export function calculateLoanDetails(
+  propertyPrice: number,
+  downPayment: number,
+  loanTerm: string, // in years
+  interestRate: string // annual interest rate in percentage
+) {
+  const loanAmount = propertyPrice - downPayment;
+  const monthlyInterestRate = Number(interestRate) / 100 / 12;
+  const numberOfPayments = Number(loanTerm) * 12;
+
+  const monthlyPayment =
+    (loanAmount * monthlyInterestRate) /
+    (1 - Math.pow(1 + monthlyInterestRate, -numberOfPayments));
+
+  const totalPayment = monthlyPayment * numberOfPayments;
+  const totalInterest = totalPayment - loanAmount;
+
+  return {
+    monthlyPayment: formatPrice(monthlyPayment),
+    totalLoanAmount: formatPrice(totalPayment),
+    totalInterest: formatPrice(totalInterest),
+  };
 }

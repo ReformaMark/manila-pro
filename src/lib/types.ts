@@ -6,4 +6,14 @@ export interface PropertyTypes extends Doc<'property'> {
 export interface PropertyTypesWithImageUrls extends Doc<'property'> {
     displayImageUrl: string | null;
     imageUrls: string[] | null;
+    agent: UserTypesWithImage | undefined
+}
+
+export interface UserTypesWithImage extends Doc<'users'> {
+    userImageUrl: string | undefined;
+    ratingsAndReviews: RatingsAndReviews[];
+}
+
+export interface RatingsAndReviews extends Doc<'ratings_reviews'>{
+
 }

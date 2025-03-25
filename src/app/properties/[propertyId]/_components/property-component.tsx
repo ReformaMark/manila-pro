@@ -56,7 +56,7 @@ function PropertyComponent() {
           setCurrentImageIndex={setCurrentImageIndex} 
           currentImageIndex={currentImageIndex}
           setApi={setCarouselApi}
-          api={carouselApi}
+          carouselApi={carouselApi}
         />
       </CardContent>
     </Card>

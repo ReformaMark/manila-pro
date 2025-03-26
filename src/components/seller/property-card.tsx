@@ -34,6 +34,11 @@ export const PropertyCard = ({
                     fill
                     className="object-cover"
                 />
+                {property.featured && (
+                    <div className="absolute top-2 left-2">
+                        <Badge className="capitalize bg-orange-400 hover:bg-orange-500">Featured</Badge>
+                    </div>
+                )}
                 <div className="absolute top-2 right-2">
                     <Badge className={`${statusColors[property.status]} capitalize`}>{property.status}</Badge>
                 </div>
@@ -62,10 +67,17 @@ export const PropertyCard = ({
                 <Separator className="my-2" />
 
                 <div className="flex justify-between items-baseline">
-                    <div>
-                        <p className="text-sm text-muted-foreground">Selling Price</p>
-                        <p className="text-lg font-bold">{formatCurrency(property.totalSellingPrice)}</p>
-                    </div>
+                    {property.transactionType === "Rent" ? (
+                        <div>
+                            <p className="text-sm text-muted-foreground">Selling Price</p>
+                            <p className="text-lg font-bold">{formatCurrency(property.totalSellingPrice)}/Month</p>
+                        </div>
+                    ) : (
+                        <div>
+                            <p className="text-sm text-muted-foreground">Selling Price</p>
+                            <p className="text-lg font-bold">{formatCurrency(property.totalSellingPrice)}</p>
+                        </div>
+                    )}
                     <div className="text-right">
                         <p className="text-sm text-muted-foreground">Listed on</p>
                         <p className="text-sm">{formatDate(property.createdAt)}</p>

@@ -127,6 +127,9 @@ export function PropertiesDashboard({
             if (!selectedFacilities.some((f) => propertyFacilities.includes(f))) return false
         }
 
+
+        if (sortBy === "featured" && !property.featured) return false
+
         return true
     })
 
@@ -338,6 +341,7 @@ export function PropertiesDashboard({
                                 <SelectContent>
                                     <SelectItem value="newest">Newest First</SelectItem>
                                     <SelectItem value="oldest">Oldest First</SelectItem>
+                                    <SelectItem value="featured">Featured</SelectItem>
                                     <SelectItem value="price-high">Price: High to Low</SelectItem>
                                     <SelectItem value="price-low">Price: Low to High</SelectItem>
                                 </SelectContent>

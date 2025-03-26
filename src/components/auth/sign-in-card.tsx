@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Separator } from "../ui/separator";
+import { Checkbox } from "../ui/checkbox";
+import { Label } from "../ui/label";
 
 export const SignInCard = ({
     setState
@@ -21,6 +23,7 @@ export const SignInCard = ({
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("")
+    const [type, setType] = useState("password")
     const [pending, setPending] = useState<boolean>(false);
     const { signIn } = useAuthActions()
 
@@ -89,9 +92,14 @@ export const SignInCard = ({
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             placeholder="Password"
-                            type="password"
+                            type={type}
                             required
                         />
+                        <div className="hover:cursor-pointer flex items-center gap-x-2 text-muted-foreground">
+
+                            <Checkbox name="show" id="show" onCheckedChange={(value)=> {value === true ? setType("text") : setType("password")}} />
+                            <Label htmlFor="show">Show Password</Label>
+                        </div>
                         <Button
                             type="submit"
                             className="w-full text-white"

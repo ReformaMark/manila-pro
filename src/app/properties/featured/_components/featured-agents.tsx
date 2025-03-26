@@ -2,6 +2,7 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { ArrowRight, Sparkles } from 'lucide-react'
+import Link from 'next/link'
 import React from 'react'
 
 function FeaturedAgents() {
@@ -9,9 +10,11 @@ function FeaturedAgents() {
     <div className="mt-12" >
     <div className="flex justify-between items-center mb-6">
       <h2 className="text-xl font-semibold text-gray-900">Our Featured Agents</h2>
-      <Button variant="link" className="text-brand-orange hover:text-brand-orange/80 p-0">
-        View All Agents <ArrowRight className="h-4 w-4 ml-1" />
-      </Button>
+      <Link href={'/properties/agents'} className='contents'>
+        <Button variant="link" className="text-brand-orange hover:text-brand-orange/80 p-0">
+          View All Agents <ArrowRight className="h-4 w-4 ml-1" />
+        </Button>
+      </Link>
     </div>
 
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

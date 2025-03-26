@@ -15,7 +15,21 @@ export default defineSchema({
         contact: v.string(),
         houseNumber: v.string(),
         agentInfo: v.optional(v.object({
-            title: v.string(),
+            title: v.string(), // "Senior Real Estate Agent"
+            agency: v.string(), ///Manila Premier Realty
+            bio: v.string(),
+            specializations: v.array(v.string()),
+            languages: v.array(v.string()),
+            experience: v.number(),
+            socialMedia: v.object({
+                facebook: v.optional(v.string()),
+                instagram: v.optional(v.string()),
+                linkedin: v.optional(v.string()),
+                twitter: v.optional(v.string()),
+            }),
+          
+            certifications: v.optional(v.array(v.string())), ///"Licensed Real Estate Broker", "Luxury Home Marketing Specialist", "Certified Residential Specialist",
+            awards: v.optional(v.array(v.string())) // "Top Producer 2022", "Circle of Excellence 2021"
         })),
         street: v.string(),
         barangay: v.string(),
@@ -113,8 +127,8 @@ export default defineSchema({
         }),
     deal: defineTable({
         propertyId: v.id("property"),
-        buyerId: v.id("user"),
-        sellerId: v.id("user"),
+        buyerId: v.id("users"),
+        sellerId: v.id("users"),
         dealPrice: v.number(),
         downPayment: v.number(),
         agreedMonthlyAmortization: v.number(), // napagusapan na presyo

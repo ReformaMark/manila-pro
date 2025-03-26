@@ -17,3 +17,10 @@ export interface UserTypesWithImage extends Doc<'users'> {
 export interface RatingsAndReviews extends Doc<'ratings_reviews'>{
 
 }
+
+export interface Agent extends Doc<'users'> {
+    transactions:number,
+    rating: number,
+    reviews: number,
+    imageUrl: string | undefined
+}

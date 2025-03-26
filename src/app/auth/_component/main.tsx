@@ -8,7 +8,7 @@ function Main({children}:MainProps) {
   return (
     <div>
         <Header/>
-        <main className="flex-1 min-h-screen pt-[70px]">{children}</main>
+        <main className="flex-1">{children}</main>
     </div>
   )
 }

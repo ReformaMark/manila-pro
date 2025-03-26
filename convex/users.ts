@@ -2,6 +2,9 @@ import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { createAccount, getAuthUserId } from "@convex-dev/auth/server";
 import { generateAdminId, generateSellerId } from "@/lib/utils";
+import { paginationOptsValidator } from "convex/server";
+import { asyncMap } from "convex-helpers";
+import { Id } from "./_generated/dataModel";
 
 export const createAdmin = mutation({
     args: {
@@ -290,3 +293,98 @@ export const getCounts = query({
         }
     }
 });
+
+
+export const getAgents = query(({
+    args:{
+        searchTerm: v.string(), //name
+        location: v.string(),
+        specialization: v.string(),
+        yearsOfExperience: v.number(),
+        language: v.array(v.string()),
+        sort: v.string(),
+        paginationOpts: paginationOptsValidator ,
+    },
+    handler: async(ctx, args) =>{
+        let agents = await ctx.db.query('users')
+            .filter(q => q.eq(q.field("role"), "seller"))
+        
+
+
+        if(args.location !== "All Locations") {
+            agents = agents.filter(q => q.eq(q.field("city"), args.location))
+        }
+        if(args.yearsOfExperience !== 0) {
+            agents = agents.filter(q => q.gte(q.field("agentInfo.experience"), args.yearsOfExperience))
+        }
+
+    
+
+        // if(args.specialization !== "All Specializations") {
+        //     agents = agents.filter(q => q.eq(q.field("role"), "seller"))
+        // }
+        const transactions = await ctx.db.query('deal')
+            .filter(q => q.eq(q.field('status'), "completed"))
+            .collect()
+
+        const ratingsReviews = await ctx.db.query('ratings_reviews')
+            .collect()
+
+
+        const a = await agents.paginate(args.paginationOpts)
+        const agentsWithDetails = await asyncMap(a.page, async(agent)=>{
+            const imageUrl = agent.image ? await ctx.storage.getUrl(agent.image as Id<'_storage'>) : undefined
+            const filteredTransactions = transactions.filter(t => t.sellerId === agent._id)
+            const agentRatingsAndReviews = ratingsReviews.filter(r => r.agentId === agent._id)
+            const totalRatings = agentRatingsAndReviews.reduce((sum, review) => sum + (review.ratings || 0), 0);
+            const agentRatings = agentRatingsAndReviews.length > 0 
+                ? totalRatings / agentRatingsAndReviews.length 
+                : 0;
+
+            return {
+                ...agent,
+                transactions: filteredTransactions.length,
+                rating: agentRatings,
+                reviews: agentRatingsAndReviews.length,
+                imageUrl: imageUrl === null ? undefined : imageUrl,
+                
+            }
+        })
+
+        let temp = agentsWithDetails
+        if(args.specialization !== "All Specializations") {
+            temp = agentsWithDetails.filter(a => {
+               const isSpecialized = a.agentInfo ? a.agentInfo.specializations.includes(args.specialization) : false;
+               return isSpecialized;
+            });
+           
+        }
+       
+        if(args.language.length >= 1) {
+            temp = agentsWithDetails.filter(a => {
+                args.language.some(language => a.agentInfo?.languages.includes(language))
+            });
+        }
+      
+        if(args.sort === "Highest Rating") {
+           temp.sort((a, b) => b.rating - a.rating);
+        }
+
+        if(args.sort === "Most Transactions") {
+            temp = temp.sort((a, b) => b.transactions - a.transactions);
+        }
+        if(args.sort === "Name (A-Z)") {
+            temp = temp.sort((a, b) => a.fname.localeCompare(b.fname));
+        }
+        if(args.sort === "Most Experience") {
+            temp.sort((a, b) => 
+                (b.agentInfo?.experience || 0) - (a.agentInfo?.experience || 0)
+            );
+        }
+        return {
+            page: temp,       
+            isDone: a.isDone,   
+            continueCursor: a.continueCursor 
+        };
+    }
+}))

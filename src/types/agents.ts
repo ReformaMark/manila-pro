@@ -22,6 +22,7 @@ export interface AgentType {
     }
     certifications: string[]
     awards: string[]
+    
   }
   
   

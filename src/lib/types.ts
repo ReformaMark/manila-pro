@@ -5,6 +5,7 @@ export interface PropertyTypes extends Doc<'property'> {
 }
 export interface PropertyTypesWithImageUrls extends Doc<'property'> {
     displayImageUrl: string | null;
+    isSaved: boolean
     imageUrls: string[] | null;
     agent: UserTypesWithImage | undefined
 }

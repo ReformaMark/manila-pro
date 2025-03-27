@@ -10,7 +10,7 @@ function AgentLoading({number}: AgentLoadingProps) {
   return (
     <div className='contents'>
         {Array.from({ length: number }).map((_, index) => (
-            <Card key={index} className='w-fit h-fit'>
+            <Card key={index} className='w-full h-fit'>
                 <CardContent className='p-6 space-y-3'>
                     <div className="flex items-start gap-x-3  ">
                         <Skeleton className="size-10 rounded-full" />

@@ -1,11 +1,15 @@
 'use client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { usePaginatedQuery, useQuery } from 'convex/react'
 import { ArrowRight, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
+import { api } from '../../../../../convex/_generated/api'
+import { RatingStars } from '@/components/rating-stars'
 
 function FeaturedAgents() {
+  const  agents = useQuery(api.users.featuredAgents)
   return (
     <div className="mt-12" >
     <div className="flex justify-between items-center mb-6">
@@ -18,21 +22,19 @@ function FeaturedAgents() {
     </div>
 
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {[1, 2, 3].map((id) => (
-        <Card key={id} className="border border-gray-200 shadow-sm">
+      {agents?.map((agent) => (
+        <Card key={agent._id} className="border border-gray-200 shadow-sm">
           <CardContent className="p-6">
             <div className="flex items-center gap-4">
               <div className="relative h-16 w-16 rounded-full overflow-hidden">
                 <img src="/placeholder.svg" alt="Agent" className="object-cover" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">Agent Name</h3>
-                <p className="text-sm text-gray-500">Senior Real Estate Agent</p>
+                <h3 className="font-semibold text-gray-900">{agent.fname} {agent.lname}</h3>
+                <p className="text-sm text-gray-500">{agent.agentInfo?.title}</p>
                 <div className="flex items-center mt-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Sparkles key={i} className="h-3 w-3 text-yellow-500 fill-yellow-500" />
-                  ))}
-                  <span className="text-xs text-gray-500 ml-1">(42 reviews)</span>
+                  <RatingStars size={20} edit={false} average={agent.rating}/>
+                  <span className="text-xs text-gray-500 ml-1">(({agent.reviews}) reviews)</span>
                 </div>
               </div>
             </div>

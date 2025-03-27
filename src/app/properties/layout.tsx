@@ -41,8 +41,9 @@ export default function RootLayout({
                       {children}
                   </main>
               </div>
-              <Toaster/>
+             
             </div>
+            <Toaster/>
             </SidebarProvider>
           </body>
         </html>

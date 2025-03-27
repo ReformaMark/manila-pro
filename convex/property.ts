@@ -43,15 +43,25 @@ export const remove = mutation({
 export const getProperties = query({
     args: {},
     handler: async (ctx) => {
+        const currentUserId = await getAuthUserId(ctx)
         const properties = await ctx.db
             .query("property")
             .order("desc")
             .collect();
-
         const propertyWithUrls = await asyncMap(properties, async (property) => {
+            let isSaved = false
             let displayImageUrl = null;
             let imageUrls = property.otherImage ? property.otherImage : [];
-            
+        
+            if(!currentUserId) {
+                isSaved = false
+            }
+            const saved = await ctx.db.query("saved_properties")
+                .filter(q => q.eq(q.field('propertyId'), property._id))
+                .filter(q => q.eq(q.field('userId'), currentUserId))
+                .first()
+            saved === null ? isSaved = false : isSaved = true
+
             const seller = await ctx.db.get(property.sellerId)
             const sellerRatingsandReviews = await ctx.db.query('ratings_reviews')
                 .filter(q => q.eq(q.field('agentId'), property.sellerId))
@@ -61,18 +71,15 @@ export const getProperties = query({
             if(seller?.image){
                 userImageUrl = await ctx.storage.getUrl(seller.image as Id<'_storage'>)
             }
-
             if (typeof property.displayImage === "string" && property.displayImage.startsWith("https://")) {
                 displayImageUrl = property.displayImage; // Direct link
             } else {
                 displayImageUrl = await ctx.storage.getUrl(property.displayImage as Id<"_storage">); // Storage ID
             }
-
             if (property.otherImage) {
                 if (displayImageUrl) {
                     imageUrls.unshift(displayImageUrl)
                     imageUrls = await asyncMap(property.otherImage, async (id) => {
-
                         let url = null;
                         if (typeof id === "string" && id.startsWith("https://")) {
                             url = id;
@@ -93,35 +100,19 @@ export const getProperties = query({
                         return url;
                     }).then((data) => data.filter(url => url !== null));
                 }
-                return {
-                    ...property,
-                    displayImageUrl: displayImageUrl,
-                    imageUrls: imageUrls,
-                    agent: {
-                        ...seller,
-                        userImageUrl: userImageUrl,
-                        ratingsAndReviews: sellerRatingsandReviews
-                    }
-                }
-
-            } else {
-                return {
-                    ...property,
-                    displayImageUrl: displayImageUrl,
-                    imageUrls: imageUrls,
-                    agent: {
-                        ...seller,
-                        userImageUrl: userImageUrl,
-                        ratingsAndReviews: sellerRatingsandReviews
-                    }
+            }
+            return {
+                ...property,
+                displayImageUrl: displayImageUrl,
+                imageUrls: imageUrls,
+                isSaved: isSaved,
+                agent: {
+                    ...seller,
+                    userImageUrl: userImageUrl,
+                    ratingsAndReviews: sellerRatingsandReviews
                 }
             }
-
-
         })
-
-
-
         return propertyWithUrls;
     }
 })
@@ -129,6 +120,7 @@ export const getProperties = query({
 export const getFeaturedProperties = query({
     args: { paginationOpts: paginationOptsValidator },
     handler: async (ctx, args) => {
+        const currentUserId = await getAuthUserId(ctx)
         const properties = await ctx.db
             .query("property")
             .order("desc")
@@ -137,6 +129,14 @@ export const getFeaturedProperties = query({
             .paginate(args.paginationOpts)
 
         const propertyWithUrls = await asyncMap(properties.page, async (property) => {
+            let isSaved = false
+            if(!currentUserId) {
+                isSaved = false
+            }
+            const saved = await ctx.db.query("saved_properties")
+                .filter(q => q.eq(q.field('propertyId'), property._id))
+                .filter(q => q.eq(q.field('userId'), currentUserId))
+                .first()
             const seller = await ctx.db.get(property.sellerId)
             const sellerRatingsandReviews = await ctx.db.query('ratings_reviews')
                 .filter(q => q.eq(q.field('agentId'), property.sellerId))
@@ -180,28 +180,19 @@ export const getFeaturedProperties = query({
                         return url;
                     }).then((data) => data.filter(url => url !== null));
                 }
-                return {
-                    ...property,
-                    displayImageUrl: displayImageUrl,
-                    imageUrls: imageUrls,
-                    agent: seller ? {
-                        ...seller,
-                        userImageUrl: userImageUrl === null ? undefined : userImageUrl,
-                        ratingsAndReviews: sellerRatingsandReviews
-                    } : undefined
-                }
+               
 
-            } else {
-                return {
-                    ...property,
-                    displayImageUrl: displayImageUrl,
-                    imageUrls: imageUrls,
-                    agent: seller ? {
-                        ...seller,
-                        userImageUrl: userImageUrl === null ? undefined : userImageUrl,
-                        ratingsAndReviews: sellerRatingsandReviews
-                    } : undefined
-                }
+            } 
+            return {
+                ...property,
+                displayImageUrl: displayImageUrl,
+                imageUrls: imageUrls,
+                isSaved: isSaved,
+                agent: seller ? {
+                    ...seller,
+                    userImageUrl: userImageUrl === null ? undefined : userImageUrl,
+                    ratingsAndReviews: sellerRatingsandReviews
+                } : undefined
             }
 
 
@@ -217,6 +208,18 @@ export const getFeaturedProperties = query({
 export const getProperty = query({
     args: { id: v.id('property') },
     handler: async (ctx, args) => {
+        let isSaved = false
+        const currentUserId = await getAuthUserId(ctx)
+        if(!currentUserId) {
+            isSaved = false
+        }
+        const saved = await ctx.db.query("saved_properties")
+            .filter(q => q.eq(q.field('propertyId'), args.id))
+            .filter(q => q.eq(q.field('userId'), currentUserId))
+            .first()
+
+        saved === null ? isSaved = false : isSaved = true
+        
         const property = await ctx.db.get(args.id)
         if (!property) return
         const seller = await ctx.db.get(property.sellerId)
@@ -264,27 +267,16 @@ export const getProperty = query({
                     return url;
                 }).then((data) => data.filter(url => url !== null));
             }
-            return {
-                ...property,
-                displayImageUrl: displayImageUrl,
-                imageUrls: imageUrls,
-                agent: {
-                    ...seller,
-                    userImageUrl: userImageUrl === null ? undefined : userImageUrl,
-                    ratingsAndReviews: sellerRatingsandReviews
-                }
-            }
-
-        } else {
-            return {
-                ...property,
-                displayImageUrl: displayImageUrl,
-                imageUrls: imageUrls,
-                agent: {
-                    ...seller,
-                    userImageUrl: userImageUrl === null ? undefined : userImageUrl,
-                    ratingsAndReviews: sellerRatingsandReviews
-                }
+        }
+        return {
+            ...property,
+            displayImageUrl: displayImageUrl,
+            imageUrls: imageUrls,
+            isSaved: isSaved,
+            agent: {
+                ...seller,
+                userImageUrl: userImageUrl === null ? undefined : userImageUrl,
+                ratingsAndReviews: sellerRatingsandReviews
             }
         }
     }
@@ -296,6 +288,7 @@ export const similarProp = query({
         propertyId: v.id('property')
     },
     handler: async(ctx, args) =>{
+        const currentUserId = await getAuthUserId(ctx)
         const similar = await ctx.db.query('property')
             .filter(q => q.eq(q.field('sellerId'), args.sellerId))
             .filter(q => q.eq(q.field('status'), "available"))
@@ -304,6 +297,16 @@ export const similarProp = query({
             .take(5)
 
             const propertyWithUrls = await asyncMap(similar, async (property) => {
+                let isSaved = false
+                if(!currentUserId) {
+                    isSaved = false
+                }
+                const saved = await ctx.db.query("saved_properties")
+                    .filter(q => q.eq(q.field('propertyId'), args.propertyId))
+                    .filter(q => q.eq(q.field('userId'), currentUserId))
+                    .first()
+        
+                saved === null ? isSaved = false : isSaved = true
                 const seller = await ctx.db.get(property.sellerId)
                 const sellerRatingsandReviews = await ctx.db.query('ratings_reviews')
                     .filter(q => q.eq(q.field('agentId'), property.sellerId))
@@ -347,31 +350,18 @@ export const similarProp = query({
                             return url;
                         }).then((data) => data.filter(url => url !== null));
                     }
-                    return {
-                        ...property,
-                        displayImageUrl: displayImageUrl,
-                        imageUrls: imageUrls,
-                        agent: seller ? {
-                            ...seller,
-                            userImageUrl: userImageUrl === null ? undefined : userImageUrl,
-                            ratingsAndReviews: sellerRatingsandReviews
-                        } : undefined
-                    }
-    
-                } else {
-                    return {
-                        ...property,
-                        displayImageUrl: displayImageUrl,
-                        imageUrls: imageUrls,
-                        agent: seller ? {
-                            ...seller,
-                            userImageUrl: userImageUrl === null ? undefined : userImageUrl,
-                            ratingsAndReviews: sellerRatingsandReviews
-                        } : undefined
-                    }
                 }
-    
-    
+                    return {
+                        ...property,
+                        displayImageUrl: displayImageUrl,
+                        imageUrls: imageUrls,
+                        isSaved: isSaved,
+                        agent: seller ? {
+                            ...seller,
+                            userImageUrl: userImageUrl === null ? undefined : userImageUrl,
+                            ratingsAndReviews: sellerRatingsandReviews
+                        } : undefined
+                    }
             })
 
         return propertyWithUrls
@@ -556,5 +546,147 @@ export const unitType = query({
 
         const unitTypes = Array.from(new Set(properties.map(property => property.unitType)));
         return unitTypes;
+    }
+})
+
+export const saveProperty = mutation({
+    args:{
+        id: v.id('property')
+    },
+    handler: async(ctx, args) =>{
+        const currentUserId = await getAuthUserId(ctx)
+        if(!currentUserId) throw new ConvexError('No user found!')
+        
+        const existing = await ctx.db.query('saved_properties')
+            .filter(q => q.eq(q.field('propertyId'), args.id))
+            .filter(q => q.eq(q.field('userId'), currentUserId))
+            .first()
+
+        if(existing) {
+            await ctx.db.delete(existing._id)
+
+            return {
+                process: "unsave"
+            }
+        } else {
+            await ctx.db.insert('saved_properties', {
+                userId: currentUserId,
+                propertyId: args.id
+            })
+            return {
+                process: "save"
+            }
+        }
+    }
+})
+
+export const isSaved = query({
+    args:{
+        id: v.id('property')
+    },
+    handler: async(ctx, args) =>{
+        const currentUserId = await getAuthUserId(ctx)
+
+        if(!currentUserId) throw new ConvexError('NO user Found!')
+
+        const saved = await ctx.db.get(args.id)
+
+        if(saved !== null) {
+            return true
+        } else {
+            return false
+        }
+    }
+})
+
+export const getSavedProperties = query({
+    args:{
+
+    },
+    handler: async(ctx, args) =>{
+        const currentUserId = await getAuthUserId(ctx)
+        if(!currentUserId) throw new ConvexError('No user Found!')
+
+        const savedProperties = await ctx.db.query('saved_properties')
+            .filter(q => q.eq(q.field('userId'), currentUserId))
+            .collect()
+
+            const propertyWithUrls = await asyncMap(savedProperties, async (property) => {
+                const prop = await ctx.db.get(property.propertyId)
+                if(!prop) return null
+          
+                let displayImageUrl = null;
+                let imageUrls = prop.otherImage ? prop.otherImage : [];
+    
+                const seller = await ctx.db.get(prop.sellerId)
+                const sellerRatingsandReviews = await ctx.db.query('ratings_reviews')
+                    .filter(q => q.eq(q.field('agentId'), prop.sellerId))
+                    .order('desc')
+                    .collect()
+                let userImageUrl = undefined
+                if(seller?.image){
+                    userImageUrl = await ctx.storage.getUrl(seller.image as Id<'_storage'>)
+                }
+                if (typeof prop.displayImage === "string" && prop.displayImage.startsWith("https://")) {
+                    displayImageUrl = prop.displayImage; // Direct link
+                } else {
+                    displayImageUrl = await ctx.storage.getUrl(prop.displayImage as Id<"_storage">); // Storage ID
+                }
+                if (prop.otherImage) {
+                    if (displayImageUrl) {
+                        imageUrls.unshift(displayImageUrl)
+                        imageUrls = await asyncMap(prop.otherImage, async (id) => {
+                            let url = null;
+                            if (typeof id === "string" && id.startsWith("https://")) {
+                                url = id;
+                            } else {
+                                url = await ctx.storage.getUrl(id as Id<"_storage">);
+                            }
+                            return url;
+                        }).then((data) => data.filter(url => url !== null));
+                    } else {
+                        imageUrls = await asyncMap(prop.otherImage, async (id) => {
+    
+                            let url = null;
+                            if (typeof id === "string" && id.startsWith("https://")) {
+                                url = id;
+                            } else {
+                                url = await ctx.storage.getUrl(id as Id<"_storage">);
+                            }
+                            return url;
+                        }).then((data) => data.filter(url => url !== null));
+                    }
+                }
+
+            
+                return {
+                    ...prop,
+                    displayImageUrl: displayImageUrl,
+                    imageUrls: imageUrls,
+                    isSaved: true,
+                    agent: {
+                        ...seller,
+                        userImageUrl: userImageUrl,
+                        ratingsAndReviews: sellerRatingsandReviews
+                    }
+                }
+            })
+            const filteredProp = propertyWithUrls.filter(p => p !== null)
+
+            console.log(filteredProp)
+        return filteredProp
+    }
+})
+
+export const clearSavedProperties = mutation({
+    handler: async(ctx) =>{
+        const currentUserId = await getAuthUserId(ctx)
+        if(!currentUserId) throw new ConvexError('NO user Found!')
+        
+        const savedProp = await ctx.db.query('saved_properties').filter(q => q.eq(q.field('userId'), currentUserId)).collect()
+
+        await asyncMap(savedProp, async(prop)=>{
+            await ctx.db.delete(prop._id)
+        })
     }
 })

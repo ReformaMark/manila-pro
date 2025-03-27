@@ -1,8 +1,8 @@
 'use client'
-import { PropertyTypes } from '@/lib/types'
+import { PropertyTypes, PropertyTypesWithImageUrls } from '@/lib/types'
 import { Card, CardContent,CardHeader, CardTitle } from '@/components/ui/card'
 import Image from 'next/image'
-import {formatPrice } from '@/lib/utils'
+import {cn, formatPrice } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import {  Heart} from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -10,11 +10,12 @@ import { PropertyDetails } from './PropertyDetails'
 import Link from 'next/link'
 
 interface PropertyCardProps {
-  property: PropertyTypes
+  property: PropertyTypesWithImageUrls
   onClick: () => void
   layout?: "grid" | "list"
 }
 export function PropertyCard({ property, onClick, layout = "grid" }: PropertyCardProps) {
+
     if (layout === "list") {
         return (
           <Card
@@ -67,7 +68,6 @@ export function PropertyCard({ property, onClick, layout = "grid" }: PropertyCar
           </Card>
         )
       }
-    
       return (
         <Card
           className="h-full overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer text-brand-black "
@@ -83,7 +83,7 @@ export function PropertyCard({ property, onClick, layout = "grid" }: PropertyCar
               className="w-full h-48 object-cover"
             />
             <div className="absolute top-2 right-2">
-              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full bg-black/50 hover:bg-black/70 text-white">
+              <Button variant="ghost" size="icon" className={cn(property.isSaved ? "h-8 w-8 rounded-full bg-brand-orange text-white" : "h-8 w-8 rounded-full bg-black/50 hover:bg-black/70 text-white")}>
                 <Heart className="h-4 w-4" />
               </Button>
             </div>

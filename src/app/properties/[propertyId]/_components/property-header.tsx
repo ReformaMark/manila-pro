@@ -2,15 +2,45 @@
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { PropertyTypesWithImageUrls } from '@/lib/types'
-import { formatPrice } from '@/lib/utils'
-import { Heart, MapPin, Share2 } from 'lucide-react'
+import { cn, formatPrice } from '@/lib/utils'
+import { useMutation, useQuery } from 'convex/react'
+import { CheckCircle, Heart, MapPin, Share2 } from 'lucide-react'
 import React from 'react'
+import { api } from '../../../../../convex/_generated/api'
+import { toast } from 'sonner'
 
 interface PropertyHeaderProps {
   property: PropertyTypesWithImageUrls
 }
 
 function PropertyHeader({property}: PropertyHeaderProps) {
+  const saveProperty = useMutation(api.property.saveProperty)
+  const isSaved = useQuery(api.property.isSaved, {id: property._id})
+
+  console.log(isSaved)
+  const handleSaved = () =>{
+    try {
+      toast.promise(saveProperty({
+        id: property._id
+      }),
+      {
+        loading: "Saving Property...",
+        success: (data) => (
+          
+        <div className="flex items-center gap-2">
+         
+          <CheckCircle className="h-5 w-5 text-green-600" />
+          {data.process === "unsave" ? <span>Property Removed From Saved Properties</span> : <span>Property Saved</span>}
+          
+        </div>
+        ),
+        error: "Error Saving Property!"
+      }
+    )
+    } catch (error) {
+      console.log("Something Went Wrong!",error)
+    }
+  }
   return (
     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
     <div>
@@ -43,11 +73,12 @@ function PropertyHeader({property}: PropertyHeaderProps) {
         </Button>
         <Button
           variant="outline"
+          onClick={handleSaved}
           size="sm"
-          className="border-brand-orange text-brand-orange hover:bg-brand-orange/10"
+          className={cn(property.isSaved ? "bg-brand-orange text-white" : "border-brand-orange text-brand-orange hover:bg-brand-orange/10" )}
         >
           <Heart className="h-4 w-4 mr-2" />
-          Save
+          Save{property.isSaved ? "d" : ""}
         </Button>
       </div>
     </div>

@@ -388,3 +388,43 @@ export const getAgents = query(({
         };
     }
 }))
+
+export const featuredAgents = query({
+    args:{
+
+    },
+    handler: async(ctx,  args) =>{
+        const  agents = await ctx.db.query('users')
+            .filter(q => q.eq(q.field('role'), 'seller'))
+            .collect();
+        const transactions = await ctx.db.query('deal')
+            .filter(q => q.eq(q.field('status'), "completed"))
+            .collect();
+
+        const ratingsReviews = await ctx.db.query('ratings_reviews').collect();
+
+        const agentsWithDetails = await asyncMap(agents, async(agent) =>{
+            const imageUrl = agent.image ? await ctx.storage.getUrl(agent.image as Id<'_storage'>) : undefined;
+            const filteredTransactions = transactions.filter(t => t.sellerId === agent._id);
+            const agentRatingsAndReviews = ratingsReviews.filter(r => r.agentId === agent._id);
+            const totalRatings = agentRatingsAndReviews.reduce((sum, review) => sum + (review.ratings || 0), 0);
+            const agentRatings = agentRatingsAndReviews.length > 0
+                ? totalRatings / agentRatingsAndReviews.length 
+                : 0;
+
+            return {
+                ...agent,
+                transactions: filteredTransactions.length,
+                rating: agentRatings,
+                reviews: agentRatingsAndReviews.length,
+                imageUrl: imageUrl === null ? undefined : imageUrl,
+                
+            }
+        })
+
+        const filteredAgents = agentsWithDetails.sort((a,b) => b.rating - a.rating).slice(0,2)
+
+        return filteredAgents
+
+    }
+})

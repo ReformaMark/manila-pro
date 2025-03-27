@@ -76,8 +76,8 @@ export default function PropertyShowcase({properties}:{properties: PropertyTypes
   })
   
 
-  const [filteredProperties, setFilteredProperties] = useState<PropertyTypes[]>(properties)
-  const [selectedProperty, setSelectedProperty] = useState<PropertyTypes | null>(null)
+  const [filteredProperties, setFilteredProperties] = useState<PropertyTypesWithImageUrls[]>(properties)
+  const [selectedProperty, setSelectedProperty] = useState<PropertyTypesWithImageUrls | null>(null)
   const [isFilterOpen, setIsFilterOpen] = useState(false)
  
   // Apply filters

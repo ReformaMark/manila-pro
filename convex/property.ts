@@ -690,3 +690,94 @@ export const clearSavedProperties = mutation({
         })
     }
 })
+
+export const filteredByTransaction = query({
+    args:{
+        transaction: v.string(),
+        paginationOpts: paginationOptsValidator
+    },
+    handler: async (ctx, args) => {
+        const currentUserId = await getAuthUserId(ctx)
+        const properties = await ctx.db
+            .query("property")
+            .order("desc")
+            .filter(q => q.eq(q.field('transactionType'), args.transaction))
+            .paginate(args.paginationOpts)
+
+        const propertyWithUrls = await asyncMap(properties.page, async (property) => {
+            let isSaved = false
+            if(!currentUserId) {
+                isSaved = false
+            }
+            const saved = await ctx.db.query("saved_properties")
+                .filter(q => q.eq(q.field('propertyId'), property._id))
+                .filter(q => q.eq(q.field('userId'), currentUserId))
+                .first()
+            if(saved !== null){
+                isSaved = true
+            } 
+            const seller = await ctx.db.get(property.sellerId)
+            const sellerRatingsandReviews = await ctx.db.query('ratings_reviews')
+                .filter(q => q.eq(q.field('agentId'), property.sellerId))
+                .order('desc')
+                .collect()
+            let displayImageUrl = null;
+            let imageUrls = property.otherImage ? property.otherImage : [];
+            let userImageUrl = undefined
+            if(seller?.image) {
+                userImageUrl = await ctx.storage.getUrl(seller.image as Id<"_storage">)
+            }
+
+            if (typeof property.displayImage === "string" && property.displayImage.startsWith("https://")) {
+                displayImageUrl = property.displayImage; // Direct link
+            } else {
+                displayImageUrl = await ctx.storage.getUrl(property.displayImage as Id<"_storage">); // Storage ID
+            }
+
+            if (property.otherImage) {
+                if (displayImageUrl) {
+                    imageUrls.unshift(displayImageUrl)
+                    imageUrls = await asyncMap(property.otherImage, async (id) => {
+
+                        let url = null;
+                        if (typeof id === "string" && id.startsWith("https://")) {
+                            url = id;
+                        } else {
+                            url = await ctx.storage.getUrl(id as Id<"_storage">);
+                        }
+                        return url;
+                    }).then((data) => data.filter(url => url !== null));
+                } else {
+                    imageUrls = await asyncMap(property.otherImage, async (id) => {
+
+                        let url = null;
+                        if (typeof id === "string" && id.startsWith("https://")) {
+                            url = id;
+                        } else {
+                            url = await ctx.storage.getUrl(id as Id<"_storage">);
+                        }
+                        return url;
+                    }).then((data) => data.filter(url => url !== null));
+                }
+            } 
+            return {
+                ...property,
+                displayImageUrl: displayImageUrl,
+                imageUrls: imageUrls,
+                isSaved: isSaved,
+                agent: seller ? {
+                    ...seller,
+                    userImageUrl: userImageUrl === null ? undefined : userImageUrl,
+                    ratingsAndReviews: sellerRatingsandReviews
+                } : undefined
+            }
+
+
+        })
+        return {
+            page: propertyWithUrls,       // The transformed list
+            isDone: properties.isDone,    // Preserve pagination status
+            continueCursor: properties.continueCursor // Preserve pagination cursor
+        };
+    }
+})

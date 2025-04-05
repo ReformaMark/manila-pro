@@ -18,6 +18,10 @@ export interface UserTypesWithImage extends Doc<'users'> {
 export interface RatingsAndReviews extends Doc<'ratings_reviews'>{
 
 }
+export interface DealsType extends Doc<'deal'>{
+    property: PropertyTypesWithImageUrls;
+    agent: UserTypesWithImage;
+}
 
 export interface Agent extends Doc<'users'> {
     transactions:number,

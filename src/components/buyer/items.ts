@@ -11,11 +11,11 @@ export const discoverItems = [
         label: "Featured",
         href: "/properties/featured"
     },
-    {
-        icon: Map,
-        label: "Map View",
-        href: "/properties/map-view"
-    },
+    // {
+    //     icon: Map,
+    //     label: "Map View",
+    //     href: "/properties/map-view"
+    // },
     {
         icon: Heart,
         label: "Saved Properties",
@@ -47,8 +47,8 @@ export const resourceItems = [
         href: "/properties/agents"
     },
     {
-        icon: BarChart,
-        label: "Market Trends",
-        href: "/properties/market-trends"
+        icon: FileText,
+        label: "Deal Proposals",
+        href: "/proposals"
     }
 ]

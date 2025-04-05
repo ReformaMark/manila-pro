@@ -1,6 +1,7 @@
 import { defineSchema, defineTable } from "convex/server";
 import { authTables } from "@convex-dev/auth/server";
 import { v } from "convex/values";
+import { count } from "console";
 
 export default defineSchema({
     ...authTables,
@@ -17,6 +18,11 @@ export default defineSchema({
         agentInfo: v.optional(v.object({
             title: v.string(), // "Senior Real Estate Agent"
             agency: v.string(), ///Manila Premier Realty
+            officeAddress: v.optional(v.string()), // "1234 Main St, Makati City, Philippines"
+            workingHours: v.optional(v.object({
+                days: v.string(), // "Mon-Fri"
+                hours: v.string(), // "9am-5pm"
+            })),
             bio: v.string(),
             specializations: v.array(v.string()),
             languages: v.array(v.string()),
@@ -129,15 +135,26 @@ export default defineSchema({
         propertyId: v.id("property"),
         buyerId: v.id("users"),
         sellerId: v.id("users"),
-        dealPrice: v.number(),
-        downPayment: v.number(),
-        agreedMonthlyAmortization: v.number(), // napagusapan na presyo
-        agreedTermInMonths: v.number(), // napagusapan na presyo
+        proposal: v.object({
+            offer: v.number(), // initial price offered by buyer
+            message: v.optional(v.string()), // message from buyer to seller
+            moveInDate: v.optional(v.string()), // date of move in
+            duration: v.optional(v.number()), // duration in months for rent/lease
+            counterOffer: v.optional(v.object({
+                price: v.number(), // counter offer price
+                message: v.optional(v.string()),
+                createdAt: v.number(), // date of counter offer
+            })),
+        }), // initial price offered by buyer
+        dealPrice: v.optional(v.number()),
+        downPayment: v.optional(v.number()), // initial payment
+        agreedMonthlyAmortization: v.optional(v.number()), // napagusapan na presyo
+        agreedTermInMonths: v.optional(v.number()), // napagusapan na presyo
         status: v.union(
             v.literal("pending_approval"),    // Initial state when buyer makes an offer
+            v.literal("negotiating"),         // When seller is sending counter offers
             v.literal("approved"),            // Seller approved the deal
             v.literal("rejected"),            // Seller rejected the deal
-            v.literal("processing_payment"),   // Deal approved, waiting for payment
             v.literal("active"),              // Deal is active, payments ongoing
             v.literal("completed"),           // All payments made, deal fulfilled
             v.literal("cancelled")            // Deal cancelled after approval

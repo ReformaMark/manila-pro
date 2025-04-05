@@ -428,3 +428,35 @@ export const featuredAgents = query({
 
     }
 })
+
+export const getAgentById = query({
+    args:{
+        id: v.id("users")
+    },
+    handler: async(ctx, args) =>{
+
+        const agent = await ctx.db.get(args.id)
+        if(!agent) return null
+        const imageUrl = agent.image ? await ctx.storage.getUrl(agent.image as Id<'_storage'>) : undefined;
+        const transactions = await ctx.db.query('deal')
+            .filter(q => q.eq(q.field('sellerId'), args.id))
+            .collect()
+        const ratingsReviews = await ctx.db.query('ratings_reviews')
+            .filter(q => q.eq(q.field('agentId'), args.id))
+            .collect()
+
+        const totalRatings = ratingsReviews.reduce((sum, review) => sum + (review.ratings || 0), 0);
+        const agentRatings = ratingsReviews.length > 0 
+            ? totalRatings / ratingsReviews.length 
+            : 0;
+        
+        return {
+            ...agent,
+            transactions: transactions.length,
+            rating: agentRatings,
+            reviews: ratingsReviews.length,
+            imageUrl: imageUrl === null ? undefined : imageUrl,
+            
+        }
+    }
+})

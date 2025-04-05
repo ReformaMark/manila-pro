@@ -15,6 +15,9 @@ import { useQuery } from 'convex/react'
 import { api } from '../../../../../convex/_generated/api'
 import Link from 'next/link'
 import MortgageCalculator from './mortgage-calculator'
+import { QuickProposalDialog } from '@/app/proposals/_components/quick-proposal-dialog'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Textarea } from '@/components/ui/textarea'
 
 interface PropertyContentProps{
     property: PropertyTypesWithImageUrls
@@ -344,7 +347,7 @@ function PropertyContent({property, carouselApi, setCurrentImageIndex}: Property
         <CardContent>
           <div className="flex items-center mb-4">
             <div className="flex gap-x-3">
-
+            
               <Avatar className="h-16 w-16 ">
                 <AvatarImage src={agent?.userImageUrl} alt="User" />
                 <AvatarFallback className="bg-gray-800 text-white uppercase">{agent?.fname.charAt(1)} {agent?.lname.charAt(1)}</AvatarFallback>
@@ -383,23 +386,46 @@ function PropertyContent({property, carouselApi, setCurrentImageIndex}: Property
           </div>
 
           <div className="space-y-4">
-            <Button className="w-full bg-brand-orange hover:bg-brand-orange/90">
-              <MessageSquare className="h-4 w-4 mr-2" />
-              Send Message
-            </Button>
-            <Button
-              variant="outline"
-              className="w-full border-brand-orange text-brand-orange hover:bg-brand-orange/10"
-            >
-              <Calendar className="h-4 w-4 mr-2" />
-              Schedule Viewing
-            </Button>
+            <QuickProposalDialog
+              property={property}
+              agentId={property.sellerId}
+              buttonClassName="w-full bg-brand-orange hover:bg-brand-orange/90"
+            />
+
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full border-brand-orange text-brand-orange hover:bg-brand-orange/10"
+                >
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  Send Message
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Message Agent</DialogTitle>
+                  <DialogDescription>Send a message to Maria Santos about this property.</DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <Textarea
+                    placeholder="Hi Maria, I'm interested in this property and would like to know more about..."
+                    className="min-h-[120px]"
+                  />
+                </div>
+                <DialogFooter>
+                  <Button type="submit" className="bg-brand-orange hover:bg-brand-orange/90">
+                    Send Message
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         </CardContent>
       </Card>
-      {property.transactionType?.toLowerCase() === "buy" && (
+      {/* {property.transactionType?.toLowerCase() === "buy" && (
         <MortgageCalculator property={property}/>
-      )}
+      )} */}
     </aside>
   </div>
   )

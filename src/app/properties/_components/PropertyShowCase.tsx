@@ -243,8 +243,6 @@ export default function PropertyShowcase({properties}:{properties: PropertyTypes
 
   return (
     <div className="min-h-screen  text-brand-black">
-
-
       {/* Main Content */}
       <div className={`transition-all duration-300 `}>
         <div className="px-2 md:px-10 ">
@@ -330,14 +328,14 @@ export default function PropertyShowcase({properties}:{properties: PropertyTypes
                 >
                   List
                 </Button>
-                <Button
+                {/* <Button
                   variant={activeView === "map" ? "default" : "ghost"}
                   size="sm"
                   className={`rounded-none ${activeView === "map" ? "bg-brand-orange hover:bg-brand-orange/90" : "text-black hover:text-white"}`}
                   onClick={() => setActiveView("map")}
                 >
                   Map
-                </Button>
+                </Button> */}
               </div>
             </div>
           </div>

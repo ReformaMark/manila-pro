@@ -6,6 +6,7 @@ import React from 'react'
 import PropertyCard from '../../_components/PropertyCard'
 import Loading from '@/components/loading'
 import { Button } from '@/components/ui/button'
+import Link from 'next/link'
 interface PropertyListProps {
     properties: PropertyTypesWithImageUrls[]
     loadMore: (numItems: number) => void;
@@ -39,7 +40,9 @@ function PropertyList({
               whileHover={{ y: -5 }}
               className="h-full"
             >
-              <PropertyCard property={property} onClick={() => {}} />
+              <Link className="" href={`/properties/${property._id}`}>
+                <PropertyCard property={property} onClick={() => {}} />
+              </Link>
             </motion.div>
           ))}
         </div>

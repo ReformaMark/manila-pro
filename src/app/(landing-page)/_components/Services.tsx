@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import {motion} from 'framer-motion'
 import { containerVariants, itemVariants } from './framerVariants'
 import { Building, Handshake, Key } from 'lucide-react'
+import Link from 'next/link'
 
 function Services() {
   return (
@@ -33,7 +34,9 @@ function Services() {
             </CardContent>
 
             <CardFooter className='flex justify-center items-center my-10'>
-                <Button variant={'outline'} className='border-2 font-semibold border-black text-lg p-4'>Start Exploring</Button>
+                <Link href={'/properties/buy'} className=''>
+                    <Button variant={'outline'} className='border-2 font-semibold border-black text-lg p-4'>Start Exploring</Button>
+                </Link>
             </CardFooter>
         </Card>
         </motion.div>
@@ -54,7 +57,9 @@ function Services() {
             </CardContent>
 
             <CardFooter className='flex justify-center items-center my-10'>
-                <Button variant={'outline'} className='border-2 font-semibold border-black text-lg p-4'>See Your Options</Button>
+                <Link href={'/properties/rent'} className=''>
+                    <Button variant={'outline'} className='border-2 font-semibold border-black text-lg p-4'>See Your Options</Button>
+                </Link>
             </CardFooter>
         </Card>
         </motion.div>
@@ -75,7 +80,9 @@ function Services() {
             </CardContent>
 
             <CardFooter className='flex justify-center items-center my-10'>
-                <Button variant={'outline'} className='border-2 font-semibold border-black text-lg p-4'>Browse Listings</Button>
+                <Link href={'/properties/lease'} className=''>
+                    <Button variant={'outline'} className='border-2 font-semibold border-black text-lg p-4'>Browse Listings</Button>
+                </Link>
             </CardFooter>
         </Card>
         </motion.div>

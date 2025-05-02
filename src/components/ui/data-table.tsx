@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -9,8 +9,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { cn } from "@/lib/utils"
+} from "@/components/ui/table";
+import { cn } from "@/lib/utils";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -21,17 +21,17 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  useReactTable
-} from "@tanstack/react-table"
-import * as React from "react"
+  useReactTable,
+} from "@tanstack/react-table";
+import * as React from "react";
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
   isInventory?: boolean;
   search?: string;
   placeholder?: string;
-  onRowSelectionChange?: (rows: TData[]) => void
+  onRowSelectionChange?: (rows: TData[]) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -40,12 +40,15 @@ export function DataTable<TData, TValue>({
   isInventory,
   placeholder,
   search,
-  onRowSelectionChange
+  onRowSelectionChange,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = React.useState({})
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
     data,
@@ -64,26 +67,30 @@ export function DataTable<TData, TValue>({
       columnVisibility,
       rowSelection,
     },
-  })
+  });
 
   React.useEffect(() => {
     if (onRowSelectionChange) {
       const selectedRows = table
         .getFilteredSelectedRowModel()
-        .rows.map(row => row.original);
+        .rows.map((row) => row.original);
       onRowSelectionChange(selectedRows);
     }
   }, [rowSelection, onRowSelectionChange, table]);
 
   return (
     <div className="w-full">
-      <div className={cn(
-        "flex items-center mb-3",
-        isInventory && "justify-end py-4"
-      )}>
+      <div
+        className={cn(
+          "flex items-center mb-3",
+          isInventory && "justify-end py-4"
+        )}
+      >
         <Input
           placeholder={placeholder || "Search"}
-          value={(table.getColumn(`${search}`)?.getFilterValue() as string) ?? ""}
+          value={
+            (table.getColumn(`${search}`)?.getFilterValue() as string) ?? ""
+          }
           onChange={(event) =>
             table.getColumn(`${search}`)?.setFilterValue(event.target.value)
           }
@@ -132,9 +139,9 @@ export function DataTable<TData, TValue>({
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                   </TableHead>
                 ))}
               </TableRow>
@@ -146,6 +153,7 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  className="hover:bg-zinc-100"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} className="p-4">
@@ -195,7 +203,7 @@ export function DataTable<TData, TValue>({
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 // "use client"

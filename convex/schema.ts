@@ -33,7 +33,7 @@ export default defineSchema({
                 linkedin: v.optional(v.string()),
                 twitter: v.optional(v.string()),
             }),
-          
+
             certifications: v.optional(v.array(v.string())), ///"Licensed Real Estate Broker", "Luxury Home Marketing Specialist", "Certified Residential Specialist",
             awards: v.optional(v.array(v.string())) // "Top Producer 2022", "Circle of Excellence 2021"
         })),
@@ -162,11 +162,14 @@ export default defineSchema({
         requestDate: v.number(),
         approvalDate: v.optional(v.number()),
         remarks: v.optional(v.string()),
-    }).searchIndex("by_property", {
-        searchField: "propertyId",
-    }).searchIndex("by_status", {
-        searchField: "status",
-    }),
+    })
+        .index("by_propertyId", ["propertyId"])
+        .searchIndex("by_property", {
+            searchField: "propertyId",
+        })
+        .searchIndex("by_status", {
+            searchField: "status",
+        }),
     document: defineTable({
         dealId: v.id("deal"),
         documentType: v.string(),

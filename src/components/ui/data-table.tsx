@@ -94,7 +94,7 @@ export function DataTable<TData, TValue>({
           onChange={(event) =>
             table.getColumn(`${search}`)?.setFilterValue(event.target.value)
           }
-          className="max-w-sm border-black"
+          className="max-w-sm border-black w-full"
         />
 
         {/* {isInventory && (
@@ -179,10 +179,10 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
+        {/* <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
+        </div> */}
         <div className="space-x-2 text-primary">
           <Button
             variant="outline"

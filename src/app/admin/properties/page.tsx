@@ -14,9 +14,20 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useState } from "react";
 
 const PropertiesPage = () => {
   const properties = useQuery(api.property.getProperties);
+  const [city, setCity] = useState<string>("all");
+  const [status, setStatus] = useState<string>("all");
 
   const availableProperties = properties?.filter(
     (property) => property.status === "available"
@@ -27,6 +38,13 @@ const PropertiesPage = () => {
   const soldProperties = properties?.filter(
     (property) => property.status === "sold"
   );
+
+  const filteredProperties = properties?.filter((property) => {
+    let filteredCity = city === "all" || property.city === city;
+    let filteredStatus = status === "all" || property.status === status;
+
+    return filteredCity && filteredStatus;
+  });
 
   if (properties === undefined)
     return <Loader2 className="w-6 h-6 animate-spin" />;
@@ -66,10 +84,35 @@ const PropertiesPage = () => {
               View and monitor real estate property listings.
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="relative">
+            <div className="flex gap-2 mb-2">
+              <Select onValueChange={(value) => setCity(value)}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Cities" defaultValue="all" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All cities</SelectItem>
+                  <SelectItem value="Makati">Makati</SelectItem>
+                  <SelectItem value="Pasay">Pasay</SelectItem>
+                  <SelectItem value="Taguig">Taguig</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select onValueChange={(value) => setStatus(value)}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Status" defaultValue="all" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="available">Available</SelectItem>
+                  <SelectItem value="reserved">Reserved</SelectItem>
+                  <SelectItem value="sold">Sold</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <DataTable
               columns={PropertyColumns}
-              data={properties}
+              data={filteredProperties!}
               search="propertyName"
             />
           </CardContent>

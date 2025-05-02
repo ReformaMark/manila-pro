@@ -122,11 +122,11 @@ export function formattedAmortization(amort: number) {
   }).format(amort)
 }
 
-export  const scrollToSection = (id: string) => {
+export const scrollToSection = (id: string) => {
   const element = document.getElementById(id);
 
   if (element) {
-    element.scrollIntoView({ behavior: "smooth" , block: "start"});
+    element.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 };
 
@@ -177,4 +177,12 @@ export function calculateLoanDetails(
     totalLoanAmount: formatPrice(totalPayment),
     totalInterest: formatPrice(totalInterest),
   };
+}
+
+// Format status for display
+export const formatStatus = (status: string) => {
+  return status
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ")
 }

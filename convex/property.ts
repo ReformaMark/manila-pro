@@ -818,6 +818,7 @@ export const getPropertyByIdWithDeals = query({
         const transactions = await ctx.db
             .query("deal")
             .withIndex("by_propertyId", q => q.eq("propertyId", property._id))
+            .order("desc")
             .collect()
 
         const transactionWithDetails = await asyncMap(transactions, async (transaction) => {

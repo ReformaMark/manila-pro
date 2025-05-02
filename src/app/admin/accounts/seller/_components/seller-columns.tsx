@@ -5,6 +5,7 @@ import { Doc } from "../../../../../../convex/_generated/dataModel";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Eye, Mail, Pencil, Trash2 } from "lucide-react";
+import { useConfirm } from "@/hooks/use-confirm";
 
 export const SellerColumns: ColumnDef<Doc<"users">>[] = [
   {
@@ -56,53 +57,58 @@ export const SellerColumns: ColumnDef<Doc<"users">>[] = [
       return <p>{row.original.city}</p>;
     },
   },
-  {
-    accessorKey: "actions",
-    header: () => <div className="text-center">ACTIONS</div>,
-    cell: function Cell({ row }) {
-      const user = row.original;
+  //   {
+  //     accessorKey: "actions",
+  //     header: () => <div className="text-center">ACTIONS</div>,
+  //     cell: function Cell({ row }) {
+  //     //   const [ConfirmDialog, confirm] = useConfirm(
+  //     //     "Disable user?",
+  //     //     "Deactivating this user will prevent them to have access on their account."
+  //     //   );
 
-      return (
-        <>
-          <div className="flex items-center justify-center gap-2">
-            {/* <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 p-0"
-              onClick={() => setShowEditModal(true)}
-            >
-              <Pencil className="h-8 w-8" />
-            </Button>
+  //     //   const user = row.original;
 
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 p-0"
-              onClick={() => {}}
-            >
-              <Eye className="h-8 w-8" />
-            </Button>
+  //       return (
+  //         <>
+  //           <div className="flex items-center justify-center gap-2">
+  //             <Button
+  //               variant="ghost"
+  //               size="icon"
+  //               className="h-8 w-8 p-0"
+  //               onClick={() => setShowEditModal(true)}
+  //             >
+  //               <Pencil className="h-8 w-8" />
+  //             </Button>
 
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 p-0"
-              onClick={() => {}}
-            >
-              <Mail className="h-8 w-8" />
-            </Button> */}
+  //             <Button
+  //               variant="ghost"
+  //               size="icon"
+  //               className="h-8 w-8 p-0"
+  //               onClick={() => {}}
+  //             >
+  //               <Eye className="h-8 w-8" />
+  //             </Button>
 
-            <Button
-              variant="destructive"
-              size="icon"
-              className="h-8 p-0 w-full text-white"
-              onClick={() => {}}
-            >
-              Disable
-            </Button>
-          </div>
-        </>
-      );
-    },
-  },
+  //             <Button
+  //               variant="ghost"
+  //               size="icon"
+  //               className="h-8 w-8 p-0"
+  //               onClick={() => {}}
+  //             >
+  //               <Mail className="h-8 w-8" />
+  //             </Button>
+
+  //             <Button
+  //               variant="destructive"
+  //               size="icon"
+  //               className="h-8 p-0 w-full text-white"
+  //               onClick={() => {}}
+  //             >
+  //               Disable
+  //             </Button>
+  //           </div>
+  //         </>
+  //       );
+  //     },
+  //   },
 ];

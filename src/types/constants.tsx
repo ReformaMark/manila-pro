@@ -7,3 +7,13 @@ export const dealStatusColorMap = {
   completed: "bg-green-100 hover:bg-green-200 text-green-800",
   cancelled: "bg-gray-100 hover:bg-gray-200 text-gray-800",
 };
+
+export const dealStatusDisplayMap = {
+  pending_approval: "Pending Approval",
+  negotiating: "Negotiating",
+  approved: "Approved",
+  rejected: "Rejected",
+  active: "Active",
+  completed: "Completed",
+  cancelled: "Cancelled",
+};

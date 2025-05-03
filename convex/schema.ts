@@ -160,9 +160,10 @@ export default defineSchema({
             v.literal("cancelled")            // Deal cancelled after approval
         ),
         requestDate: v.number(),
-        approvalDate: v.optional(v.number()),
+        approvalDate: v.optional(v.number()), // kelan inapprove or nag ongoing yung payment
         remarks: v.optional(v.string()),
     })
+        .index("by_sellerId", ["sellerId"])
         .index("by_propertyId", ["propertyId"])
         .searchIndex("by_property", {
             searchField: "propertyId",

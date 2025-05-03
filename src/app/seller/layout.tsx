@@ -8,11 +8,12 @@ import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import { AdminHeader } from "../admin/_components/admin-header";
+import { SellerHeader } from "@/components/seller/layouts/seller-header";
 
 const poppinsFont = Poppins({
   subsets: ["latin"],
   weight: "400",
-})
+});
 
 export const metadata: Metadata = {
   title: "ManilaPro - Buyer",
@@ -28,16 +29,16 @@ export default function RootLayout({
     <ConvexAuthNextjsServerProvider>
       <ConvexClientProvider>
         <html lang="en">
-          <body
-            className={`${poppinsFont.className} antialiased`}
-          >
+          <body className={`${poppinsFont.className} antialiased`}>
             <SellerGuard>
               <SidebarProvider>
                 <div className="flex min-h-screen flex-col antialiased w-full">
-                  <AdminHeader />
+                  <SellerHeader />
                   <div className="md:flex">
                     <SellerSidebar />
-                    <main className="flex-1 min-h-screen pt-[70px] overflow-hidden">{children}</main>
+                    <main className="flex-1 min-h-screen pt-[70px] overflow-hidden">
+                      {children}
+                    </main>
                     <Toaster />
                   </div>
                 </div>

@@ -4,7 +4,7 @@ import { ConvexError, convexToJson, v } from "convex/values";
 import { paginationOptsValidator } from "convex/server";
 import { asyncMap } from 'convex-helpers'
 import { Id } from "./_generated/dataModel";
-import { ArrowRightSquare } from "lucide-react";
+import { ArrowRightSquare, Cctv } from "lucide-react";
 
 
 export const get = query({
@@ -788,7 +788,7 @@ export const getPropertyByIdWithDeals = query({
         id: v.id("property")
     },
     handler: async (ctx, { id }) => {
-        // * 1.) Authorization
+        // * 1.) Authorization check
         const userId = await getAuthUserId(ctx)
         if (!userId) return null
 
@@ -838,5 +838,63 @@ export const getPropertyByIdWithDeals = query({
             seller,
             transactionWithDetails,
         }
+    }
+})
+
+export const getPropertiesByRequestDeals = query({
+    handler: async (ctx) => {
+        // * 1.) Authorization Check
+        const sellerId = await getAuthUserId(ctx)
+        if (!sellerId) return []
+
+
+        // * 2.) Fetching relevant deals (seller based)
+        const deals = await ctx.db
+            .query("deal")
+            .withIndex("by_sellerId", q => q.eq("sellerId", sellerId))
+            .filter(q => q.or(
+                q.eq(q.field("status"), "pending_approval"),
+                q.eq(q.field("status"), "negotiating"),
+            ))
+            .order("desc")
+            .collect()
+
+        // * 3.) Get deals property and buyer details
+        const dealsWithDetails = await asyncMap(deals, async (deal) => {
+            const property = await ctx.db.get(deal.propertyId)
+            const buyer = await ctx.db.get(deal.buyerId)
+
+            if (!property || !buyer) {
+                console.warn(`Could not find property ${deal.propertyId} or buyer ${deal.buyerId} for deal ${deal._id}`);
+                return null;
+            }
+
+            let displayImageUrl = null;
+            if (property?.displayImage) {
+                displayImageUrl = await ctx.storage.getUrl(property.displayImage as Id<"_storage">)
+            }
+
+            const otherImages = await asyncMap(property.otherImage ?? [], async (image) => {
+                return await ctx.storage.getUrl(image as Id<"_storage">)
+            })
+            const filteredOtherImages = otherImages.filter(Boolean);
+
+            return {
+                ...deal,
+                property: {
+                    ...property,
+                    displayImageUrl,
+                    otherImages: filteredOtherImages,
+                },
+                buyer: {
+                    ...buyer,
+                }
+            }
+        })
+
+        // * 4. Filter out any null results from asyncMap
+        const validDeals = dealsWithDetails.filter(deal => deal !== null);
+
+        return validDeals
     }
 })

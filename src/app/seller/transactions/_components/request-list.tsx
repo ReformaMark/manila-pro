@@ -15,6 +15,7 @@ import { EyeIcon } from "lucide-react";
 import useViewModal from "@/store/modals";
 import { ViewRequestModal } from "./view-request-modal";
 import { FunctionReturnType } from "convex/server";
+import { EmptyState } from "@/components/empty-state";
 
 type GetPropertiesReturnType = FunctionReturnType<
   typeof api.property.getPropertiesByRequestDeals
@@ -69,89 +70,108 @@ export const RequestList = () => {
           onChange={(e) => setSearch(e.target.value)}
         />
 
-        {filteredRequestDeals.map((deal) => {
-          const monthly = deal.proposal.offer / deal.proposal.duration!;
+        {filteredRequestDeals.length === 0 ? (
+          <EmptyState
+            title="No requests at the moment"
+            description="Post your properties now to get recognized!"
+            actionLabel="Click Here"
+            href={"/seller/properties"}
+          />
+        ) : (
+          <>
+            {filteredRequestDeals.map((deal) => {
+              const monthly = deal.proposal.offer / deal.proposal.duration!;
 
-          return (
-            <div
-              key={deal._id}
-              className="border border-gray-300 rounded-md p-4 mt-6"
-            >
-              <div className="flex flex-row items-center gap-3">
-                <div className="w-[90px]">
-                  <AspectRatio ratio={4 / 4}>
-                    <Image
-                      src={deal.property.displayImageUrl || "/next.svg"}
-                      alt={deal.property.propertyName}
-                      fill
-                      className="rounded-md object-cover"
-                    />
-                  </AspectRatio>
-                </div>
-                <div>
-                  <h1>{deal.property.propertyName}</h1>
-                  <p className="text-muted-foreground text-sm">
-                    Requested: {formatDateListed(deal.requestDate)}
-                  </p>
-                </div>
-              </div>
-
-              <Separator className="mt-4 w-full" />
-
-              <div className="mt-3 flex flex-col">
-                <p className="text-zinc-700">Status</p>
-                <Badge
-                  className={cn(
-                    "w-fit rounded-full my-1",
-                    dealStatusColorMap[deal.status]
-                  )}
+              return (
+                <div
+                  key={deal._id}
+                  className="border border-gray-300 rounded-md p-4 mt-6"
                 >
-                  {dealStatusDisplayMap[deal.status]}
-                </Badge>
-              </div>
+                  <div className="flex flex-row items-center gap-3">
+                    <div className="w-[90px]">
+                      <AspectRatio ratio={4 / 4}>
+                        <Image
+                          src={deal.property.displayImageUrl || "/next.svg"}
+                          alt={deal.property.propertyName}
+                          fill
+                          className="rounded-md object-cover"
+                        />
+                      </AspectRatio>
+                    </div>
+                    <div>
+                      <h1>{deal.property.propertyName}</h1>
+                      <p className="text-muted-foreground text-sm">
+                        Requested: {formatDateListed(deal.requestDate)}
+                      </p>
+                    </div>
+                  </div>
 
-              <div className="mt-3 flex flex-col">
-                <p className="text-zinc-700">Buyer</p>
-                <p className="text-lg font-semibold">
-                  {deal.buyer.fname} {deal.buyer.lname}
-                </p>
-                <p className="text-zinc-600 text-base">{deal.buyer.email}</p>
-                <p className="text-zinc-600 text-base">{deal.buyer.contact}</p>
-              </div>
+                  <Separator className="mt-4 w-full" />
 
-              <div className="mt-3 flex flex-col">
-                <p className="text-zinc-700">Offer Details</p>
-                <p className="text-lg font-semibold">
-                  {formatPrice(deal.proposal.offer)}
-                </p>
-                <p className="text-zinc-600 text-base">
-                  {deal.downPayment ? (
-                    <p>Down payment: {formatPrice(deal.downPayment)}/mo</p>
-                  ) : (
-                    <p>Down payment: {formatPrice(monthly)}/mo</p>
-                  )}
-                </p>
-              </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div className="mt-3 flex flex-col">
+                      <p className="text-zinc-700">Status</p>
+                      <Badge
+                        className={cn(
+                          "w-fit rounded-full my-1",
+                          dealStatusColorMap[deal.status]
+                        )}
+                      >
+                        {dealStatusDisplayMap[deal.status]}
+                      </Badge>
+                    </div>
 
-              <div className="mt-6">
-                <h1 className="text-base font-semibold">Message:</h1>
-                <p className="text-zinc-600">{deal.proposal.message}</p>
-              </div>
+                    <div className="mt-3 flex flex-col">
+                      <p className="text-zinc-700">Buyer</p>
+                      <p className="text-lg font-semibold">
+                        {deal.buyer.fname} {deal.buyer.lname}
+                      </p>
+                      <p className="text-zinc-600 text-base">
+                        {deal.buyer.email}
+                      </p>
+                      <p className="text-zinc-600 text-base">
+                        {deal.buyer.contact}
+                      </p>
+                    </div>
 
-              <div className="grid grid-cols-2 gap-3 mt-5">
-                <Button variant="default">Accept</Button>
-                <Button
-                  variant="outline"
-                  className="hover:bg-zinc-100 hover:text-black"
-                  onClick={() => handleView(deal)}
-                >
-                  <EyeIcon className="w-5 h-5" />
-                  View
-                </Button>
-              </div>
-            </div>
-          );
-        })}
+                    <div className="mt-3 flex flex-col">
+                      <p className="text-zinc-700">Offer Details</p>
+                      <p className="text-lg font-semibold">
+                        {formatPrice(deal.proposal.offer)}
+                      </p>
+                      <p className="text-zinc-600 text-base">
+                        {deal.downPayment ? (
+                          <p>
+                            Down payment: {formatPrice(deal.downPayment)}/mo
+                          </p>
+                        ) : (
+                          <p>Down payment: {formatPrice(monthly)}/mo</p>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-6">
+                    <h1 className="text-base font-semibold">Message:</h1>
+                    <p className="text-zinc-600">{deal.proposal.message}</p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 mt-5">
+                    <Button variant="default">Accept</Button>
+                    <Button
+                      variant="outline"
+                      className="hover:bg-zinc-100 hover:text-black"
+                      onClick={() => handleView(deal)}
+                    >
+                      <EyeIcon className="w-5 h-5" />
+                      View
+                    </Button>
+                  </div>
+                </div>
+              );
+            })}
+          </>
+        )}
       </div>
 
       {selectedDeal && (

@@ -90,9 +90,9 @@ export default defineSchema({
             v.literal("Taguig")
         ),
         status: v.union(
-            v.literal("available"),
-            v.literal("reserved"),
-            v.literal("sold"),
+            v.literal("available"), // show
+            v.literal("reserved"), // reserved dont show in buyer side
+            v.literal("sold"), // sold dont show in buyer side
         ),
         createdAt: v.number(),
         updatedAt: v.number(),

@@ -1,7 +1,7 @@
 import { Doc } from "../../convex/_generated/dataModel";
 
 export interface PropertyTypes extends Doc<'property'> {
- displayImageUrl: string | null;
+    displayImageUrl: string | null;
 }
 export interface PropertyTypesWithImageUrls extends Doc<'property'> {
     displayImageUrl: string | null;
@@ -15,17 +15,26 @@ export interface UserTypesWithImage extends Doc<'users'> {
     ratingsAndReviews: RatingsAndReviews[];
 }
 
-export interface RatingsAndReviews extends Doc<'ratings_reviews'>{
+export interface RatingsAndReviews extends Doc<'ratings_reviews'> {
 
 }
-export interface DealsType extends Doc<'deal'>{
+export interface DealsType extends Doc<'deal'> {
     property: PropertyTypesWithImageUrls;
     agent: UserTypesWithImage;
 }
 
 export interface Agent extends Doc<'users'> {
-    transactions:number,
+    transactions: number,
     rating: number,
     reviews: number,
     imageUrl: string | undefined
 }
+
+export type DealStatus =
+    | "pending_approval"
+    | "negotiating"
+    | "approved"
+    | "rejected"
+    | "active"
+    | "completed"
+    | "cancelled";

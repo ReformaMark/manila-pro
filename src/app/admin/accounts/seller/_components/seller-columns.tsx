@@ -2,10 +2,6 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Doc } from "../../../../../../convex/_generated/dataModel";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Eye, Mail, Pencil, Trash2 } from "lucide-react";
-import { useConfirm } from "@/hooks/use-confirm";
 
 export const SellerColumns: ColumnDef<Doc<"users">>[] = [
   {

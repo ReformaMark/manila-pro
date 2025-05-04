@@ -86,13 +86,13 @@ export const AdminTransactionHistory = ({
                           {formatCurrency(deal.proposal.offer)}
                         </p>
                       </div>
-                      {deal.dealPrice && (
+                      {deal.finalDealPrice && (
                         <div>
                           <p className="text-sm text-muted-foreground">
                             Final Price
                           </p>
                           <p className="font-medium">
-                            {formatCurrency(deal.dealPrice)}
+                            {formatCurrency(deal.finalDealPrice)}
                           </p>
                         </div>
                       )}

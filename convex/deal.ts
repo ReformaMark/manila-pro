@@ -116,7 +116,7 @@ export const acceptCounterOffer = mutation({
         if (args.isAccepted) {
             await ctx.db.patch(args.id, {
                 status: "approved",
-                dealPrice: proposal.proposal.counterOffer?.price,
+                finalDealPrice: proposal.proposal.counterOffer?.price,
             });
         } else {
             await ctx.db.patch(args.id, {
@@ -139,11 +139,19 @@ export const handleDealStatus = mutation({
             v.literal("completed"),           // All payments made, deal fulfilled
             v.literal("cancelled")            // Deal cancelled after approval or cinancel ni buyer
         ),
+
+        // ! When approving a request.
+        finalDealPrice: v.optional(v.number()),
+        agreedTermInMonths: v.optional(v.number()),
+        downPayment: v.optional(v.number()),
     },
     handler: async (ctx, {
         dealId,
         propertyId,
         status,
+        agreedTermInMonths,
+        downPayment,
+        finalDealPrice,
     }) => {
         // * 1.) Authorization Check
         const sellerId = await getAuthUserId(ctx)
@@ -160,12 +168,30 @@ export const handleDealStatus = mutation({
         }
 
         // * 3.) Handle Accepted Transactions.
-        // * FLOW: when args status is active, patch it and also patch the property to be reserved or sold. Reasoning: Para hindi na makikita sa frontend yung property na iyon. Magssold lang to if one time payment.
+        // * FLOW: when args status is active, patch it and also patch the property to be reserved or sold. Reasoning: Para hindi na makikita sa frontend yung property na iyon. Magssold lang to if one time payment. Also, finalDealPrice, downPayment, agreedTermInMonths ilagay sa deal.
         // TODO: Determine kung pano siya malalaman if one time payment (as in babayaran agad) para sold na yung status at hindi reserved
+        // TODO: finalDealPrice - Down Payment) / Term. Determine first san kukunin down payment.
 
         if (status === "active") {
+            const dateTodayInUnix = Math.floor(Date.now() / 1000);
+
+            if (finalDealPrice === undefined || downPayment === undefined || agreedTermInMonths === undefined) {
+                throw new ConvexError("Missing required fields (finalDealPrice, downPayment, agreedTermInMonths) for approving the deal.");
+            }
+
+            if (agreedTermInMonths <= 0) {
+                throw new ConvexError("Agreed term in months must be greater than zero.");
+            }
+
+            const agreedMonthlyAmortization = (finalDealPrice - downPayment) / agreedTermInMonths
+
             await ctx.db.patch(dealId, {
-                status
+                status,
+                approvalDate: dateTodayInUnix,
+                finalDealPrice,
+                downPayment,
+                agreedTermInMonths,
+                agreedMonthlyAmortization,
             })
 
             await ctx.db.patch(propertyId, {
@@ -175,6 +201,6 @@ export const handleDealStatus = mutation({
             return "Success"
         }
 
-
+        throw new ConvexError(`Unhandled deal status: ${status}`);
     }
 })

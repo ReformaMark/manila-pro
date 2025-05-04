@@ -189,12 +189,15 @@ export const ViewRequestModal = ({
                   </div>
 
                   <div>
-                    <p className="text-sm mt-2">Down payment:</p>
+                    {/* <p className="text-sm mt-2">Down payment:</p> */}
                     <h1 className="text-base">
-                      {deal.downPayment ? (
-                        <p>{formatPrice(deal.downPayment)}/mo</p>
+                      {deal.agreedMonthlyAmortization ? (
+                        <p>
+                          Monthly Payment:{" "}
+                          {formatPrice(deal.agreedMonthlyAmortization)}/mo
+                        </p>
                       ) : (
-                        <p>{formatPrice(monthly)}/mo</p>
+                        <p>Monthly Payment: {formatPrice(monthly)}/mo</p>
                       )}
                     </h1>
                   </div>

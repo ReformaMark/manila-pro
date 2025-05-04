@@ -898,3 +898,61 @@ export const getPropertiesByRequestDeals = query({
         return validDeals
     }
 })
+
+export const getPropertyByAcceptedDeals = query({
+    handler: async (ctx) => {
+        // * 1.) Authorization Check
+        const sellerId = await getAuthUserId(ctx)
+        if (!sellerId) return []
+
+        // * 2.) Fetching the deals
+        const deals = await ctx.db
+            .query("deal")
+            .withIndex("by_sellerId", q => q.eq("sellerId", sellerId))
+            .filter(q => q.or(
+                q.eq(q.field("status"), "active"),
+                q.eq(q.field("status"), "approved"),
+            ))
+            .order("desc")
+            .collect()
+
+        // * 3.) Fetching deals with details (relationships)
+        const dealsWithDetails = await asyncMap(deals, async (deal) => {
+            const property = await ctx.db.get(deal.propertyId)
+            const buyer = await ctx.db.get(deal.buyerId)
+
+            if (!property || !buyer) {
+                return null
+            }
+
+            // * 3.1) Fetching property images
+            let displayImageUrl = null;
+            if (property.displayImage) {
+                displayImageUrl = await ctx.storage.getUrl(property.displayImage as Id<"_storage">)
+            }
+
+            const otherImages = await asyncMap(property.otherImage ?? [], async (image) => {
+                return await ctx.storage.getUrl(image as Id<"_storage">)
+            })
+
+            const filteredOtherImages = otherImages.filter(Boolean);
+
+            return {
+                ...deal,
+                property: {
+                    ...property,
+                    displayImageUrl,
+                    otherImages: filteredOtherImages,
+                },
+                buyer: {
+                    ...buyer,
+                }
+            }
+        })
+
+        // * 4. Filter out any null results from asyncMap
+        const validDeals = dealsWithDetails.filter(deal => deal !== null);
+
+        return validDeals
+    }
+})

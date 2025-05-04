@@ -146,9 +146,9 @@ export default defineSchema({
                 createdAt: v.number(), // date of counter offer
             })),
         }), // initial price offered by buyer
-        dealPrice: v.optional(v.number()),
+        finalDealPrice: v.optional(v.number()), // agreed final price. Magkakaroon neto kapag active na at na-final na kung gano na talaga ka-magkano ang napagusapan upon offers. (Dating dealPrice)
         downPayment: v.optional(v.number()), // initial payment
-        agreedMonthlyAmortization: v.optional(v.number()), // napagusapan na presyo
+        agreedMonthlyAmortization: v.optional(v.number()), // napagusapan na presyo (finalDealPrice - Down Payment) / Term. Auto calculated ata to.
         agreedTermInMonths: v.optional(v.number()), // napagusapan na presyo
         status: v.union(
             v.literal("pending_approval"),    // Initial state when buyer makes an offer

@@ -7,3 +7,9 @@ export const AcceptDealSchema = z.object({
 })
 
 export type AcceptDealSchemaType = z.infer<typeof AcceptDealSchema>
+
+export const CancelDealSchema = z.object({
+    remarks: z.string().min(3, "Please put a remark").max(1000, "Remarks too long, please try to shorten it")
+})
+
+export type CancelDealSchemaType = z.infer<typeof CancelDealSchema>

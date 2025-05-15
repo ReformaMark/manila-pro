@@ -184,16 +184,9 @@ export const RequestList = () => {
                         <p className="text-lg font-semibold">
                           {formatPrice(deal.proposal.offer)}
                         </p>
-                        <p className="text-zinc-600 text-base">
-                          {deal.agreedMonthlyAmortization ? (
-                            <p>
-                              Monthly Payment:{" "}
-                              {formatPrice(deal.agreedMonthlyAmortization)}/mo
-                            </p>
-                          ) : (
-                            <p>Monthly Payment: {formatPrice(monthly)}/mo</p>
-                          )}
-                        </p>
+                        <div className="text-zinc-600 text-sm">
+                          <p>Monthly Payment: {formatPrice(monthly)}/mo</p>
+                        </div>
                       </div>
                     </div>
 
@@ -202,7 +195,7 @@ export const RequestList = () => {
                       <p className="text-zinc-600">{deal.proposal.message}</p>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3 mt-5">
+                    <div className="grid grid-cols-2 gap-3 mt-5 max-w-[500px]">
                       <Button
                         variant="default"
                         disabled={isOpen}
@@ -268,7 +261,6 @@ const AcceptFormDialog = ({
     mutationFn: useConvexMutation(api.deal.handleDealStatus),
     onSuccess: () => {
       form.reset();
-      ``;
       return toast.success("Success!");
     },
   });
@@ -285,7 +277,7 @@ const AcceptFormDialog = ({
     },
   });
 
-  if (!deal) return <div>Error: No deal found.</div>;
+  // if (!deal) return <div>Error: No deal found.</div>;
 
   const finalDealPriceValue = form.watch("finalDealPrice");
   const isActualNaN = Number.isNaN(finalDealPriceValue);
@@ -341,105 +333,111 @@ const AcceptFormDialog = ({
 
   return (
     <>
-      <Dialog open={isOpen} onOpenChange={onOpenChange}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Accept Deal Offer</DialogTitle>
-            <DialogDescription>
-              Currently Dealing: {deal.property.propertyName}
-            </DialogDescription>
-          </DialogHeader>
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit((data) =>
-                onSubmit(deal._id, deal.property._id, "active", data)
-              )}
-              className="space-y-8"
-            >
-              <FormField
-                control={form.control}
-                name="finalDealPrice"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="flex flex-row gap-2">
-                      <p>Final Deal Price</p>
-                      <p>{formattedFinalDealPrice}</p>
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="0"
-                        type="number"
-                        {...field}
-                        onChange={(event) =>
-                          field.onChange(+event.target.value)
-                        }
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      The final agreed price for the property.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
+      {deal ? (
+        <Dialog open={isOpen} onOpenChange={onOpenChange}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Accept Deal Offer</DialogTitle>
+              <DialogDescription>
+                Currently Dealing: {deal.property.propertyName}
+              </DialogDescription>
+            </DialogHeader>
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit((data) =>
+                  onSubmit(deal._id, deal.property._id, "active", data)
                 )}
-              />
+                className="space-y-8"
+              >
+                <FormField
+                  control={form.control}
+                  name="finalDealPrice"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex flex-row gap-2">
+                        <p>Final Deal Price</p>
+                        <p>{formattedFinalDealPrice}</p>
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="0"
+                          type="number"
+                          {...field}
+                          onChange={(event) =>
+                            field.onChange(+event.target.value)
+                          }
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        The final agreed price for the property.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="agreedTermInMonths"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Agreed Term (Months)</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="0"
-                        type="number"
-                        {...field}
-                        onChange={(event) =>
-                          field.onChange(+event.target.value)
-                        }
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      The agreed payment term in months.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="agreedTermInMonths"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Agreed Term (Months)</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="0"
+                          type="number"
+                          {...field}
+                          onChange={(event) =>
+                            field.onChange(+event.target.value)
+                          }
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        The agreed payment term in months.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="downPayment"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="flex flex-row gap-2">
-                      <p>Down Payment</p>
-                      <p>{formattedDownPayment}</p>
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="0"
-                        type="number"
-                        {...field}
-                        onChange={(event) =>
-                          field.onChange(+event.target.value)
-                        }
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      The agreed down payment amount.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="submit" variant="default" disabled={isPending}>
-                {isPending ? "Accepting..." : "Accept"}
-              </Button>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
+                <FormField
+                  control={form.control}
+                  name="downPayment"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex flex-row gap-2">
+                        <p>Down Payment</p>
+                        <p>{formattedDownPayment}</p>
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="0"
+                          type="number"
+                          {...field}
+                          onChange={(event) =>
+                            field.onChange(+event.target.value)
+                          }
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        The agreed down payment amount.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" variant="default" disabled={isPending}>
+                  {isPending ? "Accepting..." : "Accept"}
+                </Button>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
+      ) : (
+        <Dialog open={isOpen} onOpenChange={onOpenChange}>
+          <DialogContent>Loading Deals...</DialogContent>
+        </Dialog>
+      )}
 
       <AcceptDialog />
     </>

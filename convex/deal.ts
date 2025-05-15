@@ -144,6 +144,7 @@ export const handleDealStatus = mutation({
         finalDealPrice: v.optional(v.number()),
         agreedTermInMonths: v.optional(v.number()),
         downPayment: v.optional(v.number()),
+        remarks: v.optional(v.string()),
     },
     handler: async (ctx, {
         dealId,
@@ -152,6 +153,7 @@ export const handleDealStatus = mutation({
         agreedTermInMonths,
         downPayment,
         finalDealPrice,
+        remarks,
     }) => {
         // * 1.) Authorization Check
         const sellerId = await getAuthUserId(ctx)
@@ -199,6 +201,15 @@ export const handleDealStatus = mutation({
             })
 
             return "Success"
+        }
+
+        // * 4.) Handle cancelled status (usually happens when a current active has been cancelled due to reasons)
+        // * need remarks on why it is cancelled.
+        if (status === "cancelled") {
+            return await ctx.db.patch(dealId, {
+                status,
+                remarks,
+            })
         }
 
         throw new ConvexError(`Unhandled deal status: ${status}`);

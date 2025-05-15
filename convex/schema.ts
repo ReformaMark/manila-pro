@@ -152,15 +152,16 @@ export default defineSchema({
         agreedTermInMonths: v.optional(v.number()), // napagusapan na presyo
         status: v.union(
             v.literal("pending_approval"),    // Initial state when buyer makes an offer
+            v.literal("active"),              // Deal is active, payments ongoing
+            v.literal("rejected"),            // Seller rejected the deal
+            v.literal("completed"),           // All payments made, deal fulfilled
+            v.literal("cancelled"),            // Deal cancelled after approval
+            // 5 process up
             v.literal("negotiating"),         // When seller is sending counter offers
             v.literal("approved"),            // Seller approved the deal
-            v.literal("rejected"),            // Seller rejected the deal
-            v.literal("active"),              // Deal is active, payments ongoing
-            v.literal("completed"),           // All payments made, deal fulfilled
-            v.literal("cancelled")            // Deal cancelled after approval
         ),
         requestDate: v.number(),
-        approvalDate: v.optional(v.number()), // kelan inapprove or nag ongoing yung payment
+        approvalDate: v.optional(v.number()), // kelan inapprove
         remarks: v.optional(v.string()),
     })
         .index("by_sellerId", ["sellerId"])

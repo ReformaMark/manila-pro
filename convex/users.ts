@@ -497,3 +497,29 @@ export const updateProfile = mutation({
     });
   },
 });
+
+export const getImageUrl = query({
+  args: {},
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new ConvexError("NO user found!");
+    const user = await ctx.db.get(userId);
+    if (!user) throw new ConvexError("NO user found!");
+    if (user.image) {
+      return await ctx.storage.getUrl(user.image);
+    }
+  },
+});
+export const saveImage = mutation({
+  args: {
+    imageStorageId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new ConvexError("NO user found!");
+
+    await ctx.db.patch(userId, {
+      image: args.imageStorageId,
+    });
+  },
+});

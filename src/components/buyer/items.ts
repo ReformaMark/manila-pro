@@ -56,12 +56,7 @@ export const resourceItems = [
   {
     icon: User,
     label: "My Profile",
-    href: "/properties/profile",
-  },
-  {
-    icon: Home,
-    label: "My Properties",
-    href: "/properties/agents",
+    href: "/profile",
   },
   {
     icon: Users,

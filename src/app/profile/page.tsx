@@ -26,21 +26,21 @@ import { useRouter } from "next/navigation"
 
 export default function ProfilePage() {
     const {user: currentUser, isLoading: loadingUser} = useCurrentUser()
-
+    const saveImage = useMutation(api.users.saveImage)
+    const userImageUrl = useQuery(api.users.getImageUrl)
     const {count: unreadMessageCount} = useUnreadMessage()
     const router = useRouter()
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [imageStorageId, setImageStorageId] = useState<string | undefined>("");
     const [isEditing, setIsEditing] = useState<boolean>(false)
 
-
     const [formData, setFormData] = useState({
-        fname: currentUser?.fname ,
-        lname: currentUser?.lname ,
-        email: currentUser?.email ,
-        phone: currentUser?.contact ,
-        bio: currentUser?.bio ,
-        location: currentUser?.city ,
+        fname: currentUser ? currentUser.fname : "" ,
+        lname:  currentUser ?  currentUser.lname : "" ,
+        email:  currentUser ?  currentUser.email : "" ,
+        phone:  currentUser ?  currentUser.contact : "" ,
+        bio:  currentUser ? currentUser.bio : "" ,
+        location:  currentUser ? currentUser?.city: "",
     })
 
     const imageUrl = useQuery(
@@ -60,7 +60,17 @@ export default function ProfilePage() {
     }))
   }
 
-
+  const handleEditProfile = () =>{
+    setFormData({
+        fname: currentUser ? currentUser.fname : "" ,
+        lname:  currentUser ?  currentUser.lname : "" ,
+        email:  currentUser ?  currentUser.email : "" ,
+        phone:  currentUser ?  currentUser.contact : "" ,
+        bio:  currentUser ? currentUser.bio : "" ,
+        location:  currentUser ? currentUser?.city: "",
+    })
+    setIsEditing(true)
+  }
 
     // function to be able to read and upload the image to our own database
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -89,6 +99,9 @@ export default function ProfilePage() {
 
       const { storageId } = await result.json();
       setImageStorageId(storageId);
+      saveImage({
+        imageStorageId: storageId
+      })
       toast.success("Image uploaded successfully");
     } catch (error) {
       toast.error("Failed to upload Image");
@@ -131,12 +144,9 @@ export default function ProfilePage() {
                 <CardContent className="p-6">
                   <div className="flex flex-col items-center">
                     <Avatar className="h-24 w-24 mb-4">
-                      <AvatarImage src={imageUrl ?? undefined} alt={currentUser?.lname} />
+                      <AvatarImage src={imageUrl ?? userImageUrl ?? undefined} alt={currentUser?.lname} />
                       <AvatarFallback className="bg-brand-orange text-white text-xl">
-                        {currentUser?.lname
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")}
+                          {currentUser?.fname?.[0]?.toUpperCase()}{currentUser?.lname?.[0]?.toUpperCase()}
                       </AvatarFallback>
                       <div  onClick={() =>
                           document.getElementById("user-image")?.click()
@@ -190,7 +200,7 @@ export default function ProfilePage() {
                       <Button
                         variant="outline"
                         className="w-full border-brand-orange text-brand-orange hover:bg-brand-orange/10"
-                        onClick={() => setIsEditing(true)}
+                        onClick={handleEditProfile}
                       >
                         <Edit className="h-4 w-4 mr-2" />
                         Edit Profile

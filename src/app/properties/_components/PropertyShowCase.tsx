@@ -16,6 +16,7 @@ import PropertyCard from "./PropertyCard"
 import { PropertyDetailModal } from "./PropertyDetailsModal"
 import { useRouter } from "next/navigation"
 import { useFilterStore } from "../store/useFilter"
+import { useConvexAuth } from "convex/react"
 
 
 
@@ -56,6 +57,7 @@ const facilities = [
 
 export default function PropertyShowcase({properties}:{properties: PropertyTypesWithImageUrls[]}) {
   const {unitType, transactionType, location, setLocation, resetFiltersStore} = useFilterStore()
+  const { isAuthenticated, isLoading: isAuthLoading } = useConvexAuth()
   const router = useRouter()
   const isMobile = useIsMobile()
   const [activeView, setActiveView] = useState<"grid" | "list" | "map">("grid")
@@ -401,7 +403,7 @@ export default function PropertyShowcase({properties}:{properties: PropertyTypes
                       whileHover={{ y: -5 }}
                       className="h-full"
                     >
-                      <PropertyCard property={property} onClick={() => router.push(`/properties/${property._id}`)} />
+                      <PropertyCard property={property} onClick={() => isAuthenticated ? router.push(`/properties/${property._id}`) : router.push(`/auth`)} />
                     </motion.div>
                   ))}
                 </div>
@@ -418,21 +420,21 @@ export default function PropertyShowcase({properties}:{properties: PropertyTypes
                       transition={{ duration: 0.3 }}
                       whileHover={{ y: -2 }}
                     >
-                      <PropertyCard property={property} onClick={() => router.push(`/properties/${property._id}`)} layout="list" />
+                      <PropertyCard property={property} onClick={() =>  isAuthenticated ? router.push(`/properties/${property._id}`) :  router.push(`/auth`)} layout="list" />
                     </motion.div>
                   ))}
                 </div>
               )}
 
               {/* Map View */}
-              {activeView === "map" && (
+              {/* {activeView === "map" && (
                 <div className="bg-white rounded-lg h-[600px] flex items-center justify-center ">
                   <div className="text-center">
                     <p className="text-lg font-medium mb-2 text-brand-black">Map View</p>
                     <p className="text-gray-400">Interactive map would be displayed here</p>
                   </div>
                 </div>
-              )}
+              )} */}
 
               {/* No Results */}
               {filteredProperties.length === 0 && (

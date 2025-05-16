@@ -89,6 +89,7 @@ export function PropertyCard({ property, onClick, layout = "grid" }: PropertyCar
             </div>
             {property.featured && <Badge className="absolute top-2 left-2 bg-brand-orange text-white">Featured</Badge>}
             <Badge className="absolute bottom-2 left-2 bg-black/70 text-white">{property.transactionType}</Badge>
+            <Badge className="absolute bottom-2 right-2 bg-black/70 text-white">{property.propertyType}</Badge>
           </div>
           <CardHeader className="p-4 pb-2">
             <div className="flex justify-between items-start">

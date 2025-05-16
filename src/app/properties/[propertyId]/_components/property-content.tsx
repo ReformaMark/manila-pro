@@ -18,6 +18,7 @@ import MortgageCalculator from './mortgage-calculator'
 import { QuickProposalDialog } from '@/app/proposals/_components/quick-proposal-dialog'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
+import SendMessageDialog from './send-message-dialog'
 
 interface PropertyContentProps{
     property: PropertyTypesWithImageUrls
@@ -132,10 +133,14 @@ function PropertyContent({property, carouselApi, setCurrentImageIndex}: Property
                         <span>Furnishing:</span>
                         <span className="font-medium text-gray-900">Fully Furnished</span>
                       </li>
+                       <li className="flex justify-between">
+                        <span>Listed:</span>
+                        <span className="font-medium text-gray-900">{formatDateListed(property._creationTime)}</span>
+                      </li>
                     </ul>
                   </div>
 
-                  <div>
+                  {/* <div>
                     <h3 className="text-lg font-semibold mb-2 text-gray-900">Additional Details</h3>
                     <ul className="space-y-2 text-gray-700">
                       <li className="flex justify-between">
@@ -146,10 +151,10 @@ function PropertyContent({property, carouselApi, setCurrentImageIndex}: Property
                         <span>Pet Policy:</span>
                         <span className="font-medium text-gray-900">Allowed</span>
                       </li>
-                      {/* <li className="flex justify-between">
+                      <li className="flex justify-between">
                         <span>Property ID:</span>
                         <span className="font-medium text-gray-900">MP-{property._id}</span>
-                      </li> */}
+                      </li>
                       <li className="flex justify-between">
                         <span>Listed:</span>
                         <span className="font-medium text-gray-900">{formatDateListed(property._creationTime)}</span>
@@ -159,7 +164,7 @@ function PropertyContent({property, carouselApi, setCurrentImageIndex}: Property
                         <span className="font-medium text-gray-900">Immediate</span>
                       </li>
                     </ul>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </CardContent>
@@ -391,35 +396,10 @@ function PropertyContent({property, carouselApi, setCurrentImageIndex}: Property
               agentId={property.sellerId}
               buttonClassName="w-full bg-brand-orange hover:bg-brand-orange/90"
             />
-
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full border-brand-orange text-brand-orange hover:bg-brand-orange/10"
-                >
-                  <MessageSquare className="h-4 w-4 mr-2" />
-                  Send Message
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                  <DialogTitle>Message Agent</DialogTitle>
-                  <DialogDescription>Send a message to Maria Santos about this property.</DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <Textarea
-                    placeholder="Hi Maria, I'm interested in this property and would like to know more about..."
-                    className="min-h-[120px]"
-                  />
-                </div>
-                <DialogFooter>
-                  <Button type="submit" className="bg-brand-orange hover:bg-brand-orange/90">
-                    Send Message
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+            
+          {property.agent && (
+            <SendMessageDialog agentId={property.agent._id}/>
+          )}
           </div>
         </CardContent>
       </Card>

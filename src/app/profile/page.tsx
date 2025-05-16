@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -15,21 +15,25 @@ import { User, MapPin, Mail, Phone, Calendar, Edit, Save, Heart, Home, MessageSq
 import { useCurrentUser } from "@/hooks/use-current-user"
 import { formatDateListed } from "@/lib/utils"
 import { useMutation, useQuery } from "convex/react"
-import { api } from "../../../../convex/_generated/api"
+import { api } from "../../../convex/_generated/api"
 import { useUnreadMessage } from "@/hooks/use-unread-message"
-import PropertyCard from "../_components/PropertyCard"
+import PropertyCard from "../properties/_components/PropertyCard"
 import { PropertyTypesWithImageUrls } from "@/lib/types"
 import Loading from "@/components/loading"
 import { toast } from "sonner"
 import { useConvexMutation } from "@convex-dev/react-query"
+import { useRouter } from "next/navigation"
 
 export default function ProfilePage() {
-    const {user: currentUser} = useCurrentUser()
-    const {count: unreadMessageCount} = useUnreadMessage()
+    const {user: currentUser, isLoading: loadingUser} = useCurrentUser()
 
+    const {count: unreadMessageCount} = useUnreadMessage()
+    const router = useRouter()
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [imageStorageId, setImageStorageId] = useState<string | undefined>("");
     const [isEditing, setIsEditing] = useState<boolean>(false)
+
+
     const [formData, setFormData] = useState({
         fname: currentUser?.fname ,
         lname: currentUser?.lname ,
@@ -43,6 +47,7 @@ export default function ProfilePage() {
         api.files.getStorageUrl,
         imageStorageId ? { storageId: imageStorageId } : "skip"
     );
+
     const savedProperties = useQuery(api.property.getSavedProperties)
     const updateProfile = useMutation(api.users.updateProfile)
     const generateUploadUrl = useConvexMutation(api.files.generateUploadUrl);
@@ -110,6 +115,8 @@ export default function ProfilePage() {
     })
     setIsEditing(false)
   }
+
+
 
   return (
     <div className="min-h-screen text-white">

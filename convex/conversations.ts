@@ -49,6 +49,7 @@ export const getUnreadMessagesNumber = query({
   args: {},
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
+    if (!userId) return null;
     const conversations = await getConverstions(ctx);
     let unreadMesCount: number = 0;
     await asyncMap(conversations, async (conversation) => {

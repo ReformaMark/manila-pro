@@ -11,30 +11,41 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
-import { User, MapPin, Mail, Phone, Calendar, Edit, Save, Heart, Home, MessageSquare, CheckCircle } from "lucide-react"
+import { User, MapPin, Mail, Phone, Calendar, Edit, Save, Heart, Home, MessageSquare, CheckCircle, Pencil, PencilIcon } from "lucide-react"
 import { useCurrentUser } from "@/hooks/use-current-user"
 import { formatDateListed } from "@/lib/utils"
-import { useQuery } from "convex/react"
+import { useMutation, useQuery } from "convex/react"
 import { api } from "../../../../convex/_generated/api"
 import { useUnreadMessage } from "@/hooks/use-unread-message"
 import PropertyCard from "../_components/PropertyCard"
 import { PropertyTypesWithImageUrls } from "@/lib/types"
 import Loading from "@/components/loading"
+import { toast } from "sonner"
+import { useConvexMutation } from "@convex-dev/react-query"
 
 export default function ProfilePage() {
     const {user: currentUser} = useCurrentUser()
     const {count: unreadMessageCount} = useUnreadMessage()
-    const savedProperties = useQuery(api.property.getSavedProperties)
 
-    const [isEditing, setIsEditing] = useState(false)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [imageStorageId, setImageStorageId] = useState<string | undefined>("");
+    const [isEditing, setIsEditing] = useState<boolean>(false)
     const [formData, setFormData] = useState({
-        name: `${currentUser?.fname} ${currentUser?.lname}`,
-        email: currentUser?.email,
-        phone: currentUser?.contact,
-        bio: currentUser?.bio || "",
-        location: currentUser?.city || "",
-  })
+        fname: currentUser?.fname ,
+        lname: currentUser?.lname ,
+        email: currentUser?.email ,
+        phone: currentUser?.contact ,
+        bio: currentUser?.bio ,
+        location: currentUser?.city ,
+    })
 
+    const imageUrl = useQuery(
+        api.files.getStorageUrl,
+        imageStorageId ? { storageId: imageStorageId } : "skip"
+    );
+    const savedProperties = useQuery(api.property.getSavedProperties)
+    const updateProfile = useMutation(api.users.updateProfile)
+    const generateUploadUrl = useConvexMutation(api.files.generateUploadUrl);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -44,8 +55,59 @@ export default function ProfilePage() {
     }))
   }
 
+
+
+    // function to be able to read and upload the image to our own database
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be less than 5MB");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const postUrl = await generateUploadUrl();
+
+      const result = await fetch(postUrl, {
+        method: "POST",
+        headers: { "Content-Type": file.type },
+        body: file,
+      });
+
+      const { storageId } = await result.json();
+      setImageStorageId(storageId);
+      toast.success("Image uploaded successfully");
+    } catch (error) {
+      toast.error("Failed to upload Image");
+      console.error("Upload error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+
   const handleSaveProfile = () => {
-   
+    toast.promise(updateProfile({
+        image: imageStorageId ?? "",
+        fname: formData.fname ?? "",
+        lname: formData.lname ?? "",
+        email: formData.email ?? "",
+        contact: formData.phone ?? "",
+        bio: formData.bio ?? "",
+        city: formData.location ?? ""
+    }), {
+        loading: "Updating your profile.",
+        success: "Profile updated successfully..",
+        error: "Unable to update your profile."
+    })
     setIsEditing(false)
   }
 
@@ -62,13 +124,25 @@ export default function ProfilePage() {
                 <CardContent className="p-6">
                   <div className="flex flex-col items-center">
                     <Avatar className="h-24 w-24 mb-4">
-                      <AvatarImage src={currentUser?.image} alt={currentUser?.lname} />
+                      <AvatarImage src={imageUrl ?? undefined} alt={currentUser?.lname} />
                       <AvatarFallback className="bg-brand-orange text-white text-xl">
                         {currentUser?.lname
                           .split(" ")
                           .map((n) => n[0])
                           .join("")}
                       </AvatarFallback>
+                      <div  onClick={() =>
+                          document.getElementById("user-image")?.click()
+                        } className="bg-black/10 w-full h-full absolute bottom-0 flex items-center justify-center opacity-0 hover:opacity-70 hover:cursor-pointer transition-all duration-300 ease-in-out">
+                        <PencilIcon className="text-white h-7"/>
+                         <Input
+                            id="user-image"
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={handleImageChange}
+                        />
+                      </div>
                     </Avatar>
 
                     <h2 className="text-xl font-bold text-gray-900">{currentUser?.fname}</h2>
@@ -159,19 +233,32 @@ export default function ProfilePage() {
                   </CardHeader>
                   <CardContent>
                     <form className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="name" className="text-gray-700">
-                          Full Name
-                        </Label>
-                        <Input
-                          id="name"
-                          name="name"
-                          value={formData.name}
-                          onChange={handleInputChange}
-                          className="bg-white border-gray-300 text-gray-900"
-                        />
-                      </div>
-
+                        <div className="grid grid-cols-2 gap-5">
+                            <div className="space-y-2">
+                                <Label htmlFor="fname" className="text-gray-700">
+                                    First Name
+                                </Label>
+                                <Input
+                                    id="fname"
+                                    name="fname"
+                                    value={formData.fname}
+                                    onChange={handleInputChange}
+                                    className="bg-white border-gray-300 text-gray-900"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="lname" className="text-gray-700">
+                                    Last Name
+                                </Label>
+                                <Input
+                                    id="lname"
+                                    name="lname"
+                                    value={formData.lname}
+                                    onChange={handleInputChange}
+                                    className="bg-white border-gray-300 text-gray-900"
+                                />
+                            </div>
+                        </div>
                       <div className="space-y-2">
                         <Label htmlFor="email" className="text-gray-700">
                           Email Address
@@ -180,6 +267,7 @@ export default function ProfilePage() {
                           id="email"
                           name="email"
                           type="email"
+                          disabled
                           value={formData.email}
                           onChange={handleInputChange}
                           className="bg-white border-gray-300 text-gray-900"

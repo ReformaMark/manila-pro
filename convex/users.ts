@@ -7,456 +7,493 @@ import { asyncMap } from "convex-helpers";
 import { Id } from "./_generated/dataModel";
 
 export const createAdmin = mutation({
-    args: {
-        // accountId: v.string(),
-        fname: v.string(),
-        lname: v.string(),
-        email: v.string(),
-        contact: v.string(),
-        houseNumber: v.string(),
-        street: v.string(),
-        barangay: v.string(),
-        city: v.string(),
-        realtyId: v.optional(v.id("realty")),
-        password: v.string(),
-    },
-    handler: async (ctx, args) => {
-        try {
-            const adminId = await getAuthUserId(ctx)
+  args: {
+    // accountId: v.string(),
+    fname: v.string(),
+    lname: v.string(),
+    email: v.string(),
+    contact: v.string(),
+    houseNumber: v.string(),
+    street: v.string(),
+    barangay: v.string(),
+    city: v.string(),
+    realtyId: v.optional(v.id("realty")),
+    password: v.string(),
+  },
+  handler: async (ctx, args) => {
+    try {
+      const adminId = await getAuthUserId(ctx);
 
-            if (!adminId) throw new ConvexError("Not authenticated");
+      if (!adminId) throw new ConvexError("Not authenticated");
 
-            const admin = await ctx.db.get(adminId);
+      const admin = await ctx.db.get(adminId);
 
-            if (!admin || admin.role !== "admin") {
-                throw new ConvexError("Unauthorized - Only admins can create users");
-            }
+      if (!admin || admin.role !== "admin") {
+        throw new ConvexError("Unauthorized - Only admins can create users");
+      }
 
-            const existingEmail = await ctx.db
-                .query("users")
-                .filter((q) => q.eq(q.field("email"), args.email))
-                .first()
+      const existingEmail = await ctx.db
+        .query("users")
+        .filter((q) => q.eq(q.field("email"), args.email))
+        .first();
 
-            if (existingEmail) throw new ConvexError("Email already exists")
+      if (existingEmail) throw new ConvexError("Email already exists");
 
-            const role = "admin"
-            // const password = "123456"  TODO: generate random password and send it to email
-            const accountId = generateAdminId();
+      const role = "admin";
+      // const password = "123456"  TODO: generate random password and send it to email
+      const accountId = generateAdminId();
 
-            const { email, password, ...userData } = args;
+      const { email, password, ...userData } = args;
 
-            // @ts-expect-error - type error in convex auth
-            const create = await createAccount(ctx, {
-                provider: "password",
-                account: {
-                    id: email,
-                    secret: password, // No need na to kasi ang password ata ay manggagaling sa email notification pero for the meantime lagay muna
-                },
-                profile: {
-                    email,
-                    role,
-                    accountId,
-                    ...userData,
-                },
-            })
+      // @ts-expect-error - type error in convex auth
+      const create = await createAccount(ctx, {
+        provider: "password",
+        account: {
+          id: email,
+          secret: password, // No need na to kasi ang password ata ay manggagaling sa email notification pero for the meantime lagay muna
+        },
+        profile: {
+          email,
+          role,
+          accountId,
+          ...userData,
+        },
+      });
 
-            if (!create?.user._id) throw new ConvexError("Failed to create account")
+      if (!create?.user._id) throw new ConvexError("Failed to create account");
 
-            return create.user
-        } catch (error) {
-            console.error("Error in createAdmin:", error)
-            throw error;
-        }
+      return create.user;
+    } catch (error) {
+      console.error("Error in createAdmin:", error);
+      throw error;
     }
-})
+  },
+});
 
 export const createSeller = mutation({
-    args: {
-        // accountId: v.string(),
-        fname: v.string(),
-        lname: v.string(),
-        email: v.string(),
-        contact: v.string(),
-        houseNumber: v.string(),
-        street: v.string(),
-        barangay: v.string(),
-        city: v.string(),
-        password: v.string(),
-        // realtyId: v.optional(v.id("realty"))
-    },
-    handler: async (ctx, args) => {
-        try {
-            const adminId = await getAuthUserId(ctx)
-            if (!adminId) throw new ConvexError("Not authenticated");
+  args: {
+    // accountId: v.string(),
+    fname: v.string(),
+    lname: v.string(),
+    email: v.string(),
+    contact: v.string(),
+    houseNumber: v.string(),
+    street: v.string(),
+    barangay: v.string(),
+    city: v.string(),
+    password: v.string(),
+    // realtyId: v.optional(v.id("realty"))
+  },
+  handler: async (ctx, args) => {
+    try {
+      const adminId = await getAuthUserId(ctx);
+      if (!adminId) throw new ConvexError("Not authenticated");
 
-            const admin = await ctx.db.get(adminId);
-            if (!admin || admin.role !== "admin") {
-                throw new ConvexError("Unauthorized - Only admins can create users");
-            }
+      const admin = await ctx.db.get(adminId);
+      if (!admin || admin.role !== "admin") {
+        throw new ConvexError("Unauthorized - Only admins can create users");
+      }
 
-            const existingEmail = await ctx.db
-                .query("users")
-                .filter((q) => q.eq(q.field("email"), args.email))
-                .first()
+      const existingEmail = await ctx.db
+        .query("users")
+        .filter((q) => q.eq(q.field("email"), args.email))
+        .first();
 
-            if (existingEmail) throw new ConvexError("Email already exists")
+      if (existingEmail) throw new ConvexError("Email already exists");
 
-            const role = "seller"
-            // const password = "123456"  TODO: generate random password and send it to email
-            const accountId = generateSellerId();
+      const role = "seller";
+      // const password = "123456"  TODO: generate random password and send it to email
+      const accountId = generateSellerId();
 
-            const { email, password, ...userData } = args;
+      const { email, password, ...userData } = args;
 
-            // @ts-expect-error - type error in convex auth
-            const create = await createAccount(ctx, {
-                provider: "password",
-                account: {
-                    id: email,
-                    secret: password, // No need na to kasi ang password ata ay manggagaling sa email notification pero for the meantime lagay muna
-                },
-                profile: {
-                    email,
-                    role,
-                    accountId,
-                    ...userData,
-                },
-            })
+      // @ts-expect-error - type error in convex auth
+      const create = await createAccount(ctx, {
+        provider: "password",
+        account: {
+          id: email,
+          secret: password, // No need na to kasi ang password ata ay manggagaling sa email notification pero for the meantime lagay muna
+        },
+        profile: {
+          email,
+          role,
+          accountId,
+          ...userData,
+        },
+      });
 
-            if (!create?.user._id) throw new ConvexError("Failed to create account")
+      if (!create?.user._id) throw new ConvexError("Failed to create account");
 
-            return create.user
-        } catch (error) {
-            console.error("Error in createAdmin:", error)
-            throw error;
-        }
+      return create.user;
+    } catch (error) {
+      console.error("Error in createAdmin:", error);
+      throw error;
     }
-})
+  },
+});
 
 export const current = query({
-    args: {},
-    handler: async (ctx) => {
-        const userId = await getAuthUserId(ctx);
-        if (!userId) return null;
-        return await ctx.db.get(userId);
-    },
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return null;
+    return await ctx.db.get(userId);
+  },
 });
 
 export const role = query({
-    args: {},
-    handler: async (ctx) => {
-        const userId = await getAuthUserId(ctx)
-        if (!userId) return null
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return null;
 
-        const user = await ctx.db.get(userId)
-        return user?.role
-    }
-})
+    const user = await ctx.db.get(userId);
+    return user?.role;
+  },
+});
 
 export const get = query({
-    args: {
-        role: v.union(
-            v.literal("admin"),
-            v.literal("buyer"),
-            v.literal("seller")
-        )
-    },
-    handler: async (ctx, args) => {
-        const adminId = await getAuthUserId(ctx)
+  args: {
+    role: v.union(v.literal("admin"), v.literal("buyer"), v.literal("seller")),
+  },
+  handler: async (ctx, args) => {
+    const adminId = await getAuthUserId(ctx);
 
-        if (!adminId) throw new ConvexError("Not authenticated");
+    if (!adminId) throw new ConvexError("Not authenticated");
 
-        const admin = await ctx.db.get(adminId);
+    const admin = await ctx.db.get(adminId);
 
-        if (!admin || admin.role !== "admin") {
-            throw new ConvexError("Unauthorized - Only admins can create users");
-        }
-
-        return await ctx.db
-            .query("users")
-            .filter((q) =>
-                q.and(
-                    q.eq(q.field("role"), args.role),
-                    q.neq(q.field("_id"), adminId)
-                )
-            )
-            .collect()
+    if (!admin || admin.role !== "admin") {
+      throw new ConvexError("Unauthorized - Only admins can create users");
     }
-})
+
+    return await ctx.db
+      .query("users")
+      .filter((q) =>
+        q.and(q.eq(q.field("role"), args.role), q.neq(q.field("_id"), adminId))
+      )
+      .collect();
+  },
+});
 
 export const updateAdmin = mutation({
-    args: {
-        id: v.id("users"),
-        fname: v.string(),
-        lname: v.string(),
-        email: v.string(),
-        contact: v.string(),
-        houseNumber: v.string(),
-        street: v.string(),
-        barangay: v.string(),
-        city: v.string(),
-        realtyId: v.optional(v.id("realty")),
-    },
-    handler: async (ctx, args) => {
-        const adminId = await getAuthUserId(ctx);
-        if (!adminId) throw new ConvexError("Not authenticated");
+  args: {
+    id: v.id("users"),
+    fname: v.string(),
+    lname: v.string(),
+    email: v.string(),
+    contact: v.string(),
+    houseNumber: v.string(),
+    street: v.string(),
+    barangay: v.string(),
+    city: v.string(),
+    realtyId: v.optional(v.id("realty")),
+  },
+  handler: async (ctx, args) => {
+    const adminId = await getAuthUserId(ctx);
+    if (!adminId) throw new ConvexError("Not authenticated");
 
-        const admin = await ctx.db.get(adminId);
-        if (!admin || admin.role !== "admin") {
-            throw new ConvexError("Unauthorized - Only admins can update users");
-        }
+    const admin = await ctx.db.get(adminId);
+    if (!admin || admin.role !== "admin") {
+      throw new ConvexError("Unauthorized - Only admins can update users");
+    }
 
-        const { id, ...updates } = args;
-        const existingAdmin = await ctx.db.get(id);
+    const { id, ...updates } = args;
+    const existingAdmin = await ctx.db.get(id);
 
-        if (!existingAdmin) {
-            throw new ConvexError("Admin not found");
-        }
+    if (!existingAdmin) {
+      throw new ConvexError("Admin not found");
+    }
 
-        if (existingAdmin.role !== "admin") {
-            throw new ConvexError("Can only update admin users");
-        }
+    if (existingAdmin.role !== "admin") {
+      throw new ConvexError("Can only update admin users");
+    }
 
-        await ctx.db.patch(id, updates);
-        return await ctx.db.get(id);
-    },
+    await ctx.db.patch(id, updates);
+    return await ctx.db.get(id);
+  },
 });
 
 export const updateSeller = mutation({
-    args: {
-        id: v.id("users"),
-        fname: v.string(),
-        lname: v.string(),
-        email: v.string(),
-        contact: v.string(),
-        houseNumber: v.string(),
-        street: v.string(),
-        barangay: v.string(),
-        city: v.string(),
-        realtyId: v.optional(v.id("realty")),
-    },
-    handler: async (ctx, args) => {
-        const adminId = await getAuthUserId(ctx);
-        if (!adminId) throw new ConvexError("Not authenticated");
+  args: {
+    id: v.id("users"),
+    fname: v.string(),
+    lname: v.string(),
+    email: v.string(),
+    contact: v.string(),
+    houseNumber: v.string(),
+    street: v.string(),
+    barangay: v.string(),
+    city: v.string(),
+    realtyId: v.optional(v.id("realty")),
+  },
+  handler: async (ctx, args) => {
+    const adminId = await getAuthUserId(ctx);
+    if (!adminId) throw new ConvexError("Not authenticated");
 
-        const admin = await ctx.db.get(adminId);
-        if (!admin || admin.role !== "admin") {
-            throw new ConvexError("Unauthorized - Only admins can update users");
-        }
+    const admin = await ctx.db.get(adminId);
+    if (!admin || admin.role !== "admin") {
+      throw new ConvexError("Unauthorized - Only admins can update users");
+    }
 
-        const { id, ...updates } = args;
-        const existingSeller = await ctx.db.get(id);
+    const { id, ...updates } = args;
+    const existingSeller = await ctx.db.get(id);
 
-        if (!existingSeller) {
-            throw new ConvexError("Seller not found");
-        }
+    if (!existingSeller) {
+      throw new ConvexError("Seller not found");
+    }
 
-        if (existingSeller.role !== "seller") {
-            throw new ConvexError("Can only update admin users");
-        }
+    if (existingSeller.role !== "seller") {
+      throw new ConvexError("Can only update admin users");
+    }
 
-        await ctx.db.patch(id, updates);
-        return await ctx.db.get(id);
-    },
+    await ctx.db.patch(id, updates);
+    return await ctx.db.get(id);
+  },
 });
 
 export const getCounts = query({
-    args: {},
-    handler: async (ctx) => {
-        const adminId = await getAuthUserId(ctx)
-        if (!adminId) throw new ConvexError("Not authenticated");
+  args: {},
+  handler: async (ctx) => {
+    const adminId = await getAuthUserId(ctx);
+    if (!adminId) throw new ConvexError("Not authenticated");
 
-        const admin = await ctx.db.get(adminId);
-        if (!admin || admin.role !== "admin") {
-            throw new ConvexError("Unauthorized");
-        }
-
-        const buyers = await ctx.db
-            .query("users")
-            .filter((q) => q.eq(q.field("role"), "buyer"))
-            .collect();
-
-        const sellers = await ctx.db
-            .query("users")
-            .filter((q) => q.eq(q.field("role"), "seller"))
-            .collect();
-
-        const admins = await ctx.db
-            .query("users")
-            .filter((q) => q.eq(q.field("role"), "admin"))
-            .collect();
-
-        return {
-            total: buyers.length + sellers.length + admins.length,
-            buyers: buyers.length,
-            sellers: sellers.length,
-            admins: admins.length
-        }
+    const admin = await ctx.db.get(adminId);
+    if (!admin || admin.role !== "admin") {
+      throw new ConvexError("Unauthorized");
     }
+
+    const buyers = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("role"), "buyer"))
+      .collect();
+
+    const sellers = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("role"), "seller"))
+      .collect();
+
+    const admins = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("role"), "admin"))
+      .collect();
+
+    return {
+      total: buyers.length + sellers.length + admins.length,
+      buyers: buyers.length,
+      sellers: sellers.length,
+      admins: admins.length,
+    };
+  },
 });
 
+export const getAgents = query({
+  args: {
+    searchTerm: v.string(), //name
+    location: v.string(),
+    specialization: v.string(),
+    yearsOfExperience: v.number(),
+    language: v.array(v.string()),
+    sort: v.string(),
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, args) => {
+    let agents = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("role"), "seller"));
 
-export const getAgents = query(({
-    args:{
-        searchTerm: v.string(), //name
-        location: v.string(),
-        specialization: v.string(),
-        yearsOfExperience: v.number(),
-        language: v.array(v.string()),
-        sort: v.string(),
-        paginationOpts: paginationOptsValidator ,
-    },
-    handler: async(ctx, args) =>{
-        let agents = await ctx.db.query('users')
-            .filter(q => q.eq(q.field("role"), "seller"))
-        
-
-
-        if(args.location !== "All Locations") {
-            agents = agents.filter(q => q.eq(q.field("city"), args.location))
-        }
-        if(args.yearsOfExperience !== 0) {
-            agents = agents.filter(q => q.gte(q.field("agentInfo.experience"), args.yearsOfExperience))
-        }
-
-    
-
-        // if(args.specialization !== "All Specializations") {
-        //     agents = agents.filter(q => q.eq(q.field("role"), "seller"))
-        // }
-        const transactions = await ctx.db.query('deal')
-            .filter(q => q.eq(q.field('status'), "completed"))
-            .collect()
-
-        const ratingsReviews = await ctx.db.query('ratings_reviews')
-            .collect()
-
-
-        const a = await agents.paginate(args.paginationOpts)
-        const agentsWithDetails = await asyncMap(a.page, async(agent)=>{
-            const imageUrl = agent.image ? await ctx.storage.getUrl(agent.image as Id<'_storage'>) : undefined
-            const filteredTransactions = transactions.filter(t => t.sellerId === agent._id)
-            const agentRatingsAndReviews = ratingsReviews.filter(r => r.agentId === agent._id)
-            const totalRatings = agentRatingsAndReviews.reduce((sum, review) => sum + (review.ratings || 0), 0);
-            const agentRatings = agentRatingsAndReviews.length > 0 
-                ? totalRatings / agentRatingsAndReviews.length 
-                : 0;
-
-            return {
-                ...agent,
-                transactions: filteredTransactions.length,
-                rating: agentRatings,
-                reviews: agentRatingsAndReviews.length,
-                imageUrl: imageUrl === null ? undefined : imageUrl,
-                
-            }
-        })
-
-        let temp = agentsWithDetails
-        if(args.specialization !== "All Specializations") {
-            temp = agentsWithDetails.filter(a => {
-               const isSpecialized = a.agentInfo ? a.agentInfo.specializations.includes(args.specialization) : false;
-               return isSpecialized;
-            });
-           
-        }
-       
-        if(args.language.length >= 1) {
-            temp = agentsWithDetails.filter(a => {
-                args.language.some(language => a.agentInfo?.languages.includes(language))
-            });
-        }
-      
-        if(args.sort === "Highest Rating") {
-           temp.sort((a, b) => b.rating - a.rating);
-        }
-
-        if(args.sort === "Most Transactions") {
-            temp = temp.sort((a, b) => b.transactions - a.transactions);
-        }
-        if(args.sort === "Name (A-Z)") {
-            temp = temp.sort((a, b) => a.fname.localeCompare(b.fname));
-        }
-        if(args.sort === "Most Experience") {
-            temp.sort((a, b) => 
-                (b.agentInfo?.experience || 0) - (a.agentInfo?.experience || 0)
-            );
-        }
-        return {
-            page: temp,       
-            isDone: a.isDone,   
-            continueCursor: a.continueCursor 
-        };
+    if (args.location !== "All Locations") {
+      agents = agents.filter((q) => q.eq(q.field("city"), args.location));
     }
-}))
+    if (args.yearsOfExperience !== 0) {
+      agents = agents.filter((q) =>
+        q.gte(q.field("agentInfo.experience"), args.yearsOfExperience)
+      );
+    }
+
+    // if(args.specialization !== "All Specializations") {
+    //     agents = agents.filter(q => q.eq(q.field("role"), "seller"))
+    // }
+    const transactions = await ctx.db
+      .query("deal")
+      .filter((q) => q.eq(q.field("status"), "completed"))
+      .collect();
+
+    const ratingsReviews = await ctx.db.query("ratings_reviews").collect();
+
+    const a = await agents.paginate(args.paginationOpts);
+    const agentsWithDetails = await asyncMap(a.page, async (agent) => {
+      const imageUrl = agent.image
+        ? await ctx.storage.getUrl(agent.image as Id<"_storage">)
+        : undefined;
+      const filteredTransactions = transactions.filter(
+        (t) => t.sellerId === agent._id
+      );
+      const agentRatingsAndReviews = ratingsReviews.filter(
+        (r) => r.agentId === agent._id
+      );
+      const totalRatings = agentRatingsAndReviews.reduce(
+        (sum, review) => sum + (review.ratings || 0),
+        0
+      );
+      const agentRatings =
+        agentRatingsAndReviews.length > 0
+          ? totalRatings / agentRatingsAndReviews.length
+          : 0;
+
+      return {
+        ...agent,
+        transactions: filteredTransactions.length,
+        rating: agentRatings,
+        reviews: agentRatingsAndReviews.length,
+        imageUrl: imageUrl === null ? undefined : imageUrl,
+      };
+    });
+
+    let temp = agentsWithDetails;
+    if (args.specialization !== "All Specializations") {
+      temp = agentsWithDetails.filter((a) => {
+        const isSpecialized = a.agentInfo
+          ? a.agentInfo.specializations.includes(args.specialization)
+          : false;
+        return isSpecialized;
+      });
+    }
+
+    if (args.language.length >= 1) {
+      temp = agentsWithDetails.filter((a) => {
+        args.language.some((language) =>
+          a.agentInfo?.languages.includes(language)
+        );
+      });
+    }
+
+    if (args.sort === "Highest Rating") {
+      temp.sort((a, b) => b.rating - a.rating);
+    }
+
+    if (args.sort === "Most Transactions") {
+      temp = temp.sort((a, b) => b.transactions - a.transactions);
+    }
+    if (args.sort === "Name (A-Z)") {
+      temp = temp.sort((a, b) => a.fname.localeCompare(b.fname));
+    }
+    if (args.sort === "Most Experience") {
+      temp.sort(
+        (a, b) =>
+          (b.agentInfo?.experience || 0) - (a.agentInfo?.experience || 0)
+      );
+    }
+    return {
+      page: temp,
+      isDone: a.isDone,
+      continueCursor: a.continueCursor,
+    };
+  },
+});
 
 export const featuredAgents = query({
-    args:{
+  args: {},
+  handler: async (ctx, args) => {
+    const agents = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("role"), "seller"))
+      .collect();
+    const transactions = await ctx.db
+      .query("deal")
+      .filter((q) => q.eq(q.field("status"), "completed"))
+      .collect();
 
-    },
-    handler: async(ctx,  args) =>{
-        const  agents = await ctx.db.query('users')
-            .filter(q => q.eq(q.field('role'), 'seller'))
-            .collect();
-        const transactions = await ctx.db.query('deal')
-            .filter(q => q.eq(q.field('status'), "completed"))
-            .collect();
+    const ratingsReviews = await ctx.db.query("ratings_reviews").collect();
 
-        const ratingsReviews = await ctx.db.query('ratings_reviews').collect();
+    const agentsWithDetails = await asyncMap(agents, async (agent) => {
+      const imageUrl = agent.image
+        ? await ctx.storage.getUrl(agent.image as Id<"_storage">)
+        : undefined;
+      const filteredTransactions = transactions.filter(
+        (t) => t.sellerId === agent._id
+      );
+      const agentRatingsAndReviews = ratingsReviews.filter(
+        (r) => r.agentId === agent._id
+      );
+      const totalRatings = agentRatingsAndReviews.reduce(
+        (sum, review) => sum + (review.ratings || 0),
+        0
+      );
+      const agentRatings =
+        agentRatingsAndReviews.length > 0
+          ? totalRatings / agentRatingsAndReviews.length
+          : 0;
 
-        const agentsWithDetails = await asyncMap(agents, async(agent) =>{
-            const imageUrl = agent.image ? await ctx.storage.getUrl(agent.image as Id<'_storage'>) : undefined;
-            const filteredTransactions = transactions.filter(t => t.sellerId === agent._id);
-            const agentRatingsAndReviews = ratingsReviews.filter(r => r.agentId === agent._id);
-            const totalRatings = agentRatingsAndReviews.reduce((sum, review) => sum + (review.ratings || 0), 0);
-            const agentRatings = agentRatingsAndReviews.length > 0
-                ? totalRatings / agentRatingsAndReviews.length 
-                : 0;
+      return {
+        ...agent,
+        transactions: filteredTransactions.length,
+        rating: agentRatings,
+        reviews: agentRatingsAndReviews.length,
+        imageUrl: imageUrl === null ? undefined : imageUrl,
+      };
+    });
 
-            return {
-                ...agent,
-                transactions: filteredTransactions.length,
-                rating: agentRatings,
-                reviews: agentRatingsAndReviews.length,
-                imageUrl: imageUrl === null ? undefined : imageUrl,
-                
-            }
-        })
+    const filteredAgents = agentsWithDetails
+      .sort((a, b) => b.rating - a.rating)
+      .slice(0, 2);
 
-        const filteredAgents = agentsWithDetails.sort((a,b) => b.rating - a.rating).slice(0,2)
-
-        return filteredAgents
-
-    }
-})
+    return filteredAgents;
+  },
+});
 
 export const getAgentById = query({
-    args:{
-        id: v.id("users")
-    },
-    handler: async(ctx, args) =>{
+  args: {
+    id: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const agent = await ctx.db.get(args.id);
+    if (!agent) return null;
+    const imageUrl = agent.image
+      ? await ctx.storage.getUrl(agent.image as Id<"_storage">)
+      : undefined;
+    const transactions = await ctx.db
+      .query("deal")
+      .filter((q) => q.eq(q.field("sellerId"), args.id))
+      .collect();
+    const ratingsReviews = await ctx.db
+      .query("ratings_reviews")
+      .filter((q) => q.eq(q.field("agentId"), args.id))
+      .collect();
 
-        const agent = await ctx.db.get(args.id)
-        if(!agent) return null
-        const imageUrl = agent.image ? await ctx.storage.getUrl(agent.image as Id<'_storage'>) : undefined;
-        const transactions = await ctx.db.query('deal')
-            .filter(q => q.eq(q.field('sellerId'), args.id))
-            .collect()
-        const ratingsReviews = await ctx.db.query('ratings_reviews')
-            .filter(q => q.eq(q.field('agentId'), args.id))
-            .collect()
+    const totalRatings = ratingsReviews.reduce(
+      (sum, review) => sum + (review.ratings || 0),
+      0
+    );
+    const agentRatings =
+      ratingsReviews.length > 0 ? totalRatings / ratingsReviews.length : 0;
 
-        const totalRatings = ratingsReviews.reduce((sum, review) => sum + (review.ratings || 0), 0);
-        const agentRatings = ratingsReviews.length > 0 
-            ? totalRatings / ratingsReviews.length 
-            : 0;
-        
-        return {
-            ...agent,
-            transactions: transactions.length,
-            rating: agentRatings,
-            reviews: ratingsReviews.length,
-            imageUrl: imageUrl === null ? undefined : imageUrl,
-            
-        }
-    }
-})
+    return {
+      ...agent,
+      transactions: transactions.length,
+      rating: agentRatings,
+      reviews: ratingsReviews.length,
+      imageUrl: imageUrl === null ? undefined : imageUrl,
+    };
+  },
+});
+
+export const updateProfile = mutation({
+  args: {
+    image: v.string(),
+    fname: v.string(),
+    lname: v.string(),
+    email: v.string(),
+    contact: v.string(),
+    city: v.string(),
+    bio: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new ConvexError("NO user found!");
+
+    await ctx.db.patch(userId, {
+      ...args,
+    });
+  },
+});

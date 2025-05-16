@@ -21,6 +21,7 @@ import type * as files from "../files.js";
 import type * as http from "../http.js";
 import type * as messsages from "../messsages.js";
 import type * as property from "../property.js";
+import type * as ratings_reviews from "../ratings_reviews.js";
 import type * as saved_properties from "../saved_properties.js";
 import type * as users from "../users.js";
 
@@ -41,6 +42,7 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   messsages: typeof messsages;
   property: typeof property;
+  ratings_reviews: typeof ratings_reviews;
   saved_properties: typeof saved_properties;
   users: typeof users;
 }>;

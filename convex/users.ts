@@ -452,27 +452,9 @@ export const getAgentById = query({
     const imageUrl = agent.image
       ? await ctx.storage.getUrl(agent.image as Id<"_storage">)
       : undefined;
-    const transactions = await ctx.db
-      .query("deal")
-      .filter((q) => q.eq(q.field("sellerId"), args.id))
-      .collect();
-    const ratingsReviews = await ctx.db
-      .query("ratings_reviews")
-      .filter((q) => q.eq(q.field("agentId"), args.id))
-      .collect();
-
-    const totalRatings = ratingsReviews.reduce(
-      (sum, review) => sum + (review.ratings || 0),
-      0
-    );
-    const agentRatings =
-      ratingsReviews.length > 0 ? totalRatings / ratingsReviews.length : 0;
 
     return {
       ...agent,
-      transactions: transactions.length,
-      rating: agentRatings,
-      reviews: ratingsReviews.length,
       imageUrl: imageUrl === null ? undefined : imageUrl,
     };
   },
@@ -502,9 +484,9 @@ export const getImageUrl = query({
   args: {},
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new ConvexError("NO user found!");
+    if (!userId) return null;
     const user = await ctx.db.get(userId);
-    if (!user) throw new ConvexError("NO user found!");
+    if (!user) return null;
     if (user.image) {
       return await ctx.storage.getUrl(user.image);
     }

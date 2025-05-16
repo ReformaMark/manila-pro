@@ -7,6 +7,17 @@ import { api } from '../../../../../../convex/_generated/api'
 import { Id } from '../../../../../../convex/_generated/dataModel'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import Image from 'next/image'
+import { Flag, Mail, MapPin, MessageSquare, Phone, PhoneCall, Share2, Star } from 'lucide-react'
+import { FaFacebook, FaInstagram, FaLinkedin, FaTwitter } from 'react-icons/fa'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Textarea } from '@/components/ui/textarea'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import AgentBasicInfo from './agent-basic-info'
+import AgentBioAndDetails from './agent-bio-details'
+import AgentContactCard from './agent-contact-card'
+import AgentContent from './agent-content'
 
 function AgentComponent() {
     const params = useParams()
@@ -63,19 +74,43 @@ function AgentComponent() {
     )
   }
   return (
-    <div className='min-h-screen'>
-        <div>
-            <div className="container mx-auto px-4 py-6">
-                {/* Breadcrumb */}
-                <div className="flex items-center text-sm text-gray-500 mb-4">
-                    <Link href="/agents" className="hover:text-brand-orange transition-colors">
-                        Agents
-                    </Link>
-                <span className="mx-2">/</span>
-                <span className="text-gray-900">{agent.fname} {agent.lname}</span>
-                </div>
+    <div className='min-h-screen container'>
+          {/* Breadcrumb */}
+          <div className="flex items-center text-sm text-gray-500 mb-4">
+            <Link href="/agents" className="hover:text-brand-orange transition-colors">
+              Agents
+            </Link>
+            <span className="mx-2">/</span>
+            <span className="text-gray-900">{agent.fname} {agent.lname}</span>
+          </div>
+
+          {/* Agent Profile Header */}
+          <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 mb-6">
+            <div className="flex flex-col md:flex-row gap-6">
+             
+         
+               {agent && (
+                <>
+                {/* Left Column - Photo and Basic Info */}
+                <AgentBasicInfo agent={agent}/>
+
+                {/* Middle Column - Bio and Details */}
+                <AgentBioAndDetails agent={agent}/>
+
+                  {/* Right Column - Contact Card */}
+                <AgentContactCard agent={agent}/>
+                </>
+              )}
+            
+             
             </div>
-        </div>
+          </div>
+
+          {/* Agent Content */}
+          {agent && (
+            <AgentContent agent={agent}/>
+          )}
+  
     </div>
   )
 }

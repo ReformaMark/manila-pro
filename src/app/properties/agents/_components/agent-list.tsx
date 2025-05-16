@@ -55,7 +55,7 @@ function AgentList({
                       <AvatarFallback className="bg-gray-800 text-white uppercase">{agent?.fname.charAt(1)} {agent?.lname.charAt(1)}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
-                      <Link href={`/agents/${agent._id}`} className="hover:text-brand-orange">
+                      <Link href={`/properties/agents/${agent._id}`} className="hover:text-brand-orange">
                         <h3 className="font-semibold text-gray-900 capitalize">{agent?.fname} {agent?.lname}</h3>
                       </Link>
                       <p className="text-sm text-gray-500">{agent.agentInfo?.title ?? "No title"}</p>

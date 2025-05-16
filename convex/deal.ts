@@ -222,3 +222,16 @@ export const handleDealStatus = mutation({
     throw new ConvexError(`Unhandled deal status: ${status}`);
   },
 });
+
+export const getTransactions = query({
+  args: {
+    agentId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const transactions = await ctx.db
+      .query("deal")
+      .filter((q) => q.eq(q.field("sellerId"), args.agentId))
+      .collect();
+    return transactions;
+  },
+});

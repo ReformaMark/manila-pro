@@ -37,7 +37,8 @@ export default defineSchema({
           linkedin: v.optional(v.string()),
           twitter: v.optional(v.string()),
         }),
-
+        areasServed: v.optional(v.array(v.string())),
+        licenseNumber: v.optional(v.string()),
         certifications: v.optional(v.array(v.string())), ///"Licensed Real Estate Broker", "Luxury Home Marketing Specialist", "Certified Residential Specialist",
         awards: v.optional(v.array(v.string())), // "Top Producer 2022", "Circle of Excellence 2021"
       })
@@ -52,26 +53,10 @@ export default defineSchema({
     agentId: v.id("users"),
     ratings: v.number(),
     reviews: v.string(),
+    userId: v.id("users"),
   }),
-  // project: defineTable({
-  //     projectName: v.string(),
-  //     tagName: v.string(),
-  //     projectLocation: v.string(),
-  //     photo: v.string(),
-  // }).searchIndex("projectName", {
-  //     searchField: "projectName",
-  // }),
-  // realty: defineTable({
-  //     realtyName: v.string(),
-  //     tagName: v.string(),
-  //     contactPerson: v.string(),
-  //     contactNumber: v.string(),
-  //     photo: v.string(),
-  // }).searchIndex("realtyName", {
-  //     searchField: "realtyName",
-  // }),
+
   property: defineTable({
-    // projectId: v.id("project"),
     propertyName: v.string(),
     sellerId: v.id("users"),
     block: v.string(),
@@ -126,9 +111,6 @@ export default defineSchema({
     forecastedDate: v.optional(v.number()),
     //Price details
   })
-    // .searchIndex("by_project", {
-    //     searchField: "projectId",
-    // })
     .searchIndex("by_status", {
       searchField: "status",
     })

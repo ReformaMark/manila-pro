@@ -5,6 +5,7 @@ import { paginationOptsValidator } from "convex/server";
 import { asyncMap } from "convex-helpers";
 import { Id } from "./_generated/dataModel";
 import { ArrowRightSquare, Cctv } from "lucide-react";
+import { string } from "zod";
 
 export const get = query({
   args: {},
@@ -839,6 +840,95 @@ export const filteredByTransaction = query({
       page: propertyWithUrls, // The transformed list
       isDone: properties.isDone, // Preserve pagination status
       continueCursor: properties.continueCursor, // Preserve pagination cursor
+    };
+  },
+});
+
+export const getAgentActiveListings = query({
+  args: {
+    agentId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    const activeListings = await ctx.db
+      .query("property")
+      .filter((q) => q.eq(q.field("sellerId"), args.agentId))
+      .filter((q) => q.eq(q.field("status"), "available"))
+      .collect();
+    const agent = await ctx.db.get(args.agentId);
+    if (!agent) return null;
+
+    const agentImage = agent.image
+      ? await ctx.storage.getUrl(agent.image)
+      : undefined;
+    const ratingsReviews = await ctx.db
+      .query("ratings_reviews")
+      .filter((q) => q.eq(q.field("agentId"), args.agentId))
+      .collect();
+    const properties = await asyncMap(activeListings, async (property) => {
+      const isSaved = await ctx.db
+        .query("saved_properties")
+        .filter((q) => q.eq(q.field("userId"), userId))
+        .filter((q) => q.eq(q.field("propertyId"), property._id))
+        .unique();
+
+      const displayImageUrl = property.displayImage.startsWith("https://")
+        ? property.displayImage
+        : await ctx.storage.getUrl(property.displayImage);
+      const imageUrls = property.otherImage?.map(async (imageId) => {
+        const url = imageId.startsWith("https://")
+          ? imageId
+          : await ctx.storage.getUrl(imageId);
+        return url;
+      });
+
+      return {
+        ...property,
+        isSaved: isSaved ? true : false,
+        displayImageUrl: displayImageUrl,
+        imageUrls: imageUrls ? imageUrls.filter((i) => i != null) : null,
+        agent: {
+          ...agent,
+          userImageUrl: agentImage,
+          ratingsAndReviews: ratingsReviews,
+        },
+      };
+    });
+
+    const pastTransactions = await ctx.db
+      .query("deal")
+      .withIndex("by_sellerId", (q) => q.eq("sellerId", args.agentId))
+      .order("desc")
+      .collect();
+
+    const pastTransactionsWithProperty = asyncMap(
+      pastTransactions,
+      async (pt) => {
+        const property = await ctx.db.get(pt.propertyId);
+        if (!property) return null;
+        const propertyImageUrl = property?.displayImage
+          ? property.displayImage.startsWith("https://")
+            ? property.displayImage
+            : await ctx.storage.getUrl(property.displayImage)
+          : undefined;
+        return {
+          ...pt,
+          property: {
+            ...property,
+            displayImageUrl: propertyImageUrl ? propertyImageUrl : undefined,
+          },
+        };
+      }
+    );
+
+    const activeOrCompleted = pastTransactions.filter(
+      (pt) => pt.status === "active" || pt.status === "completed"
+    );
+    return {
+      properties: properties,
+      pastTransactions: (await pastTransactionsWithProperty).filter(
+        (pt) => pt != null
+      ),
     };
   },
 });

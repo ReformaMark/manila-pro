@@ -29,7 +29,7 @@ export interface Agent extends Doc<"users"> {
 }
 
 export interface AgentType extends Doc<"users"> {
-  imageUrl: string | undefined;
+  imageUrl: string | undefined | null;
 }
 
 export type DealStatus =
@@ -40,3 +40,9 @@ export type DealStatus =
   | "active"
   | "completed"
   | "cancelled";
+
+export interface ConversationType extends Doc<"conversations"> {
+  messages: Doc<"messages">[];
+  receiver: AgentType;
+  unreadMessages: number;
+}

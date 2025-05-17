@@ -50,7 +50,7 @@ export const getUnreadMessagesNumber = query({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) return null;
-    const conversations = await getConverstions(ctx);
+    const conversations = await getConversations(ctx);
     let unreadMesCount: number = 0;
     await asyncMap(conversations, async (conversation) => {
       const count = conversation.messages.filter(
@@ -63,7 +63,52 @@ export const getUnreadMessagesNumber = query({
   },
 });
 
-const getConverstions = async (ctx: QueryCtx) => {
+export const conversations = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return null;
+    const initConversations = await getConversations(ctx);
+
+    const conversations = await asyncMap(
+      initConversations,
+      async (conversation) => {
+        let unreadMesCount: number = 0;
+
+        const count = conversation.messages.filter(
+          (mes) => mes.receiverId === userId && !mes.isRead
+        ).length;
+        unreadMesCount = unreadMesCount + count;
+        const otherParticipantId = conversation.participantsId.find(
+          (id) => id !== userId
+        );
+        const receiver = otherParticipantId
+          ? await ctx.db.get(otherParticipantId)
+          : null;
+
+        if (receiver === null) return null;
+
+        const imageUrl = receiver?.image
+          ? receiver?.image.startsWith("https://")
+            ? receiver?.image
+            : await ctx.storage.getUrl(receiver.image as Id<"_storage">)
+          : null;
+        return {
+          ...conversation,
+          receiver: {
+            ...receiver,
+            imageUrl: imageUrl,
+          },
+          unreadMessages: count,
+        };
+      }
+    );
+
+    return conversations.filter((c) => c != null);
+  },
+});
+
+const getConversations = async (ctx: QueryCtx) => {
   const userId = await getAuthUserId(ctx);
   if (!userId) throw new ConvexError("No user Found!");
   const conversations = await ctx.db
@@ -90,3 +135,31 @@ const getConverstions = async (ctx: QueryCtx) => {
   });
   return convoWithMessages;
 };
+
+export const markAsRead = mutation({
+  args: {
+    conversationId: v.id("conversations"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return;
+    const messages = await ctx.db
+      .query("messages")
+      .withIndex("by_conversationId", (q) =>
+        q.eq("conversationId", args.conversationId)
+      )
+      .filter((q) => q.eq(q.field("isRead"), false))
+      .collect();
+    const filteredMessages = messages.filter(
+      (mes) => mes.receiverId === userId
+    );
+
+    if (filteredMessages.length > 0) {
+      await asyncMap(filteredMessages, async (message) => {
+        await ctx.db.patch(message._id, {
+          isRead: true,
+        });
+      });
+    }
+  },
+});

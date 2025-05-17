@@ -60,7 +60,7 @@ function AgentList({
                   <div className="flex items-start gap-4">
                     <Avatar className="size-2o ">
                       <AvatarImage src={agent.imageUrl} alt="Agent Image" />
-                      <AvatarFallback className="bg-gray-800 text-white uppercase">{agent?.fname.charAt(1)} {agent?.lname.charAt(1)}</AvatarFallback>
+                      <AvatarFallback className="bg-gray-800 text-white uppercase">{agent?.fname.charAt(0)} {agent?.lname.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
                       <Link href={`/properties/agents/${agent._id}`} className="hover:text-brand-orange">

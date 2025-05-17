@@ -7,6 +7,7 @@ import {
   Home,
   Key,
   Map,
+  MessageSquareIcon,
   Settings,
   Star,
   User,
@@ -69,8 +70,8 @@ export const resourceItems = [
     href: "/proposals",
   },
   {
-    icon: Settings,
-    label: "Settings",
-    href: "/proposals",
+    icon: MessageSquareIcon,
+    label: "Messages",
+    href: "/messages",
   },
 ];

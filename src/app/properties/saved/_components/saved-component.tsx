@@ -123,7 +123,7 @@ export default function SavedProperties() {
           </div>
         </div> */}
         {/* Email Alerts */}
-        <div className="mt-12">
+        {/* <div className="mt-12">
           <Card className="border border-gray-200 shadow-sm">
             <CardHeader>
               <CardTitle className="text-gray-900">Property Alerts</CardTitle>
@@ -143,7 +143,7 @@ export default function SavedProperties() {
               </div>
             </CardContent>
           </Card>
-        </div>
+        </div> */}
       </div>
     </div>
   )

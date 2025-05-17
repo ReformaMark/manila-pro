@@ -2,14 +2,18 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { useQuery } from 'convex/react'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Router } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
 import { api } from '../../../../../convex/_generated/api'
 import { RatingStars } from '@/components/rating-stars'
+import { useRouter } from 'next/navigation'
+import CallDialog from '../../agents/_components/call-dialog'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 function FeaturedAgents() {
   const  agents = useQuery(api.users.featuredAgents)
+  const router = useRouter()
   return (
     <div className="mt-12" >
     <div className="flex justify-between items-center mb-6">
@@ -26,8 +30,14 @@ function FeaturedAgents() {
         <Card key={agent._id} className="border border-gray-200 shadow-sm">
           <CardContent className="p-6">
             <div className="flex items-center gap-4">
-              <div className="relative h-16 w-16 rounded-full overflow-hidden">
-                <img src="/placeholder.svg" alt="Agent" className="object-cover" />
+              <div className="relative h-16 w-16 rounded-full">
+                 <Avatar>
+                    <AvatarImage src={agent.imageUrl ?? undefined} alt={agent.lname} />
+                    <AvatarFallback className="bg-brand-orange text-white">
+                        {agent.fname?.charAt(0)} 
+                        {agent.lname?.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900">{agent.fname} {agent.lname}</h3>
@@ -38,14 +48,15 @@ function FeaturedAgents() {
                 </div>
               </div>
             </div>
-            <div className="mt-4 flex justify-between">
+            <div className="mt-4 grid grid-cols-2  gap-x-10">
               <Button
-                variant="outline"
-                className="w-[48%] border-gray-300 text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                onClick={() =>router.push(`/properties/agents/${agent._id}`)}
+                variant="default"
+                className=""
               >
                 Profile
               </Button>
-              <Button className="w-[48%] bg-brand-orange hover:bg-brand-orange/90 text-white">Contact</Button>
+              <CallDialog agent={agent}/>
             </div>
           </CardContent>
         </Card>

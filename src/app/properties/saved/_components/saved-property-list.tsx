@@ -95,10 +95,6 @@ function SavedPropertyList({
       )
       }
     
-      const removeSearch = (id: string) => {
-        setSearches(searches.filter((search) => search.id !== id))
-      }
-    
   return (
     <div className="flex flex-col  md:justify-between gap-4 mb-6">
           <h1 className="text-2xl font-bold text-gray-900">Saved Properties</h1>
@@ -112,13 +108,7 @@ function SavedPropertyList({
                 <Heart className="h-4 w-4 mr-2" />
                 Saved Properties
               </TabsTrigger>
-              <TabsTrigger
-                value="searches"
-                className="flex-1 md:flex-initial data-[state=active]:bg-brand-orange data-[state=active]:text-white"
-              >
-                <Eye className="h-4 w-4 mr-2" />
-                Saved Searches
-              </TabsTrigger>
+         
             </TabsList>
             <TabsContent value="properties" className="mt-0">
             {savedProperties.length > 0 ? (
@@ -159,7 +149,7 @@ function SavedPropertyList({
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 rounded-full bg-white/90 hover:bg-white text-gray-700"
+                          className="h-10 w-10 rounded-full bg-white/90 hover:bg-white text-gray-700"
                           onClick={(e) => {
                             e.stopPropagation()
                             removeProperty(property._id)
@@ -167,13 +157,7 @@ function SavedPropertyList({
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 rounded-full bg-white/90 hover:bg-white text-gray-700"
-                        >
-                          <Share2 className="h-4 w-4" />
-                        </Button>
+                       
                       </div>
                     </div>
                     <PropertyCard property={property} onClick={() => {router.push(`/properties/${property._id}`)}} />
@@ -196,94 +180,7 @@ function SavedPropertyList({
           )}
         </TabsContent>
 
-        <TabsContent value="searches" className="mt-0">
-          {searches.length > 0 ? (
-            <>
-              <div className="mb-4 flex justify-between items-center">
-                <p className="text-gray-700">
-                  You have <span className="font-semibold">{searches.length}</span> saved searches
-                </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-red-200 text-red-600 hover:bg-red-50"
-                  onClick={() => setSearches([])}
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Clear All
-                </Button>
-              </div>
-
-              <div className="space-y-4">
-                {searches.map((search) => (
-                  <Card key={search.id} className="border border-gray-200 shadow-sm">
-                    <CardContent className="p-4">
-                      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                        <div>
-                          <h3 className="font-semibold text-gray-900">{search.name}</h3>
-                          <div className="flex items-center mt-1 text-sm text-gray-500">
-                            <Clock className="h-4 w-4 mr-1" />
-                            <span>Created on {search.dateCreated}</span>
-                          </div>
-                          <div className="mt-2 flex flex-wrap gap-2">
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                              {search.criteria.location}
-                            </span>
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                              {search.criteria.transactionType}
-                            </span>
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                              {search.criteria.unitType}
-                            </span>
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                              {search.criteria.bedrooms}+ Beds
-                            </span>
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                              {search.criteria.bathrooms}+ Baths
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-col md:flex-row items-center gap-2">
-                          <div className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
-                            {search.matchCount} matches
-                          </div>
-                          <div className="flex gap-2">
-                            <Link href={`/properties?search=${search.id}`}>
-                              <Button className="bg-brand-orange hover:bg-brand-orange/90 text-white">
-                                View Results
-                              </Button>
-                            </Link>
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="border-gray-300 text-gray-700"
-                              onClick={() => removeSearch(search.id)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </>
-          ) : (
-            <div className="text-center py-12 bg-gray-50 rounded-lg border border-gray-200">
-              <Eye className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium mb-2 text-gray-900">No saved searches</h3>
-              <p className="text-gray-500 mb-4">
-                You haven't saved any searches yet. Use our search filters and save your searches to get notified
-                about new matching properties.
-              </p>
-              <Link href="/properties">
-                <Button className="bg-brand-orange hover:bg-brand-orange/90 text-white">Start Searching</Button>
-              </Link>
-            </div>
-          )}
-        </TabsContent>
+      
           </Tabs>
         </div>
   )

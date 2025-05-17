@@ -1,9 +1,10 @@
+'use client'
+import { useFilterStore } from '@/app/properties/store/useFilter'
+import Link from 'next/link'
 import React from 'react'
-import { Mail, } from 'lucide-react';
-import { FaFacebookMessenger, FaTiktok } from 'react-icons/fa';
-import Link from 'next/link';
 
 function FooterComponent() {
+    const {location, transactionType, unitType, setLocation, setTransactionType, setUnitType} = useFilterStore()
   return (
       <footer className="bg-brand-dark text-white py-12">
         <div className="container">
@@ -20,24 +21,24 @@ function FooterComponent() {
               <h3 className="font-semibold mb-4">Quick Links</h3>
               <ul className="space-y-2">
                 <li>
-                  <a href="#" className="text-gray-400 hover:text-white">
+                  <Link href="/" className="text-gray-400 hover:text-white">
                     Home
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-400 hover:text-white">
+                  <Link href="/properties" className="text-gray-400 hover:text-white">
                     Properties
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-400 hover:text-white">
+                  <Link href="/properties/agents" className="text-gray-400 hover:text-white">
                     Agents
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-400 hover:text-white">
+                  <Link href="/about" className="text-gray-400 hover:text-white">
                     About Us
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -46,24 +47,24 @@ function FooterComponent() {
               <h3 className="font-semibold mb-4">Locations</h3>
               <ul className="space-y-2">
                 <li>
-                  <a href="#" className="text-gray-400 hover:text-white">
+                  <Link href="/properties" onClick={()=> setLocation('makati')} className="text-gray-400 hover:text-white">
                     Makati
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-400 hover:text-white">
+                  <Link href="/properties" onClick={()=> setLocation('pasay')} className="text-gray-400 hover:text-white">
                     Pasay
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-400 hover:text-white">
+                  <Link href="/properties" onClick={()=> setLocation('taguig')} className="text-gray-400 hover:text-white">
                     Taguig
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-400 hover:text-white">
+                  <Link href="/properties" className="text-gray-400 hover:text-white">
                     All Locations
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>

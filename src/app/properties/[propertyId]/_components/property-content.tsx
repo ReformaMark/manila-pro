@@ -320,13 +320,13 @@ function PropertyContent({property, carouselApi, setCurrentImageIndex}: Property
       {/* Similar Properties */}
       <div className="mt-6">
         <div className="flex justify-between">
-          <h2 className="text-xl font-bold mb-4 text-gray-900">Similar Properties</h2>
-            <Link href={`/properties/${property._id}`} className='contents'>
+            <h2 className="text-xl font-bold mb-4 text-gray-900">More Properties from this Agent</h2>
+            <Link href={`/properties/agents/${property.agent?._id}`} className='contents'>
               <Button
                   variant={'link'}
                   className="text-brand-orange"
                   >
-                  View More Similar Properties
+                  View Agent Property listing
                   <ArrowRight  className="text-brand-orange"/>
               </Button>
             </Link>

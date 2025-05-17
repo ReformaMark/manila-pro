@@ -505,3 +505,15 @@ export const saveImage = mutation({
     });
   },
 });
+
+export const agentCount = query({
+  args: {},
+  handler: async (ctx, args) => {
+    const agent = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("role"), "seller"))
+      .collect();
+
+    return agent.length;
+  },
+});

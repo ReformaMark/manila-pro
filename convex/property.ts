@@ -859,7 +859,7 @@ export const getAgentActiveListings = query({
     if (!agent) return null;
 
     const agentImage = agent.image
-      ? await ctx.storage.getUrl(agent.image)
+      ? await ctx.storage.getUrl(agent.image as Id<"_storage">)
       : undefined;
     const ratingsReviews = await ctx.db
       .query("ratings_reviews")
@@ -874,19 +874,23 @@ export const getAgentActiveListings = query({
 
       const displayImageUrl = property.displayImage.startsWith("https://")
         ? property.displayImage
-        : await ctx.storage.getUrl(property.displayImage);
-      const imageUrls = property.otherImage?.map(async (imageId) => {
-        const url = imageId.startsWith("https://")
-          ? imageId
-          : await ctx.storage.getUrl(imageId);
-        return url;
-      });
+        : await ctx.storage.getUrl(property.displayImage as Id<"_storage">);
+
+      const imageUrls = property.otherImage
+        ? await asyncMap(property.otherImage, async (imageId) => {
+            const url =
+              typeof imageId === "string" && imageId.startsWith("https://")
+                ? imageId
+                : await ctx.storage.getUrl(imageId as Id<"_storage">);
+            return url;
+          })
+        : [];
 
       return {
         ...property,
         isSaved: isSaved ? true : false,
         displayImageUrl: displayImageUrl,
-        imageUrls: imageUrls ? imageUrls.filter((i) => i != null) : null,
+        imageUrls: imageUrls.filter((i) => i != null),
         agent: {
           ...agent,
           userImageUrl: agentImage,
@@ -1128,5 +1132,14 @@ export const getPropertyByAcceptedDeals = query({
     const validDeals = dealsWithDetails.filter((deal) => deal !== null);
 
     return validDeals;
+  },
+});
+
+export const propertiesCount = query({
+  args: {},
+  handler: async (ctx) => {
+    const properties = await ctx.db.query("property").collect();
+
+    return properties.length;
   },
 });

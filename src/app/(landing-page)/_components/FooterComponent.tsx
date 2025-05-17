@@ -5,24 +5,84 @@ import Link from 'next/link';
 
 function FooterComponent() {
   return (
-    <div className='grid grid-cols-12 items-center gap-y-10 py-5 bg-black text-white shadow-black shadow-xl p-2 md:p-10'>
-        <div className="col-span-12 md:col-span-3 text-center">
-        <Link href={'/'}>Manila<span className="text-orange-500 text-xl font-semibold ">Pro</span></Link>
-        </div>
-        <div className="col-span-12 md:col-span-6 flex  justify-evenly ">
-            {["About Us","Contact Us", "FAQ", "Terms", "Privacy",].map((label)=>(
-                <h3 key={label} className='text-xs font-semibold hover:cursor-pointer'>{label}</h3>
-            ))}
-        </div>
-        <div className="col-span-12 md:col-span-3">
-            <div className="flex justify-center gap-x-5">
-                <FaFacebookMessenger size={16} />
-                <FaTiktok size={16} />
-                <Mail size={16} />
+      <footer className="bg-brand-dark text-white py-12">
+        <div className="container">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+              <div className="font-bold text-xl mb-4">
+                <span className="text-primary">Manila</span>
+                <span className="text-white">Pro</span>
+              </div>
+              <p className="text-gray-400">Your trusted partner in finding the perfect property in the Philippines.</p>
             </div>
+
+            <div>
+              <h3 className="font-semibold mb-4">Quick Links</h3>
+              <ul className="space-y-2">
+                <li>
+                  <a href="#" className="text-gray-400 hover:text-white">
+                    Home
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-gray-400 hover:text-white">
+                    Properties
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-gray-400 hover:text-white">
+                    Agents
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-gray-400 hover:text-white">
+                    About Us
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-semibold mb-4">Locations</h3>
+              <ul className="space-y-2">
+                <li>
+                  <a href="#" className="text-gray-400 hover:text-white">
+                    Makati
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-gray-400 hover:text-white">
+                    Pasay
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-gray-400 hover:text-white">
+                    Taguig
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-gray-400 hover:text-white">
+                    All Locations
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-semibold mb-4">Contact Us</h3>
+              <ul className="space-y-2 text-gray-400">
+                <li>Email: info@manilapro.com</li>
+                <li>Phone: +63 2 8123 4567</li>
+                <li>Address: Makati City, Philippines</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+            <p>© 2025 ManilaPro. All rights reserved.</p>
+          </div>
         </div>
-       
-    </div>
+    </footer>
   )
 }
 

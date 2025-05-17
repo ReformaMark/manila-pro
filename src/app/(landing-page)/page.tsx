@@ -1,5 +1,6 @@
 
 
+import FeaturedProperties from "./_components/featured-properties";
 import FooterComponent from "./_components/FooterComponent";
 import Hero from "./_components/Hero";
 import Locations from "./_components/Locations";
@@ -11,6 +12,7 @@ const LandingPage = () => {
   return (
     <div className="">
         <Hero/>
+        <FeaturedProperties/>
         <SubHero/>
         <Services/>
         <Locations/>

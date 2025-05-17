@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { useState } from 'react'
 import {motion} from 'framer-motion'
 import { Card, CardContent } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -11,6 +11,10 @@ import { Button } from '@/components/ui/button'
 import Loading from '@/components/loading'
 import { Agent } from '@/lib/types'
 import AgentLoading from './agent-loading'
+import { useCurrentUser } from '@/hooks/use-current-user'
+import { useRouter } from 'next/navigation'
+import SendMessageDialog from '../../[propertyId]/_components/send-message-dialog'
+import CallDialog from './call-dialog'
 
 interface AgentListProps {
     results: Agent[];
@@ -25,6 +29,10 @@ function AgentList({
     handleReset,
     loadMore
 }: AgentListProps) {
+  const {user, isLoading} = useCurrentUser()
+  const router = useRouter()
+  const [callDialog, setCallDialog] = useState<boolean>(false)
+  const [messageDialog, setMessageDialog] = useState<boolean>(false)
   return (
     <div className='contents'>
         
@@ -111,22 +119,15 @@ function AgentList({
                   </div>
 
                   <div className="mt-4 flex gap-2">
-                    <Button
-                      variant="outline"
-                      className="flex-1 border-gray-300 text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-                    >
-                      <Phone className="h-4 w-4 mr-2" />
-                      Call
-                    </Button>
-                    <Button className="flex-1 bg-brand-orange hover:bg-brand-orange/90 text-white">
-                      <MessageSquare className="h-4 w-4 mr-2" />
-                      Message
-                    </Button>
+                    <CallDialog agent={agent} />
+                    <SendMessageDialog agentId={agent._id}/>
                   </div>
                 </CardContent>
               </Card>
             </motion.div>
           ))}
+
+       
          
         </div>
 

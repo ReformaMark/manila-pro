@@ -23,13 +23,9 @@ function AgentComponent() {
     const params = useParams()
     const agentId = params.id as Id<'users'>
     const agent = useQuery(api.users.getAgentById, {id: agentId})
-    const router = useRouter()
   
     const [isLoading, setIsLoading] = useState(true)
-    const [showAllTestimonials, setShowAllTestimonials] = useState(false)
 
-    const [filterType, setFilterType] = useState<string>("all")
-    const [searchQuery, setSearchQuery] = useState("")
 
     useEffect(() => {
         if (agent) {
@@ -77,7 +73,7 @@ function AgentComponent() {
     <div className='min-h-screen container'>
           {/* Breadcrumb */}
           <div className="flex items-center text-sm text-gray-500 mb-4">
-            <Link href="/agents" className="hover:text-brand-orange transition-colors">
+            <Link href="/properties/agents" className="hover:text-brand-orange transition-colors">
               Agents
             </Link>
             <span className="mx-2">/</span>

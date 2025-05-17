@@ -3,7 +3,7 @@ import AgentComponent from './_components/agent-component'
 
 function Page() {
   return (
-    <div>
+    <div className=' pb-20'>
         <AgentComponent/>
     </div>
   )

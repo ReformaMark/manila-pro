@@ -12,12 +12,14 @@ import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import Image from 'next/image'
 import { Badge } from '@/components/ui/badge'
+import { useCurrentUser } from '@/hooks/use-current-user'
 
 function AgentContent({
     agent
 }:{
     agent: AgentType
 }) {
+    const {user, isLoading} = useCurrentUser()
     const [searchQuery, setSearchQuery] = useState<string>('')
     const [filterType, setFilterType] = useState<string>('all')
     const router = useRouter()
@@ -132,7 +134,7 @@ function AgentContent({
                 <PropertyCard
                     key={property._id}
                     property={property as PropertyTypesWithImageUrls}
-                    onClick={() => router.push(`/properties/${property._id}`)}
+                    onClick={() => router.push( user ? `/properties/${property._id}` : `/auth`)}
                 />
                 ))}
             </div>
@@ -157,7 +159,8 @@ function AgentContent({
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {data?.pastTransactions.map((transaction) => (
+            {data?.pastTransactions && data?.pastTransactions?.length > 0 ?
+             data?.pastTransactions.map((transaction) => (
                 <Card key={transaction._id} className="overflow-hidden border border-gray-200">
                 <div className="relative h-40">
                     <Image
@@ -185,14 +188,18 @@ function AgentContent({
                     </div>
                 </CardContent>
                 </Card>
-            ))}
+            )) : (
+            <div className="col-span-4 text-center py-12 bg-gray-50 rounded-lg">
+                <BarChart className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No past transactions found</h3>
+                <p className="text-gray-500">
+                {agent.fname} doesn't have any completed sales or leases yet.
+                </p>
+            </div>
+            )}
             </div>
 
-            <div className="mt-6 flex justify-center">
-            <Button variant="outline" className="border-gray-300 text-gray-700">
-                View More Transactions
-            </Button>
-            </div>
+        
         </TabsContent>
 
         {/* Reviews Tab */}
@@ -292,27 +299,7 @@ function AgentContent({
             ))}
             </div>
 
-            {/* {agentRatingsAndReviews && agentRatingsAndReviews.reviews.length > 3 && (
-            <div className="mt-6 text-center">
-                <Button
-                variant="outline"
-                className="border-gray-300 text-gray-700"
-                onClick={() => setShowAllTestimonials(!showAllTestimonials)}
-                >
-                {showAllTestimonials ? (
-                    <>
-                    <ChevronUp className="h-4 w-4 mr-2" />
-                    Show Less
-                    </>
-                ) : (
-                    <>
-                    <ChevronDown className="h-4 w-4 mr-2" />
-                    Show All Reviews
-                    </>
-                )}
-                </Button>
-            </div>
-            )} */}
+          
         </TabsContent>
 
         {/* Credentials Tab */}
@@ -323,16 +310,22 @@ function AgentContent({
                 <CardTitle className="text-gray-900">Certifications</CardTitle>
                 </CardHeader>
                 <CardContent>
-                <ul className="space-y-3">
-                    {agent.agentInfo?.certifications?.map((certification, index) => (
-                    <li key={index} className="flex items-start">
+                {agent.agentInfo?.certifications && agent.agentInfo.certifications.length > 0 ? (
+                    <ul className="space-y-3">
+                    {agent.agentInfo.certifications.map((certification, index) => (
+                        <li key={index} className="flex items-start">
                         <CheckCircle className="h-5 w-5 text-green-500 mr-2 mt-0.5" />
                         <div>
-                        <p className="font-medium text-gray-900">{certification}</p>
+                            <p className="font-medium text-gray-900">{certification}</p>
                         </div>
-                    </li>
+                        </li>
                     ))}
-                </ul>
+                    </ul>
+                ) : (
+                    <p className="text-gray-500">
+                    {agent.fname} hasn't added any certifications yet or may not have any.
+                    </p>
+                )}
                 </CardContent>
             </Card>
 
@@ -341,16 +334,22 @@ function AgentContent({
                 <CardTitle className="text-gray-900">Awards & Recognition</CardTitle>
                 </CardHeader>
                 <CardContent>
-                <ul className="space-y-3">
-                    {agent.agentInfo?.awards?.map((award, index) => (
-                    <li key={index} className="flex items-start">
+                {agent.agentInfo?.awards && agent.agentInfo.awards.length > 0 ? (
+                    <ul className="space-y-3">
+                    {agent.agentInfo.awards.map((award, index) => (
+                        <li key={index} className="flex items-start">
                         <Award className="h-5 w-5 text-brand-orange mr-2 mt-0.5" />
                         <div>
-                        <p className="font-medium text-gray-900">{award}</p>
+                            <p className="font-medium text-gray-900">{award}</p>
                         </div>
-                    </li>
+                        </li>
                     ))}
-                </ul>
+                    </ul>
+                ) : (
+                    <p className="text-gray-500">
+                    {agent.fname} hasn't added any awards or recognition yet or may not have any.
+                    </p>
+                )}
                 </CardContent>
             </Card>
 

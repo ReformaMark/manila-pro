@@ -53,34 +53,44 @@ function AgentBasicInfo({
             </div>
 
             <div className="mt-4 flex flex-wrap justify-center md:justify-start gap-2">
-            {agent.agentInfo?.socialMedia.facebook && (
-                <Link href={agent.agentInfo?.socialMedia.facebook} target="_blank" rel="noopener noreferrer">
-                <Button variant="outline" size="icon" className="h-8 w-8 rounded-full border-gray-300">
-                    <FaFacebook className="h-4 w-4 text-gray-700" />
-                </Button>
-                </Link>
-            )}
-            {agent.agentInfo?.socialMedia.instagram && (
-                <Link href={agent.agentInfo?.socialMedia.instagram} target="_blank" rel="noopener noreferrer">
-                <Button variant="outline" size="icon" className="h-8 w-8 rounded-full border-gray-300">
-                    <FaInstagram className="h-4 w-4 text-gray-700" />
-                </Button>
-                </Link>
-            )}
-            {agent.agentInfo?.socialMedia.linkedin && (
-                <Link href={agent.agentInfo?.socialMedia.linkedin} target="_blank" rel="noopener noreferrer">
-                <Button variant="outline" size="icon" className="h-8 w-8 rounded-full border-gray-300">
-                    <FaLinkedin className="h-4 w-4 text-gray-700" />
-                </Button>
-                </Link>
-            )}
-            {agent.agentInfo?.socialMedia.twitter && (
-                <Link href={agent.agentInfo?.socialMedia.twitter} target="_blank" rel="noopener noreferrer">
-                <Button variant="outline" size="icon" className="h-8 w-8 rounded-full border-gray-300">
-                    <FaTwitter className="h-4 w-4 text-gray-700" />
-                </Button>
-                </Link>
-            )}
+                {agent.agentInfo?.socialMedia &&
+                    (agent.agentInfo.socialMedia.facebook ||
+                        agent.agentInfo.socialMedia.instagram ||
+                        agent.agentInfo.socialMedia.linkedin ||
+                        agent.agentInfo.socialMedia.twitter) ? (
+                    <>
+                        {agent.agentInfo.socialMedia.facebook && (
+                            <Link href={agent.agentInfo.socialMedia.facebook} target="_blank" rel="noopener noreferrer">
+                                <Button variant="outline" size="icon" className="h-8 w-8 rounded-full border-gray-300">
+                                    <FaFacebook className="h-4 w-4 text-gray-700" />
+                                </Button>
+                            </Link>
+                        )}
+                        {agent.agentInfo.socialMedia.instagram && (
+                            <Link href={agent.agentInfo.socialMedia.instagram} target="_blank" rel="noopener noreferrer">
+                                <Button variant="outline" size="icon" className="h-8 w-8 rounded-full border-gray-300">
+                                    <FaInstagram className="h-4 w-4 text-gray-700" />
+                                </Button>
+                            </Link>
+                        )}
+                        {agent.agentInfo.socialMedia.linkedin && (
+                            <Link href={agent.agentInfo.socialMedia.linkedin} target="_blank" rel="noopener noreferrer">
+                                <Button variant="outline" size="icon" className="h-8 w-8 rounded-full border-gray-300">
+                                    <FaLinkedin className="h-4 w-4 text-gray-700" />
+                                </Button>
+                            </Link>
+                        )}
+                        {agent.agentInfo.socialMedia.twitter && (
+                            <Link href={agent.agentInfo.socialMedia.twitter} target="_blank" rel="noopener noreferrer">
+                                <Button variant="outline" size="icon" className="h-8 w-8 rounded-full border-gray-300">
+                                    <FaTwitter className="h-4 w-4 text-gray-700" />
+                                </Button>
+                            </Link>
+                        )}
+                    </>
+                ) : (
+                    <span className="text-sm text-muted-foreground">No social media links provided.</span>
+                )}
             </div>
 
             <div className="mt-4 flex flex-col gap-2">

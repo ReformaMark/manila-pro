@@ -7,12 +7,15 @@ import React, { useState } from 'react'
 import { toast } from 'sonner'
 import { api } from '../../../../../convex/_generated/api'
 import { Id } from '../../../../../convex/_generated/dataModel'
+import { useCurrentUser } from '@/hooks/use-current-user'
+import { useRouter } from 'next/navigation'
 
 export default function SendMessageDialog({agentId}: {agentId: Id<'users'>}) {
     const [dialogOpen, setDialogOpen] = useState<boolean>(false)
     const [ message, setMessage] = useState<string>('')
     const sendMessage = useMutation(api.messsages.sendMessage)
-
+    const {user, isLoading} = useCurrentUser()
+    const router = useRouter()
     const handleSubmit =  () => {
         toast.promise(sendMessage({
             receiverId: agentId,
@@ -29,7 +32,7 @@ export default function SendMessageDialog({agentId}: {agentId: Id<'users'>}) {
   return (
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <Button
-                onClick={() => setDialogOpen(true)}
+                onClick={() => user ? setDialogOpen(true) : router.push('/auth')}
                 variant="outline"
                 className="w-full border-brand-orange text-brand-orange hover:bg-brand-orange/10"
             >

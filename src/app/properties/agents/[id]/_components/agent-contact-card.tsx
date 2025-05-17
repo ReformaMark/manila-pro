@@ -10,16 +10,27 @@ import { CalendarIcon, Mail, MessageSquare, PhoneCall } from 'lucide-react'
 import React, { useState } from 'react'
 import { api } from '../../../../../../convex/_generated/api'
 import { toast } from 'sonner'
+import { useCurrentUser } from '@/hooks/use-current-user'
+import { useRouter } from 'next/navigation'
 
 function AgentContactCard({
     agent
 }:{
     agent: AgentType
 }) {
+    const {user, isLoading} = useCurrentUser()
+    const router = useRouter()
     const [messageText, setMessageText] = useState<string>("")
     const [dialogOpen, setDialogOpen] = useState<boolean>(false)
     const sendMessage = useMutation(api.messsages.sendMessage)
+    const [copyStates, setCopyStates ] = useState({
+        phone: false,
+        email: false
+    })
     const handleSendMessage = () =>{
+        if(!user) {
+            router.push('/auth')
+        }
         toast.promise(sendMessage({
             receiverId: agent._id,
             content: messageText
@@ -32,6 +43,16 @@ function AgentContactCard({
         setMessageText('')
         setDialogOpen(false)
     }
+
+   
+    const copyUrl = (text: string, type: 'phone' | 'email') => {
+        navigator.clipboard.writeText(text).then(() => {
+            setCopyStates(prev => ({ ...prev, [type]: true }));
+            setTimeout(() => {
+                setCopyStates(prev => ({ ...prev, [type]: false }));
+            }, 2000);
+        });
+    }
   return (
     <div className="md:w-1/4">
         <Card className="border border-gray-200 shadow-sm">
@@ -41,19 +62,27 @@ function AgentContactCard({
             <CardContent>
             <div className="space-y-4">
                 <Button
-                variant="outline"
-                className="w-full justify-start border-gray-300 text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                    variant="outline"
+                    className="w-full justify-start border-gray-300 text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                    onClick={() => copyUrl(agent.contact, 'phone')}
                 >
-                <PhoneCall className="h-4 w-4 mr-2 text-brand-orange" />
-                {agent.contact}
+                    <PhoneCall className="h-4 w-4 mr-2 text-brand-orange" />
+                    {agent.contact}
+                    <span className="ml-auto text-xs text-green-600">
+                        {copyStates.phone ? "Copied!" : ""}
+                    </span>
                 </Button>
 
                 <Button
-                variant="outline"
-                className="w-full justify-start border-gray-300 text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                    variant="outline"
+                    className="w-full justify-start border-gray-300 text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                    onClick={() => copyUrl(agent.email, 'email')}
                 >
-                <Mail className="h-4 w-4 mr-2 text-brand-orange" />
-                {agent.email}
+                    <Mail className="h-4 w-4 mr-2 text-brand-orange" />
+                    {agent.email}
+                    <span className="ml-auto text-xs text-green-600">
+                        {copyStates.email ? "Copied!" : ""}
+                    </span>
                 </Button>
 
                 <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -90,78 +119,32 @@ function AgentContactCard({
                 </DialogContent>
                 </Dialog>
 
-                {/* <Dialog>
-                <DialogTrigger asChild>
-                    <Button
-                    variant="outline"
-                    className="w-full border-brand-orange text-brand-orange hover:bg-brand-orange/10"
-                    >
-                    <CalendarIcon className="h-4 w-4 mr-2" />
-                    Schedule Call
-                    </Button>
-                </DialogTrigger>
-                <DialogContent>
-                    <DialogHeader>
-                    <DialogTitle>Schedule a Call with {agent.name}</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4 py-4">
-                    <p className="text-sm text-gray-500">
-                        Select a date for your call. {agent.name} will confirm the time via message.
-                    </p>
-                    <div className="flex justify-center">
-                        <Popover>
-                        <PopoverTrigger asChild>
-                            <Button
-                            variant="outline"
-                            className={cn(
-                                "w-full justify-start text-left font-normal",
-                                !selectedDate && "text-gray-500",
-                            )}
-                            >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {selectedDate ? format(selectedDate, "PPP") : "Select a date"}
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0">
-                            <Calendar
-                            mode="single"
-                            selected={selectedDate}
-                            onSelect={setSelectedDate}
-                            initialFocus
-                            disabled={(date) => date < new Date() || date.getDay() === 0 || date.getDay() === 6}
-                            />
-                        </PopoverContent>
-                        </Popover>
-                    </div>
-                    </div>
-                    <div className="flex justify-end">
-                    <Button
-                        onClick={handleScheduleCall}
-                        disabled={!selectedDate}
-                        className="bg-brand-orange hover:bg-brand-orange/90 text-white"
-                    >
-                        Schedule Call
-                    </Button>
-                    </div>
-                </DialogContent>
-                </Dialog> */}
+            
             </div>
 
             <Separator className="my-4" />
 
             <div className="space-y-3">
                 <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-500">Office Address:</span>
-                </div>
-                <p className="text-gray-700 text-sm">{agent.agentInfo?.officeAddress}</p>
-
-                <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-500">Working Hours:</span>
+                    <span className="text-gray-500">Office Address:</span>
                 </div>
                 <p className="text-gray-700 text-sm">
-                {agent.agentInfo?.workingHours?.days}
-                <br />
-                {agent.agentInfo?.workingHours?.hours}
+                    {agent.agentInfo?.officeAddress
+                        ? agent.agentInfo.officeAddress
+                        : "No office address provided"}
+                </p>
+
+                <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-500">Working Hours:</span>
+                </div>
+                <p className="text-gray-700 text-sm">
+                    {agent.agentInfo?.workingHours?.days || agent.agentInfo?.workingHours?.hours
+                        ? <>
+                            {agent.agentInfo?.workingHours?.days || "Days not specified"}
+                            <br />
+                            {agent.agentInfo?.workingHours?.hours || "Hours not specified"}
+                          </>
+                        : "No working hours provided"}
                 </p>
             </div>
             </CardContent>

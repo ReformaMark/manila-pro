@@ -18,7 +18,7 @@ function FeaturedProperties() {
 
     const router = useRouter()
   return (
-    <main className="flex-1 py-12 bg-gray-50">
+    <main className="flex-1 py-12 ">
         <div className="container">
             <section className="mb-12">
             <div className="flex items-center justify-between mb-6">

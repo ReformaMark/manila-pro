@@ -20,22 +20,23 @@ function SubHero() {
         variants={containerVariants}
         className='w-full px-10 xl:px-52 py-40 size-full inset-0 relative'
         > 
-        <div className="absolute inset-0 flex gap-y-5 flex-col items-center justify-center px-5">
+        <div className="absolute inset-0 flex flex-col justify-center px-5">
         
           <motion.h1 
             variants={itemVariants}
-            className='z-20  text-center font-sans font-extrabold tracking-widest text-xl xl:text-xl text-black '
+            className='z-20 subtitle text-4xl lg:text-sm mb-0  text-left font-sans font-extrabold tracking-widest  text-white '
             >
             Let&apos;s find your dream home!
           </motion.h1> 
           <motion.p
             variants={itemVariants}
-            className='text-black text-center font-extralight'>Save a few homes you like, and we&apos;ll help you discover more recommendations just for you.</motion.p>
+            className='text-gray-200 text-xl leading-7 lg:leading-3 lg:text-[0.4rem] text-left font-extralight'>Discover premium real estate options in Makati, Pasay, and Taguig</motion.p>
+            <motion.div variants={itemVariants} className="">
             <Link href={'/properties'} className="">
-              <Button className='bg-orange-600 hover:bg-orange-400'>Explore</Button>
+              <Button className='bg-orange-600 hover:bg-orange-400 rounded-sm mt-5 lg:mt-1 lg:h-3 lg:text-[0.4rem] w-fit'>Explore Properties</Button>
             </Link>
+            </motion.div>
         </div>
-      
       </motion.div>
      
 

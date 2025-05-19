@@ -9,21 +9,22 @@ import Link from 'next/link'
 
 function Services() {
   return (
+    <div className="w-full bg-gray-100 shadow-md">
     <motion.div 
         initial="hidden"
         whileInView='visible'
         viewport={{once: true}}
         variants={containerVariants}
-        className='bg-gray-50 grid grid-cols-1 gap-5 lg:grid-cols-3 px-5 md:px-10 xl:px-40 py-10 min-h-fit gap-x-10'
+        className=' grid grid-cols-1 gap-5 lg:grid-cols-3 container w-full py-10 min-h-fit gap-x-10'
     >
         <motion.div 
             initial='hidden'
             whileInView={'visible'}
             variants={itemVariants}
-            className=""
+            className="flex"
          >
 
-        <Card className='shadow-xl rounded-3xl flex flex-col justify-between'>
+        <Card className='shadow-xl rounded-3xl flex flex-col justify-between flex-1'>
             <CardHeader className='flex justify-center items-center'>
                 <Handshake className='bg-black rounded-full size-20 text-white p-2'/>
             </CardHeader>
@@ -44,9 +45,9 @@ function Services() {
             initial='hidden'
             whileInView={'visible'}
             variants={itemVariants}
-            className=""
+            className="flex"
          >
-        <Card className='shadow-xl rounded-3xl flex flex-col justify-between'>
+        <Card className='shadow-xl rounded-3xl flex flex-col justify-between flex-1'>
             <CardHeader className='flex justify-center items-center'>
                 <Key className='bg-black rounded-full size-20 text-white p-2'/>
             </CardHeader>
@@ -67,9 +68,9 @@ function Services() {
             initial='hidden'
             whileInView={'visible'}
             variants={itemVariants}
-            className=""
+            className="flex"
          >
-        <Card className='shadow-xl rounded-3xl flex flex-col justify-between'>
+        <Card className='shadow-xl rounded-3xl flex flex-col justify-between flex-1'>
             <CardHeader className='flex justify-center items-center'>
                 <Building className='bg-black rounded-full size-20 text-white p-2'/>
             </CardHeader>
@@ -88,6 +89,7 @@ function Services() {
         </motion.div>
       
     </motion.div>
+    </div>
   )
 }
 

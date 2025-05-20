@@ -17,6 +17,8 @@ import Loading from "./loading"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useQuery } from "convex/react"
 import { api } from "../../convex/_generated/api"
+import { usePathname } from "next/navigation"
+import { cn } from "@/lib/utils"
 
 interface HeaderProps {
   setIsOpen?: (isOpen: boolean) => void,
@@ -28,17 +30,34 @@ export function Header() {
   const { signOut } = useAuthActions()
   const isMobile = useIsMobile()
   const userImageUrl = useQuery(api.users.getImageUrl)
+  const pathname = usePathname()
 
   return (
-    <header className="bg-brand-black text-white relative top-0 py-2 z-40  border-b border-gray-800" style={{ height: 'var(--header-height)' }}>
+    <header className={cn(pathname === "/auth" ? " pt-10": "bg-brand-black py-2"," text-white relative top-0  z-40  ")} style={{ height: 'var(--header-height)' }}>
       <div className=" px-10  h-full ">
         <div className="flex items-center justify-between h-full transition-all duration-500 ease-in-out">
-          {isMobile && (
+          {isMobile && pathname !== "/auth" && (
             <div className="opacity-0">iiiii</div>
           )}
           <div className="flex items-center gap-4 ">
             <Link href="/" className="flex items-center gap-2 text-center">
-              <h1 className="font-bold text-xl text-white">Manila<span className="text-xl font-extrabold text-brand-orange">Pro</span></h1>
+              <h1
+                className="font-bold text-xl text-white"
+                style={{
+                  filter: pathname === "/auth" ? "drop-shadow(0 0 2px #000)" : undefined,
+                  color: pathname === "/auth" ? "#fff" : undefined,
+                }}
+              >
+                Manila
+                <span
+                  className="text-xl font-extrabold text-brand-orange"
+                  style={{
+                    filter: pathname === "/auth" ? "drop-shadow(0 0 2px #000)" : undefined,
+                  }}
+                >
+                  Pro
+                </span>
+              </h1>
             </Link>
           </div>
             {!isLoading ? user ? (
@@ -70,10 +89,10 @@ export function Header() {
                 </DropdownMenuContent>
               </DropdownMenu>
               </div>
-            ): (
+            ): pathname !== "/auth" && (
               <Link href={'/auth'} className="">
                 <Button variant={'orange'} size={'sm'} className="h-10">
-                    Sign In
+                      Sign In
                 </Button>
               </Link>
             ) : 

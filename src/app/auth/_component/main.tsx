@@ -6,7 +6,7 @@ interface MainProps {
 }
 function Main({children}:MainProps) {
   return (
-    <div>
+    <div className='relative'>
         <Header/>
         <main className="flex-1">{children}</main>
     </div>

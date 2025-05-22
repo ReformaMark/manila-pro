@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Bath, Bed, MapPin, Maximize, Router } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 function FeaturedProperties() {
     const { results, status, loadMore } = usePaginatedQuery(
@@ -23,7 +24,9 @@ function FeaturedProperties() {
             <section className="mb-12">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-3xl font-bold">Featured Properties</h2>
-              <Button variant="outline">View All</Button>
+              <Link href="/properties/featured">
+                <Button variant="outline">View All</Button>
+              </Link>
             </div>
       
           </section>

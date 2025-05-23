@@ -1,7 +1,7 @@
 import { defineSchema, defineTable } from "convex/server";
 import { authTables } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { count } from "console";
+import { count, time } from "console";
 
 export default defineSchema({
   ...authTables,
@@ -75,6 +75,7 @@ export default defineSchema({
       v.literal("reserved"), // reserved dont show in buyer side
       v.literal("sold") // sold dont show in buyer side
     ),
+    coordinates: v.optional(v.array(v.number())), // coordinates
     createdAt: v.number(),
     updatedAt: v.number(),
     //land information
@@ -117,6 +118,23 @@ export default defineSchema({
     .searchIndex("by_city", {
       searchField: "city",
     }),
+
+  nearby_places: defineTable({
+    propertyId: v.id("property"),
+    name: v.string(), // name of the place
+    type: v.union(
+      v.literal("school"),
+      v.literal("hospital"),
+      v.literal("mall"),
+      v.literal("restaurant"),
+      v.literal("park"),
+      v.literal("transportation")
+    ),
+    coordinates: v.array(v.number()), // coordinates
+    distance: v.number(), // in meters
+    travelTime: v.string(), // in minutes
+    description: v.optional(v.string()),
+  }).index("by_propertyId", ["propertyId"]),
   deal: defineTable({
     propertyId: v.id("property"),
     buyerId: v.id("users"),

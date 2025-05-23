@@ -33,7 +33,7 @@ export function Header() {
   const pathname = usePathname()
 
   return (
-    <header className={cn(pathname === "/auth" ? " pt-10": "bg-brand-black py-2"," text-white relative top-0  z-40  ")} style={{ height: 'var(--header-height)' }}>
+    <header className={cn(pathname === "/auth" ? "relative pt-10": "sticky bg-brand-black py-2"," text-white top-0  z-40  ")} style={{ height: 'var(--header-height)' }}>
       <div className=" px-10  h-full ">
         <div className="flex items-center justify-between h-full transition-all duration-500 ease-in-out">
           {isMobile && pathname !== "/auth" && (

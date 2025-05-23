@@ -31,7 +31,7 @@ export default function RootLayout({
             className={`${poppinsFont.className} antialiased`}
           >
             <SidebarProvider>
-            <div className="antialiased w-full">
+            <div className="antialiased relative w-full">
               <Header/>
                 <div className="flex bg-green-50" >
                   <BuyerSideNav/> 

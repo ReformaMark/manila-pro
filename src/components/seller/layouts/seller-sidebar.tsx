@@ -6,6 +6,7 @@ import {
   Building2,
   ChevronDown,
   LayoutGrid,
+  MapIcon,
   Users,
 } from "lucide-react";
 import Link from "next/link";
@@ -29,6 +30,11 @@ export const sellerSidebarItems: SidebarItem[] = [
     icon: Building2,
     label: "My Properties",
     href: "/seller/properties",
+  },
+  {
+    icon: MapIcon,
+    label: "Map Locations",
+    href: "/seller/map-locations",
   },
   {
     icon: BookOpen,

@@ -1143,3 +1143,19 @@ export const propertiesCount = query({
     return properties.length;
   },
 });
+
+export const saveCoordinates = mutation({
+  args: {
+    propertyId: v.id("property"),
+    coordinates: v.array(v.number()),
+  },
+  handler: async (ctx, args) => {
+    try {
+      await ctx.db.patch(args.propertyId, {
+        coordinates: args.coordinates,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  },
+});

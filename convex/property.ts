@@ -1159,3 +1159,17 @@ export const saveCoordinates = mutation({
     }
   },
 });
+export const removeCoordinates = mutation({
+  args: {
+    propertyId: v.id("property"),
+  },
+  handler: async (ctx, args) => {
+    try {
+      await ctx.db.patch(args.propertyId, {
+        coordinates: undefined,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  },
+});

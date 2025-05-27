@@ -4,7 +4,7 @@ import MapLocations from './_components/map-locations'
 function Page() {
   
   return (
-    <div className='container mx-auto'>
+    <div className='container mx-auto '>
        <MapLocations/>
     </div>
   )

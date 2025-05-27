@@ -7,12 +7,12 @@ import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import { LayersControl, MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
-import { PropertyTypesWithImageUrls } from '@/lib/types';
 import PinIcon from '@/../public/images/pin.png';
-import PropertyCard from '@/app/properties/_components/PropertyCard';
 import { Doc } from '../../../../../convex/_generated/dataModel';
 import { useMutation } from 'convex/react';
 import { api } from '../../../../../convex/_generated/api';
+import { toast } from 'sonner';
+import { ConfirmLocationDialog } from './confirmation-dialog';
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -22,11 +22,17 @@ L.Icon.Default.mergeOptions({
 });
 
 interface LeafletMapProps {
+    // position: { lat: number; lng: number; zoom: number };
+    // setPosition: (value: { lat: number; lng: number; zoom: number }) => void;
     selectedProperty: Doc<'property'> | null;
     setSelectedProperty: (value: Doc<'property'> | null) => void;
-    properties?: PropertyTypesWithImageUrls[];
+    properties?: Doc<'property'>[] | undefined;
     selectedLocation: [number, number] | null;
     setSelectedLocation: (value: [number, number] | null) => void;
+    selectedNearbyPlace: [number,number] | null;
+    setSelectedNearbyPlace: (value: [number, number] | null) => void;
+    addingNearbyPlaces: boolean;
+    setActiveTab: (tab: string) => void;
 }
 
 interface NearbyPlacesProps {
@@ -37,36 +43,77 @@ interface NearbyPlacesProps {
 
 
 export default function LeafletMap({
+    // position,
+    // setPosition,
     selectedProperty,
     setSelectedProperty,
     properties, 
     selectedLocation,
     setSelectedLocation,
- 
+    selectedNearbyPlace,
+    setSelectedNearbyPlace,
+    addingNearbyPlaces,
+    setActiveTab
 }: LeafletMapProps) {
     const saveCoordinates = useMutation(api.property.saveCoordinates)
- 
-    const [position] = useState({
-    lat: 14.5537, // Center latitude between Makati, Taguig, and Pasay
-    lng: 121.0276, // Center longitude between Makati, Taguig, and Pasay
-    zoom: 13
+    const removeCoordinates = useMutation(api.property.removeCoordinates)
+    const [position, setPosition] = useState({
+      lat: 14.5537, // Center latitude between Makati, Taguig, and Pasay
+      lng: 121.0276, // Center longitude between Makati, Taguig, and Pasay
+      zoom: 13
     })
+    const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
     const [iconSize, setIconSize] = useState<[number, number]>([25, 41]);
     const coordinates: [number, number] = [position.lat, position.lng]
-
     function LocationSelector() {
         useMapEvents({
         click(e) {
-            if (selectedProperty) {
-                const location: [number, number] = [e.latlng.lat, e.latlng.lng];
-                setSelectedLocation(location)
+          const location: [number, number] = [e.latlng.lat, e.latlng.lng];
+            if (selectedProperty && !addingNearbyPlaces) {
+              setSelectedLocation(location)
+              setConfirmationDialogOpen(true);
+            }
+          }
+        });
+        return null;
+    }
+    function NearbyPlaceSelector() {
+        useMapEvents({
+        click(e) {
+          const location: [number, number] = [e.latlng.lat, e.latlng.lng];
+          
+            if(selectedProperty && addingNearbyPlaces) {
+              setSelectedNearbyPlace(location)
             }
         }
         });
         return null;
     }
+    function onClose() {
+      setSelectedLocation(null);
+      setConfirmationDialogOpen(false);
+    }
+    function onConfirm() {
+      if(selectedProperty && selectedLocation) { 
+        toast.promise(
+          saveCoordinates({
+            propertyId: selectedProperty?._id,
+            coordinates: selectedLocation as [number, number]
+          }),{
+            loading: 'Saving location...',
+            success: 'Location saved successfully.',
+            error: 'Failed to save location.'
+        })
+        setConfirmationDialogOpen(false)
+        setActiveTab('Assigned');
+      }
+    }
+    const filteredProperties = selectedProperty ? properties?.filter((property) => property._id === selectedProperty._id) : properties;
+   
   return (
-    <MapContainer center={coordinates} zoom={position.zoom} className='h-full w-full'>
+    <div className='contents'>
+  
+    <MapContainer center={coordinates} zoom={15} className='h-full w-full cursor-pointer'>
         <LayersControl position="topright">
            <LayersControl.BaseLayer checked name="Default Map">
                <TileLayer
@@ -82,12 +129,19 @@ export default function LeafletMap({
             />
           </LayersControl.BaseLayer>
         </LayersControl>
-        {properties?.filter((property) => property.coordinates).map((property, index) => {
+        {filteredProperties?.filter((property) => property.coordinates).map((property, index) => {
          
           return (
           <React.Fragment key={property._id}>
             <Marker 
-             
+              eventHandlers={{
+                click: () => {
+                  if (!selectedProperty && !addingNearbyPlaces) {
+                    setSelectedLocation(property.coordinates as [number, number]);
+                    setSelectedProperty(property);
+                  }
+                },
+              }}
               key={`${property._id}-${index}`}
               position={property.coordinates as [number, number]}
               icon={L.icon({
@@ -99,15 +153,17 @@ export default function LeafletMap({
               })}
             >
               <Popup closeButton={false} className='p-0'>
-                <PropertyCard property={property} onClick={() => {}}  />
+                  <h1 className='text-center font-semibold '>{property.propertyName}</h1>
+                 
               </Popup>
             </Marker>
           </React.Fragment>
         )})}
         {selectedLocation && (
             <Marker 
-             
-              key={`${selectedLocation}`}
+              
+              riseOnHover
+              key={`${selectedLocation}-location`}
               position={selectedLocation as [number, number]}
               icon={L.icon({
                 iconUrl: PinIcon.src || '/placeholder.svg',
@@ -122,7 +178,34 @@ export default function LeafletMap({
               </Popup>
             </Marker> 
         )}
+        {selectedNearbyPlace && (
+            <Marker 
+              key={`${selectedNearbyPlace}-nearbyPlace`}
+              position={selectedNearbyPlace as [number, number]}
+              icon={L.icon({
+                iconUrl: PinIcon.src || '/placeholder.svg',
+                iconSize: iconSize,
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                
+              })}
+            >
+              <Popup closeButton={false} className='p-0'>
+                
+              </Popup>
+            </Marker> 
+        )}
         <LocationSelector />
+        <NearbyPlaceSelector />
+        {selectedLocation && !addingNearbyPlaces && (
+          <ConfirmLocationDialog 
+            open={confirmationDialogOpen}
+            onClose={onClose}
+            onConfirm={onConfirm}
+            coordinates={selectedLocation as [number, number]}
+          />
+        )}
     </MapContainer>
+    </div>
   );
 }

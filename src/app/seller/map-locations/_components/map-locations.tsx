@@ -22,6 +22,11 @@ function MapLocations() {
     }
   ), [])
   const [expand, setExpand] = useState<boolean>(false)
+  const [position, setPosition] = useState({
+    lat: 14.5537, // Center latitude between Makati, Taguig, and Pasay
+    lng: 121.0276, // Center longitude between Makati, Taguig, and Pasay
+    zoom: 13
+  })
   const [addingNearbyPlaces, setAddingNearbyPlaces] = useState<boolean>(false)
   const [activeTab, setActiveTab] = useState<string>("Unassigned")
   const [selectedProperty, setSelectedProperty] = useState<Doc<'property'> | null>(null)
@@ -38,8 +43,8 @@ function MapLocations() {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 h-fit ">
       <div className="col-span-1 ">
         <SelectableProperties 
-          // position={position}
-          // setPosition={setPosition}
+          position={position}
+          setPosition={setPosition}
           activeTab={activeTab}
           properties={properties}
           selectedProperty={selectedProperty}
@@ -66,8 +71,8 @@ function MapLocations() {
             <div className="flex-1 mt-4">
 
               <Map 
-                // position={position}
-                // setPosition={setPosition}
+                position={position}
+                setPosition={setPosition}
                 properties={properties}
                 selectedLocation={selectedLocation}
                 setSelectedLocation={setSelectedLocation}

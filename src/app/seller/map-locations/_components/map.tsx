@@ -6,7 +6,7 @@ import 'leaflet/dist/leaflet.css';
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
-import { LayersControl, MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
+import { LayersControl, MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from 'react-leaflet';
 import PinIcon from '@/../public/images/pin.png';
 import { Doc } from '../../../../../convex/_generated/dataModel';
 import { useMutation } from 'convex/react';
@@ -22,8 +22,8 @@ L.Icon.Default.mergeOptions({
 });
 
 interface LeafletMapProps {
-    // position: { lat: number; lng: number; zoom: number };
-    // setPosition: (value: { lat: number; lng: number; zoom: number }) => void;
+    position: { lat: number; lng: number; zoom: number };
+    setPosition: (value: { lat: number; lng: number; zoom: number }) => void;
     selectedProperty: Doc<'property'> | null;
     setSelectedProperty: (value: Doc<'property'> | null) => void;
     properties?: Doc<'property'>[] | undefined;
@@ -43,8 +43,8 @@ interface NearbyPlacesProps {
 
 
 export default function LeafletMap({
-    // position,
-    // setPosition,
+    position,
+    setPosition,
     selectedProperty,
     setSelectedProperty,
     properties, 
@@ -57,19 +57,28 @@ export default function LeafletMap({
 }: LeafletMapProps) {
     const saveCoordinates = useMutation(api.property.saveCoordinates)
     const removeCoordinates = useMutation(api.property.removeCoordinates)
-    const [position, setPosition] = useState({
-      lat: 14.5537, // Center latitude between Makati, Taguig, and Pasay
-      lng: 121.0276, // Center longitude between Makati, Taguig, and Pasay
-      zoom: 13
-    })
+ 
     const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
     const [iconSize, setIconSize] = useState<[number, number]>([25, 41]);
     const coordinates: [number, number] = [position.lat, position.lng]
+
+    function ChangeCenter({ center }: { center: [number, number] }) {
+      const map = useMap();
+      // Update the view when center changes
+      map.flyTo(center, map.getZoom());
+
+      return null;
+    }
     function LocationSelector() {
         useMapEvents({
         click(e) {
           const location: [number, number] = [e.latlng.lat, e.latlng.lng];
             if (selectedProperty && !addingNearbyPlaces) {
+              setPosition({
+                lat: location[0],
+                lng: location[1],
+                zoom: 13
+              })
               setSelectedLocation(location)
               setConfirmationDialogOpen(true);
             }
@@ -109,6 +118,7 @@ export default function LeafletMap({
       }
     }
     const filteredProperties = selectedProperty ? properties?.filter((property) => property._id === selectedProperty._id) : properties;
+   
    
   return (
     <div className='contents'>
@@ -205,6 +215,7 @@ export default function LeafletMap({
             coordinates={selectedLocation as [number, number]}
           />
         )}
+        <ChangeCenter center={[position.lat, position.lng]} />
     </MapContainer>
     </div>
   );

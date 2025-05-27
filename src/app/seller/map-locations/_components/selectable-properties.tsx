@@ -8,8 +8,8 @@ import { Card, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 interface PropertiesProps {
-  // position: { lat: number; lng: number; zoom: number };
-  // setPosition: (value: { lat: number; lng: number; zoom: number }) => void;
+  position: { lat: number; lng: number; zoom: number };
+  setPosition: (value: { lat: number; lng: number; zoom: number }) => void;
   properties: Doc<'property'>[];
   selectedProperty: Doc<'property'> | null,
   setSelectedProperty: (value: Doc<'property'> | null) => void;
@@ -19,6 +19,8 @@ interface PropertiesProps {
 }
 
 function SelectableProperties({
+  position,
+  setPosition,
   properties,
   selectedProperty,
   setSelectedProperty,
@@ -33,7 +35,13 @@ function SelectableProperties({
       
     } else {
       setSelectedProperty(property)
-    
+      if (property.coordinates && property.coordinates.length >= 2) {
+        setPosition({
+          lat: property.coordinates[0],
+          lng: property.coordinates[1],
+          zoom: 13
+        })
+      }
       setSelectedLocation(null)
     }
   }

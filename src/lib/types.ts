@@ -3,6 +3,11 @@ import { Doc } from "../../convex/_generated/dataModel";
 export interface PropertyTypes extends Doc<"property"> {
   displayImageUrl: string | null;
 }
+
+export interface SellerPropertyWithNearbyPlaces extends Doc<'property'> {
+  displayImage: string,
+  nearbyPlaces: Doc<'nearby_places'>[]
+}
 export interface PropertyTypesWithImageUrls extends Doc<"property"> {
   displayImageUrl: string | null;
   isSaved: boolean;

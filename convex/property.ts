@@ -424,6 +424,31 @@ export const getPropertyBySeller = query({
   },
 });
 
+export const getPropertyBySellerWithNearbyPlaces = query({
+  args: {},
+  handler: async (ctx) => {
+    const id = await getAuthUserId(ctx);
+    if (!id) throw new ConvexError("Unauthorized");
+
+    const properties = await ctx.db
+      .query("property")
+      .filter((q) => q.eq(q.field("sellerId"), id))
+      .collect();
+
+    return await asyncMap(properties, async (property) => {
+      const displayImageUrl = property.displayImage
+        ? await ctx.storage.getUrl(property.displayImage)
+        : null;
+      const nearbyPlaces = await ctx.db.query('nearby_places').withIndex('by_propertyId', q => q.eq('propertyId', property._id)).collect()
+      return {
+        ...property,
+        displayImage: displayImageUrl as string,
+        nearbyPlaces: nearbyPlaces
+      };
+    });
+  },
+});
+
 export const getPropertyByIdSeller = query({
   args: { id: v.id("property") },
   handler: async (ctx, args) => {

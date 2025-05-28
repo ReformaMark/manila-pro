@@ -6,6 +6,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
 import { Card, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { SellerPropertyWithNearbyPlaces } from '@/lib/types'
 
 interface PropertiesProps {
   position: { lat: number; lng: number; zoom: number };
@@ -16,6 +17,8 @@ interface PropertiesProps {
   setSelectedLocation: (value: [number, number] | null) => void;
   activeTab?: string;
   setActiveTab?: (tab: string) => void;
+  setAddingNearbyPlaces: (value: boolean) => void;
+  setSelectedNearbyPlace: (value: [number,number] | null) => void;
 }
 
 function SelectableProperties({
@@ -26,39 +29,32 @@ function SelectableProperties({
   setSelectedProperty,
   setSelectedLocation,
   activeTab,
-  setActiveTab
+  setActiveTab,
+  setAddingNearbyPlaces,
+  setSelectedNearbyPlace,
 }: PropertiesProps) {
 
   function handleSelectProperty (property: Doc<'property'>) {
     if(selectedProperty && selectedProperty?._id === property._id) {
       setSelectedProperty(null)
-      
+      setAddingNearbyPlaces(false)
+      setSelectedNearbyPlace(null)
     } else {
       setSelectedProperty(property)
       if (property.coordinates && property.coordinates.length >= 2) {
         setPosition({
           lat: property.coordinates[0],
           lng: property.coordinates[1],
-          zoom: 13
+          zoom: 20
         })
       }
       setSelectedLocation(null)
     }
   }
 
-  const assignedPropertiesRaw = properties.filter(prop => prop.coordinates)
-  const unAssignedPropertiesRaw = properties.filter(prop => prop.coordinates === undefined)
 
-  // Helper to move selected property to the top if present
-  function prioritizeSelected(arr: Doc<'property'>[]) {
-    if (!selectedProperty) return arr
-    const idx = arr.findIndex(p => p._id === selectedProperty._id)
-    if (idx === -1) return arr
-    return [arr[idx], ...arr.slice(0, idx), ...arr.slice(idx + 1)]
-  }
-
-  const assignedProperties = prioritizeSelected(assignedPropertiesRaw)
-  const unAssignedProperties = prioritizeSelected(unAssignedPropertiesRaw)
+  const assignedProperties = properties.filter(prop => prop.coordinates)
+  const unAssignedProperties = properties.filter(prop => prop.coordinates === undefined)
 
   return (
    

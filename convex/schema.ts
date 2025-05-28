@@ -122,14 +122,7 @@ export default defineSchema({
   nearby_places: defineTable({
     propertyId: v.id("property"),
     name: v.string(), // name of the place
-    type: v.union(
-      v.literal("school"),
-      v.literal("hospital"),
-      v.literal("mall"),
-      v.literal("restaurant"),
-      v.literal("park"),
-      v.literal("transportation")
-    ),
+    type: v.string(),
     coordinates: v.array(v.number()), // coordinates
     distance: v.number(), // in meters
     travelTime: v.string(), // in minutes

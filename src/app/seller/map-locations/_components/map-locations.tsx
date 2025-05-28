@@ -13,6 +13,7 @@ import { Expand } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { BiCollapse } from 'react-icons/bi'
 
+
 function MapLocations() {
   const Map = useMemo(() => dynamic(
     () => import('./map').then(mod => mod.default),
@@ -25,14 +26,15 @@ function MapLocations() {
   const [position, setPosition] = useState({
     lat: 14.5537, // Center latitude between Makati, Taguig, and Pasay
     lng: 121.0276, // Center longitude between Makati, Taguig, and Pasay
-    zoom: 13
+    zoom: 12
   })
+  const [placesOfInterestDialog, setPlacesOfInterestDialog] = useState<boolean>(false)
   const [addingNearbyPlaces, setAddingNearbyPlaces] = useState<boolean>(false)
   const [activeTab, setActiveTab] = useState<string>("Unassigned")
   const [selectedProperty, setSelectedProperty] = useState<Doc<'property'> | null>(null)
   const [selectedNearbyPlace, setSelectedNearbyPlace] = useState<[number,number] | null>(null)
   const [selectedLocation, setSelectedLocation] = useState<[number,number] | null>(null)
-  const properties = useQuery(api.property.getPropertyBySeller)
+  const properties = useQuery(api.property.getPropertyBySellerWithNearbyPlaces)
 
   function handleExpand() {
     setExpand(!expand)
@@ -50,18 +52,23 @@ function MapLocations() {
           selectedProperty={selectedProperty}
           setSelectedLocation={setSelectedLocation}
           setSelectedProperty={setSelectedProperty}
+          setAddingNearbyPlaces={setAddingNearbyPlaces}
+          setSelectedNearbyPlace={setSelectedNearbyPlace}
         />
       </div>
       <div className="col-span-2 flex flex-col gap-5 flex-1 overflow-auto">
         <div className={cn(expand ? "h-full" : "h-1/2" ," bg-white rounded-lg shadow-sm border overflow-hidden")}>
           <div className="flex flex-col p-4 border-b w-full h-full ">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold">Property Location</h2>
+              <div className="space-y-1">
+                <h2 className="text-lg font-semibold">Property Location</h2>
+                <p className="text-sm text-gray-500">
+                  Click to pin location • Left-click + drag to navigate
+                </p>
+              </div>
               <Button variant={'ghost'} size={'icon'} onClick={handleExpand}>
                 {expand ? <BiCollapse /> : <Expand />}
-                
               </Button>
-
             </div>
             <p className="text-sm text-gray-600">
               {selectedProperty
@@ -82,6 +89,7 @@ function MapLocations() {
                 setSelectedNearbyPlace={setSelectedNearbyPlace}
                 addingNearbyPlaces={addingNearbyPlaces}
                 setActiveTab={setActiveTab}
+                setPlacesOfInterestDialog={setPlacesOfInterestDialog}
               />
             </div>
           </div>
@@ -90,10 +98,13 @@ function MapLocations() {
         {selectedProperty && (
           <div className={cn(expand ? "h-0" : "h-1/2" ," grid grid-cols-1 md:grid-cols-2 gap-6")}>
             <PlaceOfInterestForm 
+              placesOfInterestDialog={placesOfInterestDialog}
+              setPlacesOfInterestDialog={setPlacesOfInterestDialog}
               propertyId={selectedProperty._id} 
               addingNearbyPlaces={addingNearbyPlaces}
               selectedNearbyPlace={selectedNearbyPlace}
               setAddingNearbyPlaces={setAddingNearbyPlaces}
+              setSelectedNearbyPlace={setSelectedNearbyPlace}
             />
             <TransportationForm 
               propertyId={selectedProperty._id} 

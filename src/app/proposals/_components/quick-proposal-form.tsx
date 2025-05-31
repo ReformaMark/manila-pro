@@ -15,6 +15,7 @@ import { ProposalType } from "@/types/proposals"
 import { useMutation } from "convex/react"
 import { api } from "../../../../convex/_generated/api"
 import { Id } from "../../../../convex/_generated/dataModel"
+import { toast } from "sonner"
 
 interface QuickProposalFormProps {
   property: PropertyTypesWithImageUrls
@@ -60,14 +61,23 @@ export function QuickProposalForm({ property, agentId, onSuccess, onCancel }: Qu
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
-    createProposal({
+    toast.promise(createProposal({
       propertyId: property._id,
       agentId: agentId as Id<'users'>,
       price: formData.price,
       message: formData.message,
       duration: formData.duration,
       moveInDate: formData.moveInDate,
-    })
+    }),{
+      loading: "Submitting proposal...",
+      success: () => { 
+        router.push("/proposals")
+      
+        return "Proposal submited."},
+      error: "Error submitting proposal."
+    }
+    
+  )
 
     if (onSuccess) {
       onSuccess()

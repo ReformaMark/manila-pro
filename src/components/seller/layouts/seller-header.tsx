@@ -26,7 +26,7 @@ export function SellerHeader() {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-none bg-bg1 text-white">
+    <header className="fixed top-0 left-0 right-0 z-[10000] border-none bg-bg1 text-white ">
       <div className="flex h-16 items-center max-md:justify-between px-4 md:px-6">
         <div className="flex items-center gap-4 ml12-">
           <HomeAvatar />

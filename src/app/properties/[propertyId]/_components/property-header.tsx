@@ -54,9 +54,11 @@ function PropertyHeader({property}: PropertyHeaderProps) {
       </div>
       <h1 className="text-2xl md:text-3xl font-bold mt-2 text-gray-900">{property.propertyName}</h1>
       <div className="flex items-center text-gray-500 mt-1">
+        
         <MapPin className="h-4 w-4 mr-1" />
-        {property.city}
+        {property.address}
       </div>
+      
     </div>
     <div className="flex flex-col md:items-end">
       <p className="text-3xl font-bold text-brand-orange">

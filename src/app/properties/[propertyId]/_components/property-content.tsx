@@ -18,6 +18,8 @@ import MortgageCalculator from './mortgage-calculator'
 import { QuickProposalDialog } from '@/app/proposals/_components/quick-proposal-dialog'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
+import SendMessageDialog from './send-message-dialog'
+import MapComponent from './map'
 
 interface PropertyContentProps{
     property: PropertyTypesWithImageUrls
@@ -30,6 +32,10 @@ interface PropertyContentProps{
 function PropertyContent({property, carouselApi, setCurrentImageIndex}: PropertyContentProps) {
   const similarProperties = useQuery(api.property.similarProp, {
     sellerId: property.sellerId,
+    propertyId: property._id
+  })
+
+  const nearbyPlaces = useQuery(api.nearby_places.nearbyPlaces, {
     propertyId: property._id
   })
   const agent = property.agent
@@ -99,6 +105,7 @@ function PropertyContent({property, carouselApi, setCurrentImageIndex}: Property
                   <p className="text-lg font-semibold text-gray-900">{property.storeys ?? "-"}</p>
                 </div>
               </div>
+         
 
               <div className="space-y-4">
                 <div>
@@ -124,18 +131,16 @@ function PropertyContent({property, carouselApi, setCurrentImageIndex}: Property
                         <span>Max Occupants:</span>
                         <span className="font-medium text-gray-900">{property.maximumOccupants}</span>
                       </li>
-                      <li className="flex justify-between">
-                        <span>Year Built:</span>
-                        <span className="font-medium text-gray-900">2020</span>
-                      </li>
-                      <li className="flex justify-between">
-                        <span>Furnishing:</span>
-                        <span className="font-medium text-gray-900">Fully Furnished</span>
+                
+                     
+                       <li className="flex justify-between">
+                        <span>Listed:</span>
+                        <span className="font-medium text-gray-900">{formatDateListed(property._creationTime)}</span>
                       </li>
                     </ul>
                   </div>
 
-                  <div>
+                  {/* <div>
                     <h3 className="text-lg font-semibold mb-2 text-gray-900">Additional Details</h3>
                     <ul className="space-y-2 text-gray-700">
                       <li className="flex justify-between">
@@ -146,10 +151,10 @@ function PropertyContent({property, carouselApi, setCurrentImageIndex}: Property
                         <span>Pet Policy:</span>
                         <span className="font-medium text-gray-900">Allowed</span>
                       </li>
-                      {/* <li className="flex justify-between">
+                      <li className="flex justify-between">
                         <span>Property ID:</span>
                         <span className="font-medium text-gray-900">MP-{property._id}</span>
-                      </li> */}
+                      </li>
                       <li className="flex justify-between">
                         <span>Listed:</span>
                         <span className="font-medium text-gray-900">{formatDateListed(property._creationTime)}</span>
@@ -159,7 +164,7 @@ function PropertyContent({property, carouselApi, setCurrentImageIndex}: Property
                         <span className="font-medium text-gray-900">Immediate</span>
                       </li>
                     </ul>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </CardContent>
@@ -236,74 +241,65 @@ function PropertyContent({property, carouselApi, setCurrentImageIndex}: Property
               <CardTitle className="text-gray-900">Location & Neighborhood</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="bg-gray-100 h-80 rounded-lg mb-6 flex items-center justify-center">
-                <p className="text-gray-500">Interactive map would be displayed here</p>
+              <div className="relative  mb-6 rounded-lg">
+                {property.coordinates ? (
+
+                  <MapComponent property={property} />
+                ) : (
+                  <div className="text-gray-500">No location data available</div>
+                )}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <h3 className="text-lg font-semibold mb-3 text-gray-900">Nearby Places</h3>
                   <ul className="space-y-3">
-                    <li className="flex items-start">
-                      <div className="h-6 w-6 rounded-full bg-brand-orange/20 flex items-center justify-center mt-0.5 mr-2">
-                        <span className="text-xs font-medium text-brand-orange">1</span>
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-900">Greenbelt Mall</p>
-                        <p className="text-sm text-gray-500">5 minutes walk</p>
-                      </div>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="h-6 w-6 rounded-full bg-brand-orange/20 flex items-center justify-center mt-0.5 mr-2">
-                        <span className="text-xs font-medium text-brand-orange">2</span>
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-900">Ayala Triangle Gardens</p>
-                        <p className="text-sm text-gray-500">10 minutes walk</p>
-                      </div>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="h-6 w-6 rounded-full bg-brand-orange/20 flex items-center justify-center mt-0.5 mr-2">
-                        <span className="text-xs font-medium text-brand-orange">3</span>
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-900">Makati Medical Center</p>
-                        <p className="text-sm text-gray-500">15 minutes drive</p>
-                      </div>
-                    </li>
+                    {nearbyPlaces && nearbyPlaces?.length > 0 ? nearbyPlaces?.filter((place) => place.type !== 'transportation').map((place, index) => (
+                      <li key={index} className="flex items-start">
+                        <div className="h-6 w-6 rounded-full bg-brand-orange/20 flex items-center justify-center mt-0.5 mr-2">
+                          <span className="text-xs font-medium text-brand-orange">{index + 1}</span>
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900">{place.name}</p>
+                          <p className="text-sm text-gray-500">{place.type}</p>
+                        </div>
+                      </li>
+                    )) : (
+                      <li className="flex items-start">
+                      
+                        <div>
+                      
+                            <p className="text-sm text-gray-500">No nearby places have been added by the agent.</p>
+                        </div>
+                      </li>
+                    )}
+                 
                   </ul>
                 </div>
 
                 <div>
                   <h3 className="text-lg font-semibold mb-3 text-gray-900">Transportation</h3>
                   <ul className="space-y-3">
-                    <li className="flex items-start">
-                      <div className="h-6 w-6 rounded-full bg-brand-orange/20 flex items-center justify-center mt-0.5 mr-2">
-                        <span className="text-xs font-medium text-brand-orange">A</span>
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-900">Ayala MRT Station</p>
-                        <p className="text-sm text-gray-500">8 minutes walk</p>
-                      </div>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="h-6 w-6 rounded-full bg-brand-orange/20 flex items-center justify-center mt-0.5 mr-2">
-                        <span className="text-xs font-medium text-brand-orange">B</span>
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-900">Bus Terminal</p>
-                        <p className="text-sm text-gray-500">5 minutes walk</p>
-                      </div>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="h-6 w-6 rounded-full bg-brand-orange/20 flex items-center justify-center mt-0.5 mr-2">
-                        <span className="text-xs font-medium text-brand-orange">C</span>
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-900">NAIA Terminal 3</p>
-                        <p className="text-sm text-gray-500">25 minutes drive</p>
-                      </div>
-                    </li>
+                    {nearbyPlaces && nearbyPlaces?.length > 0 ? nearbyPlaces?.filter((place) => place.type === 'transportation').map((place, index) => (
+                      <li key={index} className="flex items-start">
+                        <div className="h-6 w-6 rounded-full bg-brand-orange/20 flex items-center justify-center mt-0.5 mr-2">
+                          <span className="text-xs font-medium text-brand-orange">{index + 1}</span>
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900">{place.name}</p>
+                          <p className="text-sm text-gray-500">{place.type}</p>
+                        </div>
+                      </li>
+                    )) : (
+                      <li className="flex items-start">
+                       
+                        <div>
+                         
+                          <p className="text-sm text-gray-500">No transportation options have been added by the agent.</p>
+                        </div>
+                      </li>
+                    )}
+                
                   </ul>
                 </div>
               </div>
@@ -315,13 +311,13 @@ function PropertyContent({property, carouselApi, setCurrentImageIndex}: Property
       {/* Similar Properties */}
       <div className="mt-6">
         <div className="flex justify-between">
-          <h2 className="text-xl font-bold mb-4 text-gray-900">Similar Properties</h2>
-            <Link href={`/properties/${property._id}`} className='contents'>
+            <h2 className="text-xl font-bold mb-4 text-gray-900">More Properties from this Agent</h2>
+            <Link href={`/properties/agents/${property.agent?._id}`} className='contents'>
               <Button
                   variant={'link'}
                   className="text-brand-orange"
                   >
-                  View More Similar Properties
+                  View Agent Property listing
                   <ArrowRight  className="text-brand-orange"/>
               </Button>
             </Link>
@@ -391,35 +387,10 @@ function PropertyContent({property, carouselApi, setCurrentImageIndex}: Property
               agentId={property.sellerId}
               buttonClassName="w-full bg-brand-orange hover:bg-brand-orange/90"
             />
-
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full border-brand-orange text-brand-orange hover:bg-brand-orange/10"
-                >
-                  <MessageSquare className="h-4 w-4 mr-2" />
-                  Send Message
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                  <DialogTitle>Message Agent</DialogTitle>
-                  <DialogDescription>Send a message to Maria Santos about this property.</DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <Textarea
-                    placeholder="Hi Maria, I'm interested in this property and would like to know more about..."
-                    className="min-h-[120px]"
-                  />
-                </div>
-                <DialogFooter>
-                  <Button type="submit" className="bg-brand-orange hover:bg-brand-orange/90">
-                    Send Message
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+            
+          {property.agent && (
+            <SendMessageDialog agentId={property.agent._id}/>
+          )}
           </div>
         </CardContent>
       </Card>

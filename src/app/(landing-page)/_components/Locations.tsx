@@ -15,8 +15,8 @@ export default function Locations(){
 
 
     return (
-        <div className="">
-            <div className='grid grid-cols-1 md:grid-cols-3 gap-4 px-4 md:px-10  xl:px-40 py-10 w-full'>
+        <div className="container">
+            <div className='grid grid-cols-1 md:grid-cols-3 gap-4  py-10 w-full'>
                 {locations.map((location, index) => (
                     <Card key={index} className="relative mb-4">
                         <div className="absolute top-0 left-0 bg-black bg-opacity-50 text-white p-2 size-full rounded-br-lg rounded-tl-lg">

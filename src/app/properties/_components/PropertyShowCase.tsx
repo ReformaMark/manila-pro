@@ -16,6 +16,8 @@ import PropertyCard from "./PropertyCard"
 import { PropertyDetailModal } from "./PropertyDetailsModal"
 import { useRouter } from "next/navigation"
 import { useFilterStore } from "../store/useFilter"
+import { useConvexAuth } from "convex/react"
+import MapComponent from "./map"
 
 
 
@@ -56,6 +58,7 @@ const facilities = [
 
 export default function PropertyShowcase({properties}:{properties: PropertyTypesWithImageUrls[]}) {
   const {unitType, transactionType, location, setLocation, resetFiltersStore} = useFilterStore()
+  const { isAuthenticated, isLoading: isAuthLoading } = useConvexAuth()
   const router = useRouter()
   const isMobile = useIsMobile()
   const [activeView, setActiveView] = useState<"grid" | "list" | "map">("grid")
@@ -328,14 +331,14 @@ export default function PropertyShowcase({properties}:{properties: PropertyTypes
                 >
                   List
                 </Button>
-                {/* <Button
+                <Button
                   variant={activeView === "map" ? "default" : "ghost"}
                   size="sm"
                   className={`rounded-none ${activeView === "map" ? "bg-brand-orange hover:bg-brand-orange/90" : "text-black hover:text-white"}`}
                   onClick={() => setActiveView("map")}
                 >
                   Map
-                </Button> */}
+                </Button>
               </div>
             </div>
           </div>
@@ -365,9 +368,12 @@ export default function PropertyShowcase({properties}:{properties: PropertyTypes
               {/* Results Summary */}
               <div className="mb-6 flex justify-between items-center">
                 <h2 className="text-xl font-semibold text-brand-black">
-                  {filteredProperties.length} {filteredProperties.length === 1 ? "Property" : "Properties"} Found
+                  {activeView === "map" ? filteredProperties.filter((property) => property.coordinates).length : filteredProperties.length} {filteredProperties.length === 1 ? "Property" : "Properties"} Found
                 </h2>
-                <Select defaultValue="newest" onValueChange={(value) => {handleFilterChange("sort", value)}}>
+                {activeView !== "map" && (
+
+              
+                <Select defaultValue="newest" onValueChange={(value: any) => {handleFilterChange("sort", value)}}>
                   <SelectTrigger className="w-[180px] bg-white  text-brand-black">
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
@@ -387,6 +393,7 @@ export default function PropertyShowcase({properties}:{properties: PropertyTypes
                    
                   </SelectContent>
                 </Select>
+                )}
               </div>
 
               {/* Property Grid View */}
@@ -401,7 +408,7 @@ export default function PropertyShowcase({properties}:{properties: PropertyTypes
                       whileHover={{ y: -5 }}
                       className="h-full"
                     >
-                      <PropertyCard property={property} onClick={() => router.push(`/properties/${property._id}`)} />
+                      <PropertyCard property={property} onClick={() => isAuthenticated ? router.push(`/properties/${property._id}`) : router.push(`/auth`)} />
                     </motion.div>
                   ))}
                 </div>
@@ -418,7 +425,7 @@ export default function PropertyShowcase({properties}:{properties: PropertyTypes
                       transition={{ duration: 0.3 }}
                       whileHover={{ y: -2 }}
                     >
-                      <PropertyCard property={property} onClick={() => router.push(`/properties/${property._id}`)} layout="list" />
+                      <PropertyCard property={property} onClick={() =>  isAuthenticated ? router.push(`/properties/${property._id}`) :  router.push(`/auth`)} layout="list" />
                     </motion.div>
                   ))}
                 </div>
@@ -426,10 +433,9 @@ export default function PropertyShowcase({properties}:{properties: PropertyTypes
 
               {/* Map View */}
               {activeView === "map" && (
-                <div className="bg-white rounded-lg h-[600px] flex items-center justify-center ">
+                <div className="bg-white  ">
                   <div className="text-center">
-                    <p className="text-lg font-medium mb-2 text-brand-black">Map View</p>
-                    <p className="text-gray-400">Interactive map would be displayed here</p>
+                    <MapComponent isAuthenticated={isAuthenticated} properties={filteredProperties} />
                   </div>
                 </div>
               )}

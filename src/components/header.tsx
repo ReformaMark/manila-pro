@@ -15,6 +15,10 @@ import { useAuthActions } from "@convex-dev/auth/react"
 import { useCurrentUser } from "@/hooks/use-current-user"
 import Loading from "./loading"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { useQuery } from "convex/react"
+import { api } from "../../convex/_generated/api"
+import { usePathname } from "next/navigation"
+import { cn } from "@/lib/utils"
 
 interface HeaderProps {
   setIsOpen?: (isOpen: boolean) => void,
@@ -25,17 +29,35 @@ export function Header() {
   const { user, isLoading } = useCurrentUser()
   const { signOut } = useAuthActions()
   const isMobile = useIsMobile()
+  const userImageUrl = useQuery(api.users.getImageUrl)
+  const pathname = usePathname()
 
   return (
-    <header className="bg-brand-black text-white sticky top-0 py-2 z-40  border-b border-gray-800" style={{ height: 'var(--header-height)' }}>
+    <header className={cn(pathname === "/auth" ? "relative pt-10": "sticky bg-brand-black py-2"," text-white top-0  z-40  ")} style={{ height: 'var(--header-height)' }}>
       <div className=" px-10  h-full ">
         <div className="flex items-center justify-between h-full transition-all duration-500 ease-in-out">
-          {isMobile && (
+          {isMobile && pathname !== "/auth" && (
             <div className="opacity-0">iiiii</div>
           )}
           <div className="flex items-center gap-4 ">
             <Link href="/" className="flex items-center gap-2 text-center">
-              <h1 className="font-bold text-xl text-white">Manila<span className="text-xl font-extrabold text-brand-orange">Pro</span></h1>
+              <h1
+                className="font-bold text-xl text-white"
+                style={{
+                  filter: pathname === "/auth" ? "drop-shadow(0 0 2px #000)" : undefined,
+                  color: pathname === "/auth" ? "#fff" : undefined,
+                }}
+              >
+                Manila
+                <span
+                  className="text-xl font-extrabold text-brand-orange"
+                  style={{
+                    filter: pathname === "/auth" ? "drop-shadow(0 0 2px #000)" : undefined,
+                  }}
+                >
+                  Pro
+                </span>
+              </h1>
             </Link>
           </div>
             {!isLoading ? user ? (
@@ -48,26 +70,17 @@ export function Header() {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="rounded-full">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src="/placeholder.svg" alt="User" />
-                      <AvatarFallback className="bg-gray-800 text-white">MP</AvatarFallback>
+                      <AvatarImage src={userImageUrl ?? undefined} alt="User" />
+                        <AvatarFallback className="bg-gray-800 text-white">
+                        {user?.fname?.[0]?.toUpperCase()}{user?.lname?.[0]?.toUpperCase()}
+                        </AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56 bg-brand-black border-gray-800">
-                  <DropdownMenuLabel className="text-white">My Account</DropdownMenuLabel>
+                
                   <DropdownMenuSeparator className="bg-gray-800" />
-                  <DropdownMenuItem className="text-gray-300 focus:text-white focus:bg-gray-800">
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="text-gray-300 focus:text-white focus:bg-gray-800">
-                    <MessageSquare className="mr-2 h-4 w-4" />
-                    <span>Messages</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="text-gray-300 focus:text-white focus:bg-gray-800">
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
-                  </DropdownMenuItem>
+                
                   <DropdownMenuSeparator className="bg-gray-800" />
                   <DropdownMenuItem onClick={async()=> await signOut()} className="text-gray-300 focus:text-white focus:bg-gray-800">
                     <LogOut className="mr-2 h-4 w-4" />
@@ -76,10 +89,10 @@ export function Header() {
                 </DropdownMenuContent>
               </DropdownMenu>
               </div>
-            ): (
+            ): pathname !== "/auth" && (
               <Link href={'/auth'} className="">
                 <Button variant={'orange'} size={'sm'} className="h-10">
-                    Sign In
+                      Sign In
                 </Button>
               </Link>
             ) : 

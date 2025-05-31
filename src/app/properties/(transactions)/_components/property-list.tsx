@@ -7,6 +7,7 @@ import PropertyCard from '../../_components/PropertyCard'
 import Loading from '@/components/loading'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import { useCurrentUser } from '@/hooks/use-current-user'
 interface PropertyListProps {
     properties: PropertyTypesWithImageUrls[]
     loadMore: (numItems: number) => void;
@@ -17,7 +18,8 @@ function PropertyList({
     loadMore,
     status
 }:PropertyListProps ) {
-  return (
+  const {user, isLoading} = useCurrentUser()
+    return (
     <div className="flex flex-col md:flex-row gap-6">
     {/* Main Content */}
     <div className={``}>
@@ -40,7 +42,7 @@ function PropertyList({
               whileHover={{ y: -5 }}
               className="h-full"
             >
-              <Link className="" href={`/properties/${property._id}`}>
+              <Link className="" href={user ? `/properties/${property._id}` : `/auth`}>
                 <PropertyCard property={property} onClick={() => {}} />
               </Link>
             </motion.div>

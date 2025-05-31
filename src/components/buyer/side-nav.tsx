@@ -45,7 +45,7 @@ export function BuyerSideNav({
     );
 
     return (
-        <div className='mt-16 bg-brand-black' style={{ maxHeight: `calc(100vh - var(--header-height))`, paddingTop: '4rem'}}>
+        <div className='mt-16 bg-brand-black max-h-[50vh] overflow-hidden' >
             {/* Desktop Sidebar */}
             <div 
        

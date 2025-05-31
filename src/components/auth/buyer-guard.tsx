@@ -2,18 +2,22 @@
 
 
 import { useConvexAuth } from "convex/react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useCheckRole } from "../hooks/use-check-role";
 
-export function BuyerGuide({ children }: { children: React.ReactNode }) {
+export function BuyerGuard({ children }: { children: React.ReactNode }) {
     const router = useRouter()
     const { isAuthenticated, isLoading: isAuthLoading } = useConvexAuth()
     const { data: role, isLoading: isRoleLoading } = useCheckRole()
+    const pathname = usePathname()
 
     useEffect(() => {
         if (!isAuthLoading && !isRoleLoading) {
-            if (!isAuthenticated) {
+            if (!isAuthenticated && 
+                (pathname === "/properties/profile" ||
+                    pathname === "/"
+                )) {
                 router.push("/")
                 return
             }

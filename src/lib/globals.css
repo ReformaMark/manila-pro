@@ -22,10 +22,9 @@
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
- 
+
   height: 2px;
 }
-
 
 body {
   font-family: Arial, Helvetica, sans-serif;
@@ -34,7 +33,7 @@ body {
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --bg1: 	210, 11%, 15%;
+    --bg1: 210, 11%, 15%;
     --foreground: 0 0% 3.9%;
     --card: 0 0% 100%;
     --card-foreground: 0 0% 3.9%;
@@ -67,7 +66,7 @@ body {
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
-    --header-height:  4rem;
+    --header-height: 4rem;
   }
   .dark {
     --background: 0 0% 3.9%;
@@ -108,7 +107,7 @@ body {
 @layer base {
   * {
     @apply border-border;
-    box-sizing: border-box
+    box-sizing: border-box;
   }
   body {
     @apply bg-background text-foreground;
@@ -116,10 +115,13 @@ body {
 }
 
 .hero {
-  background-image: url('../../public/images/luxury.jpg'); /* Specify the image URL */
+  background-image: url("../../public/images/luxury.jpg"); /* Specify the image URL */
   background-size: cover; /* Ensures the image covers the entire element */
   background-position: center; /* Centers the image */
   background-repeat: no-repeat; /* Prevents the image from repeating */
-  height: 60vh; /* Set height as needed */
+  height: 70vh; /* Set height as needed */
+}
 
+.subtitle {
+  -webkit-text-stroke: 0.5px black;
 }

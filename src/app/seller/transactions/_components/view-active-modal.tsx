@@ -228,23 +228,6 @@ export const ViewActiveModal = ({
 
               <div className="grid grid-cols-2 gap-3 w-full">
                 {/* <Button
-                  disabled={isPending}
-                  onClick={() => {
-                    handleAccept(deal._id, deal.property._id, "active");
-                  }}
-                >
-                  Accept Offer
-                </Button>
-                <Button
-                  variant="destructive"
-                  disabled={isPending}
-                  onClick={() =>
-                    handleReject(deal._id, deal.property._id, "rejected")
-                  }
-                >
-                  Reject
-                </Button> */}
-                <Button
                   variant="outline"
                   className="w-full hover:bg-zinc-100 hover:text-black"
                   onClick={onOpenChange}
@@ -260,8 +243,8 @@ export const ViewActiveModal = ({
                   }
                 >
                   Cancel
-                </Button>
-                {/* <div className="w-full col-span-2">
+                </Button> */}
+                <div className="w-full col-span-2">
                   <Button
                     variant="outline"
                     className="w-full hover:bg-zinc-100 hover:text-black"
@@ -270,7 +253,7 @@ export const ViewActiveModal = ({
                   >
                     Close
                   </Button>
-                </div> */}
+                </div>
               </div>
             </div>
           </div>

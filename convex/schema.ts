@@ -214,7 +214,6 @@ export default defineSchema({
     }).searchIndex("by_city", {
         searchField: "city",
     }),
-
     saved_properties: defineTable({
         propertyId: v.id('property'),
         userId: v.id('users')

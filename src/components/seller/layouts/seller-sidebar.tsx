@@ -7,6 +7,7 @@ import {
   ChevronDown,
   LayoutGrid,
   MapIcon,
+  SettingsIcon,
   Users,
 } from "lucide-react";
 import Link from "next/link";
@@ -53,6 +54,11 @@ export const sellerSidebarItems: SidebarItem[] = [
         href: "/seller/transactions/history",
       },
     ],
+  },
+  {
+    icon: SettingsIcon,
+    label: "Settings",
+    href: "/seller/user-profile",
   },
 ];
 

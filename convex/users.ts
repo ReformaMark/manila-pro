@@ -141,6 +141,24 @@ export const current = query({
   },
 });
 
+export const currentWithDisplayImage = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return null;
+
+    const user = await ctx.db.get(userId)
+
+    const userDisplayImage = user?.image ?
+      await ctx.storage.getUrl(user.image as Id<"_storage">) : undefined
+
+    return {
+      user,
+      displayImage: userDisplayImage
+    }
+  },
+});
+
 export const role = query({
   args: {},
   handler: async (ctx) => {

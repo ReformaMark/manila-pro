@@ -197,10 +197,10 @@ export const getFeaturedProperties = query({
           isSaved: isSaved,
           agent: seller
             ? {
-                ...seller,
-                userImageUrl: userImageUrl === null ? undefined : userImageUrl,
-                ratingsAndReviews: sellerRatingsandReviews,
-              }
+              ...seller,
+              userImageUrl: userImageUrl === null ? undefined : userImageUrl,
+              ratingsAndReviews: sellerRatingsandReviews,
+            }
             : undefined,
         };
       }
@@ -377,10 +377,10 @@ export const similarProp = query({
         isSaved: isSaved,
         agent: seller
           ? {
-              ...seller,
-              userImageUrl: userImageUrl === null ? undefined : userImageUrl,
-              ratingsAndReviews: sellerRatingsandReviews,
-            }
+            ...seller,
+            userImageUrl: userImageUrl === null ? undefined : userImageUrl,
+            ratingsAndReviews: sellerRatingsandReviews,
+          }
           : undefined,
       };
     });
@@ -407,8 +407,8 @@ export const getPropertyBySeller = query({
 
       const otherImageUrls = property.otherImage
         ? await asyncMap(property.otherImage, async (image) => {
-            return await ctx.storage.getUrl(image);
-          })
+          return await ctx.storage.getUrl(image);
+        })
         : [];
 
       const cleanOtherImageUrls = otherImageUrls.filter(
@@ -853,10 +853,10 @@ export const filteredByTransaction = query({
           isSaved: isSaved,
           agent: seller
             ? {
-                ...seller,
-                userImageUrl: userImageUrl === null ? undefined : userImageUrl,
-                ratingsAndReviews: sellerRatingsandReviews,
-              }
+              ...seller,
+              userImageUrl: userImageUrl === null ? undefined : userImageUrl,
+              ratingsAndReviews: sellerRatingsandReviews,
+            }
             : undefined,
         };
       }
@@ -903,12 +903,12 @@ export const getAgentActiveListings = query({
 
       const imageUrls = property.otherImage
         ? await asyncMap(property.otherImage, async (imageId) => {
-            const url =
-              typeof imageId === "string" && imageId.startsWith("https://")
-                ? imageId
-                : await ctx.storage.getUrl(imageId as Id<"_storage">);
-            return url;
-          })
+          const url =
+            typeof imageId === "string" && imageId.startsWith("https://")
+              ? imageId
+              : await ctx.storage.getUrl(imageId as Id<"_storage">);
+          return url;
+        })
         : [];
 
       return {
@@ -1184,6 +1184,7 @@ export const saveCoordinates = mutation({
     }
   },
 });
+
 export const removeCoordinates = mutation({
   args: {
     propertyId: v.id("property"),
@@ -1198,3 +1199,61 @@ export const removeCoordinates = mutation({
     }
   },
 });
+
+export const getPropertyAndDealsHistory = query({
+  handler: async (ctx) => {
+    // * 1.) Authorization Check
+    const sellerId = await getAuthUserId(ctx)
+    if (!sellerId) return []
+
+    // * 2.) Fetching the deals
+    const deals = await ctx.db
+      .query("deal")
+      .withIndex("by_sellerId", q => q.eq("sellerId", sellerId))
+      .filter(q => q.or(
+        q.eq(q.field("status"), "cancelled"),
+        q.eq(q.field("status"), "completed"),
+      ))
+      .order("desc")
+      .collect()
+
+    // * 3.) Fetching deals with details (relationships)
+    const dealsWithDetails = await asyncMap(deals, async (deal) => {
+      const property = await ctx.db.get(deal.propertyId)
+      const buyer = await ctx.db.get(deal.buyerId)
+
+      if (!property || !buyer) {
+        return null
+      }
+
+      // * 3.1) Fetching property images
+      let displayImageUrl = null;
+      if (property.displayImage) {
+        displayImageUrl = await ctx.storage.getUrl(property.displayImage as Id<"_storage">)
+      }
+
+      const otherImages = await asyncMap(property.otherImage ?? [], async (image) => {
+        return await ctx.storage.getUrl(image as Id<"_storage">)
+      })
+
+      const filteredOtherImages = otherImages.filter(Boolean);
+
+      return {
+        ...deal,
+        property: {
+          ...property,
+          displayImageUrl,
+          otherImages: filteredOtherImages,
+        },
+        buyer: {
+          ...buyer,
+        }
+      }
+    })
+
+    // * 4. Filter out any null results from asyncMap
+    const validDeals = dealsWithDetails.filter(deal => deal !== null);
+
+    return validDeals
+  }
+})

@@ -11,7 +11,7 @@ import useViewModal from "@/store/modals";
 import { dealStatusColorMap, dealStatusDisplayMap } from "@/types/constants";
 import { useQuery } from "convex/react";
 import { FunctionReturnType } from "convex/server";
-import { CheckIcon, EyeIcon } from "lucide-react";
+import { CheckIcon, EyeIcon, History } from "lucide-react";
 import Image from "next/image";
 import { Dispatch, SetStateAction, useState } from "react";
 import { api } from "../../../../../convex/_generated/api";
@@ -50,16 +50,16 @@ type GetPropertiesReturnType = FunctionReturnType<
 
 type PropertyType = GetPropertiesReturnType[number];
 
-export const ActiveList = () => {
+export const HistoryList = () => {
   const [search, setSearch] = useState<string>("");
   const [selectedDeal, setSelectedDeal] = useState<PropertyType | null>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const activeDeals = useQuery(api.property.getPropertyByAcceptedDeals);
+  const deals = useQuery(api.property.getPropertyAndDealsHistory);
   const { toggleModal } = useViewModal();
 
-  if (!activeDeals || activeDeals === undefined) return <div>Loading...</div>;
+  if (!deals || deals === undefined) return <div>Loading...</div>;
 
-  const filteredActiveDeals = activeDeals.filter((r) => {
+  const filteredDeals = deals.filter((r) => {
     // * 1.) Make it case insensitive
     const searchedTerm = search.toLowerCase();
 
@@ -78,7 +78,7 @@ export const ActiveList = () => {
     return propertyName || buyerName;
   });
 
-  const handleView = (deal: (typeof activeDeals)[number]) => {
+  const handleView = (deal: (typeof deals)[number]) => {
     setSelectedDeal(deal);
 
     if (deal) {
@@ -86,7 +86,7 @@ export const ActiveList = () => {
     }
   };
 
-  const handleCancel = (deal: (typeof activeDeals)[number]) => {
+  const handleCancel = (deal: (typeof deals)[number]) => {
     setSelectedDeal(deal);
 
     if (deal) {
@@ -104,21 +104,21 @@ export const ActiveList = () => {
           onChange={(e) => setSearch(e.target.value)}
         />
 
-        {filteredActiveDeals.length === 0 ? (
+        {filteredDeals.length === 0 ? (
           <EmptyState
             title="No active transactions at the moment"
             description="Consider checking your requests or post a property!"
           />
         ) : (
           <>
-            <div className="bg-green-100 border border-green-300 rounded-md p-3 mt-7 text-green-700">
-              <div className="flex flex-row gap-2">
-                <CheckIcon className="w-6 h-6 " />
-                <h1 className="font-semibold ">Active</h1>
+            <div className="bg-zinc-100 border border-zinc-300 rounded-md p-3 mt-7 text-zinc-700">
+              <div className="flex flex-row gap-1 items-center">
+                <History className="w-4 h-4 " />
+                <h1 className="font-semibold ">History</h1>
               </div>
-              <p className="text-sm ">Deals that are in progress</p>
+              <p className="text-sm ">Deals that are cancelled or completed</p>
             </div>
-            {filteredActiveDeals.map((deal) => {
+            {filteredDeals.map((deal) => {
               const monthly = deal.proposal.offer / deal.proposal.duration!;
 
               return (
@@ -223,14 +223,11 @@ export const ActiveList = () => {
                   </div>
 
                   <div className="mt-6">
-                    <h1 className="text-base font-semibold">Message:</h1>
-                    <p className="text-zinc-600 text-sm">
-                      {deal.proposal.message}
-                    </p>
+                    <h1 className="text-base font-semibold">Remarks:</h1>
+                    <p className="text-zinc-600 text-sm">{deal.remarks}</p>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 mt-5 max-w-[500px]">
-                    {/* <Button variant="default">Accept</Button> */}
+                  {/* <div className="grid grid-cols-2 gap-3 mt-5 max-w-[500px]">
                     <Button
                       variant="outline"
                       className="hover:bg-zinc-100 hover:text-black"
@@ -245,7 +242,7 @@ export const ActiveList = () => {
                     >
                       Cancel
                     </Button>
-                  </div>
+                  </div> */}
                 </div>
               );
             })}
@@ -260,126 +257,125 @@ export const ActiveList = () => {
         />
       )}
 
-      <CancelFormDialog
+      {/* <CancelFormDialog
         isOpen={isOpen}
         setIsOpen={setIsOpen}
         deal={selectedDeal}
         setSelectedAcceptDeal={setSelectedDeal}
-      />
+      /> */}
     </>
   );
 };
 
-const CancelFormDialog = ({
-  isOpen,
-  setIsOpen,
-  deal,
-  setSelectedAcceptDeal,
-}: {
-  isOpen: boolean;
-  setIsOpen: Dispatch<SetStateAction<boolean>>;
-  deal: PropertyType | null;
-  setSelectedAcceptDeal: Dispatch<SetStateAction<PropertyType | null>>;
-}) => {
-  const { mutate: updateDealStatus, isPending } = useMutation({
-    mutationFn: useConvexMutation(api.deal.handleDealStatus),
-    onSuccess: () => {
-      setIsOpen(false);
-      form.reset();
-      return toast.success("Cancelled");
-    },
-  });
-  const [CancelDialog, confirmAccept] = useConfirm(
-    "Are you sure?",
-    `By confirming, you agree to cancel the deal. Continue?`
-  );
-  const form = useForm<CancelDealSchemaType>({
-    resolver: zodResolver(CancelDealSchema),
-    defaultValues: {
-      remarks: "",
-    },
-  });
+// const CancelFormDialog = ({
+//   isOpen,
+//   setIsOpen,
+//   deal,
+//   setSelectedAcceptDeal,
+// }: {
+//   isOpen: boolean;
+//   setIsOpen: Dispatch<SetStateAction<boolean>>;
+//   deal: PropertyType | null;
+//   setSelectedAcceptDeal: Dispatch<SetStateAction<PropertyType | null>>;
+// }) => {
+//   const { mutate: updateDealStatus, isPending } = useMutation({
+//     mutationFn: useConvexMutation(api.deal.handleDealStatus),
+//     onSuccess: () => {
+//       form.reset();
+//       return toast.success("Cancelled");
+//     },
+//   });
+//   const [CancelDialog, confirmAccept] = useConfirm(
+//     "Are you sure?",
+//     `By confirming, you agree to cancel the deal. Continue?`
+//   );
+//   const form = useForm<CancelDealSchemaType>({
+//     resolver: zodResolver(CancelDealSchema),
+//     defaultValues: {
+//       remarks: "",
+//     },
+//   });
 
-  const onSubmit = async (
-    dealId: Id<"deal">,
-    propertyId: Id<"property">,
-    status: DealStatus,
-    values: CancelDealSchemaType
-  ) => {
-    const confirmed = await confirmAccept();
+//   const onSubmit = async (
+//     dealId: Id<"deal">,
+//     propertyId: Id<"property">,
+//     status: DealStatus,
+//     values: CancelDealSchemaType
+//   ) => {
+//     const confirmed = await confirmAccept();
 
-    if (confirmed) {
-      try {
-        await updateDealStatus({
-          dealId,
-          propertyId,
-          status,
-          ...values,
-        });
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    }
-  };
+//     if (confirmed) {
+//       try {
+//         await updateDealStatus({
+//           dealId,
+//           propertyId,
+//           status,
+//           ...values,
+//         });
+//       } catch (error) {
+//         console.error("Error:", error);
+//       }
+//     }
+//   };
 
-  const onOpenChange = () => {
-    setIsOpen(false);
-    setSelectedAcceptDeal(null);
-    form.reset();
-  };
+//   const onOpenChange = () => {
+//     setIsOpen(false);
+//     setSelectedAcceptDeal(null);
+//     form.reset();
+//   };
 
-  return (
-    <>
-      {deal ? (
-        <Dialog open={isOpen} onOpenChange={onOpenChange}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Cancel Ongoing Deal</DialogTitle>
-              <DialogDescription className="text-rose-500">
-                Warning you are currently cancelling the deal:{" "}
-                {deal.property.propertyName}
-              </DialogDescription>
-            </DialogHeader>
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit((data) =>
-                  onSubmit(deal._id, deal.property._id, "cancelled", data)
-                )}
-                className="space-y-8"
-              >
-                <FormField
-                  control={form.control}
-                  name="remarks"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex flex-row gap-2">
-                        Remarks
-                      </FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Please give a reason why you are cancelling the ongoing deal."
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+//   return (
+//     <>
+//       {deal ? (
+//         <Dialog open={isOpen} onOpenChange={onOpenChange}>
+//           <DialogContent>
+//             <DialogHeader>
+//               <DialogTitle>Cancel Ongoing Deal</DialogTitle>
+//               <DialogDescription className="text-rose-500">
+//                 Warning you are currently cancelling the deal:{" "}
+//                 {deal.property.propertyName}
+//               </DialogDescription>
+//             </DialogHeader>
+//             <Form {...form}>
+//               <form
+//                 onSubmit={form.handleSubmit((data) =>
+//                   onSubmit(deal._id, deal.property._id, "cancelled", data)
+//                 )}
+//                 className="space-y-8"
+//               >
+//                 <FormField
+//                   control={form.control}
+//                   name="remarks"
+//                   render={({ field }) => (
+//                     <FormItem>
+//                       <FormLabel className="flex flex-row gap-2">
+//                         Remarks
+//                       </FormLabel>
+//                       <FormControl>
+//                         <Textarea
+//                           placeholder="Please give a reason why you are cancelling the ongoing deal."
+//                           {...field}
+//                         />
+//                       </FormControl>
+//                       <FormMessage />
+//                     </FormItem>
+//                   )}
+//                 />
 
-                <Button type="submit" variant="default" disabled={isPending}>
-                  {isPending ? "Accepting..." : "Accept"}
-                </Button>
-              </form>
-            </Form>
-          </DialogContent>
-        </Dialog>
-      ) : (
-        <Dialog open={isOpen} onOpenChange={onOpenChange}>
-          <DialogContent>Loading Deals...</DialogContent>
-        </Dialog>
-      )}
+//                 <Button type="submit" variant="default" disabled={isPending}>
+//                   {isPending ? "Accepting..." : "Accept"}
+//                 </Button>
+//               </form>
+//             </Form>
+//           </DialogContent>
+//         </Dialog>
+//       ) : (
+//         <Dialog open={isOpen} onOpenChange={onOpenChange}>
+//           <DialogContent>Loading Deals...</DialogContent>
+//         </Dialog>
+//       )}
 
-      <CancelDialog />
-    </>
-  );
-};
+//       <CancelDialog />
+//     </>
+//   );
+// };

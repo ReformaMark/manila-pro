@@ -32,13 +32,13 @@ export function SellerHeader() {
           <HomeAvatar />
         </div>
 
-        <div className="ml-auto items-center gap-4 mr-12 hidden lg:flex">
+        {/* <div className="ml-auto items-center gap-4 mr-12 hidden lg:flex">
           {user ? (
             <UserAvatar />
           ) : (
             <Loader2Icon className="w-6 h-6 animate-spin" />
           )}
-        </div>
+        </div> */}
 
         <div className="ml-auto mr-7 lg:hidden">
           <Sheet>
@@ -118,13 +118,13 @@ export function SellerHeader() {
                     ))}
                   </div>
 
-                  <div className="mt-auto flex justify-start">
+                  {/* <div className="mt-auto flex justify-start">
                     {user ? (
                       <UserAvatar />
                     ) : (
                       <Loader2Icon className="w-6 h-6 animate-spin" />
                     )}
-                  </div>
+                  </div> */}
                 </section>
               </SheetHeader>
             </SheetContent>

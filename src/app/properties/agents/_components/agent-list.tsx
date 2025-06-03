@@ -69,9 +69,9 @@ function AgentList({
                       <p className="text-sm text-gray-500">{agent.agentInfo?.title ?? "No title"}</p>
                       <p className="text-sm text-gray-500">{agent.agentInfo?.agency ?? "No agency"}</p>
                       <div className="flex items-center mt-1">
-                        <div className="flex ">
+                        <Link href={`/properties/agents/${agent._id}/reviews`} className="flex hover:cursor-pointer">
                           <RatingStars edit={false} size={30} average={agent.rating}/>
-                        </div>
+                        </Link>
                         <span className="text-xs text-gray-500 ml-1">({agent.reviews})</span>
                       </div>
                     </div>

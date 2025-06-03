@@ -261,7 +261,7 @@ function PropertyContent({property, carouselApi, setCurrentImageIndex}: Property
                         </div>
                         <div>
                           <p className="font-medium text-gray-900">{place.name}</p>
-                          <p className="text-sm text-gray-500">{place.type}</p>
+                          <p className="text-sm text-gray-500 capitalize">{place.type}</p>
                         </div>
                       </li>
                     )) : (
@@ -287,7 +287,7 @@ function PropertyContent({property, carouselApi, setCurrentImageIndex}: Property
                         </div>
                         <div>
                           <p className="font-medium text-gray-900">{place.name}</p>
-                          <p className="text-sm text-gray-500">{place.type}</p>
+                          <p className="text-sm text-gray-500 capitalize">{place.type}</p>
                         </div>
                       </li>
                     )) : (

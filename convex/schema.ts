@@ -52,7 +52,10 @@ export default defineSchema({
   ratings_reviews: defineTable({
     agentId: v.id("users"),
     ratings: v.number(),
-    reviews: v.string(),
+    title: v.string(),
+    content: v.string(),
+    helpful: v.number(),
+    notHelpful: v.number(),
     userId: v.id("users"),
   }),
 

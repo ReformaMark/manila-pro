@@ -287,7 +287,7 @@ function AgentContent({
                     )}
                 </div> */}
 
-                <p className="mt-3 text-gray-700">{review.reviews}</p>
+                <p className="mt-3 text-gray-700">{review.content}</p>
 
                 <div className="mt-3 flex justify-end">
                     <Button variant="ghost" size="sm" className="text-gray-500 hover:text-gray-900">

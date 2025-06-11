@@ -9,6 +9,7 @@ import { Bath, Bed, MapPin, Maximize, Router } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { formatPrice } from '@/lib/utils';
 
 function FeaturedProperties() {
     const { results, status, loadMore } = usePaginatedQuery(
@@ -49,7 +50,7 @@ function FeaturedProperties() {
                 <CardContent className="p-4">
                 <div className="flex items-start justify-between mb-2">
                     <h3 className="font-semibold text-lg line-clamp-1">{property.propertyName}</h3>
-                    <p className="font-bold text-primary">{property.totalSellingPrice}</p>
+                    <p className="font-bold text-primary">{formatPrice(property.totalSellingPrice, property.transactionType ?? "")}</p>
                 </div>
 
                 <div className="flex items-center text-muted-foreground mb-4">

@@ -171,7 +171,7 @@ export default function MessagesPage() {
 
                                 <div className="flex-1 min-w-0">
                                 <div className="flex justify-between items-center">
-                                    <h3 className="font-medium text-gray-900 truncate">{otherUser.fname} {otherUser.fname}</h3>
+                                    <h3 className="font-medium text-gray-900 truncate">{otherUser.fname} {otherUser.lname}</h3>
                                     <span className="text-xs text-gray-500">
                                     {formatDateListed(conversation.messages[0]._creationTime)}
                                     </span>

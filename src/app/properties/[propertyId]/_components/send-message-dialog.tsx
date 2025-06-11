@@ -34,7 +34,7 @@ export default function SendMessageDialog({agentId}: {agentId: Id<'users'>}) {
             <Button
                 onClick={() => user ? setDialogOpen(true) : router.push('/auth')}
                 variant="outline"
-                className="w-full border-brand-orange text-brand-orange hover:bg-brand-orange/10"
+                className="w-full border-brand-orange hover:text-black text-brand-orange hover:bg-brand-orange/10"
             >
                 <MessageSquare className="h-4 w-4 mr-2" />
                 Send Message

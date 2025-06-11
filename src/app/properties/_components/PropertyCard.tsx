@@ -82,11 +82,7 @@ export function PropertyCard({ property, onClick, layout = "grid" }: PropertyCar
               priority
               className="w-full h-48 object-cover"
             />
-            <div className="absolute top-2 right-2">
-              <Button variant="ghost" size="icon" className={cn(property.isSaved ? "h-8 w-8 rounded-full bg-brand-orange text-white" : "h-8 w-8 rounded-full bg-black/50 hover:bg-black/70 text-white")}>
-                <Heart className="h-4 w-4" />
-              </Button>
-            </div>
+           
             {property.featured && <Badge className="absolute top-2 left-2 bg-brand-orange text-white">Featured</Badge>}
             <Badge className="absolute bottom-2 left-2 bg-black/70 text-white">{property.transactionType}</Badge>
             <Badge className="absolute bottom-2 right-2 bg-black/70 text-white">{property.propertyType}</Badge>

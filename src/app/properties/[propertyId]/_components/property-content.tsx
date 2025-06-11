@@ -374,7 +374,7 @@ function PropertyContent({property, carouselApi, setCurrentImageIndex}: Property
             </Button>
             <Button
               variant="outline"
-              className="w-full justify-start border-gray-200 text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+              className="w-full justify-start border-gray-200 text-gray-700 overflow-hidden hover:text-gray-900 hover:bg-gray-50"
             >
               <Mail className="h-4 w-4 mr-2 text-brand-orange" />
               {agent?.email}

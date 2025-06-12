@@ -161,7 +161,7 @@ function AgentList({
         )}
 
         {/* Become an Agent */}
-        <div className="mt-12">
+        {/* <div className="mt-12">
           <Card className="border border-gray-200 shadow-sm bg-gray-50">
             <CardContent className="p-6">
               <div className="flex flex-col md:flex-row gap-6 items-center">
@@ -173,12 +173,14 @@ function AgentList({
                   </p>
                 </div>
                 <div className="md:w-1/3 flex justify-center md:justify-end">
+                <Link href="/become-an-agent">  
                   <Button className="bg-brand-orange hover:bg-brand-orange/90 text-white">Become an Agent</Button>
+                </Link>
                 </div>
               </div>
             </CardContent>
           </Card>
-        </div>
+        </div> */}
     </div>
   )
 }

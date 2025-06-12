@@ -58,7 +58,7 @@ function ChatArea({
             </Avatar>
 
             <div>
-                <h3 className="font-medium text-gray-900">{receiver?.fname} {receiver?.fname}</h3>
+                <h3 className="font-medium text-gray-900">{receiver?.fname} {receiver?.lname}</h3>
                 <p className="text-xs text-gray-500">
                 {receiver?.role === "seller" ? "Real Estate Agent" : "User"}
                 </p>

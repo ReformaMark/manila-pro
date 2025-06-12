@@ -108,6 +108,23 @@ export const conversations = query({
   },
 });
 
+export const unreadMessagesCount = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return null;
+    const initConversations = await getConversations(ctx);
+    let unreadMesCount: number = 0;
+    await asyncMap(initConversations, async (conversation) => {
+      const count = conversation.messages.filter(
+        (mes) => mes.receiverId === userId && !mes.isRead
+      ).length;
+      unreadMesCount = unreadMesCount + count;
+    });
+    return unreadMesCount;
+  },
+});
+
 const getConversations = async (ctx: QueryCtx) => {
   const userId = await getAuthUserId(ctx);
   if (!userId) throw new ConvexError("No user Found!");

@@ -36,7 +36,7 @@ export default defineSchema({
             facebook: v.optional(v.string()),
             instagram: v.optional(v.string()),
             linkedin: v.optional(v.string()),
-            twitter: v.optional(v.string()),
+            X: v.optional(v.string()),
           })),
         areasServed: v.optional(v.array(v.string())),
         licenseNumber: v.optional(v.string()),

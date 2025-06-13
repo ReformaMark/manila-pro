@@ -52,6 +52,7 @@ export const handleProfessionalInfo = mutation({
         officeAddress: v.optional(v.string()),
         experience: v.number(),
         title: v.string(),
+        licenseNumber: v.optional(v.string()),
         workingHours: v.optional(
             v.object({
                 days: v.string(), // "Mon-Fri"
@@ -70,12 +71,16 @@ export const handleProfessionalInfo = mutation({
             throw new ConvexError("User not found")
         }
 
+        const currentAgentInfo = user.agentInfo
+
         await ctx.db.patch(userId, {
             agentInfo: {
+                ...currentAgentInfo,
                 agency: args.agency,
                 officeAddress: args.officeAddress,
                 experience: args.experience,
                 title: args.title,
+                licenseNumber: args.licenseNumber,
                 workingHours: {
                     days: args.workingHours?.days || "",
                     hours: args.workingHours?.hours || "",
@@ -92,7 +97,13 @@ export const handleProfessionalInfo = mutation({
 
 export const addToAgentInfo = mutation({
     args: {
-        field: v.union(v.literal("specializations"), v.literal("languages"), v.literal("areasServed")),
+        field: v.union(
+            v.literal("specializations"),
+            v.literal("languages"),
+            v.literal("areasServed"),
+            v.literal("certifications"),
+            v.literal("awards")
+        ),
         value: v.string(),
     },
     handler: async (ctx, args) => {
@@ -156,3 +167,41 @@ export const removeFromAgentInfo = mutation({
         };
     },
 });
+
+export const handleSocials = mutation({
+    args: {
+        userId: v.id("users"),
+        socialMedia: v.optional(
+            v.object({
+                facebook: v.optional(v.string()),
+                instagram: v.optional(v.string()),
+                linkedin: v.optional(v.string()),
+                X: v.optional(v.string()),
+            })),
+    },
+    handler: async (ctx, args) => {
+        const userId = await getAuthUserId(ctx)
+        if (!userId) {
+            throw new ConvexError("Unauthorized")
+        }
+
+        const user = await ctx.db.get(userId)
+        if (!user) {
+            throw new ConvexError("User not found")
+        }
+
+        const currentAgentInfo = user.agentInfo
+
+        await ctx.db.patch(userId, {
+            agentInfo: {
+                ...currentAgentInfo,
+                socialMedia: args.socialMedia
+            }
+        })
+
+        return {
+            success: true,
+            message: "Socials updated"
+        }
+    }
+})

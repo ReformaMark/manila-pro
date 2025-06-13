@@ -108,9 +108,9 @@ function AgentProfile({ agent }: AgentProfileProps) {
                   </Button>
                 </Link>
               )}
-              {agent.agentInfo?.socialMedia?.twitter && (
+              {agent.agentInfo?.socialMedia?.X && (
                 <Link
-                  href={agent.agentInfo.socialMedia.twitter}
+                  href={agent.agentInfo.socialMedia.X}
                   target="_blank"
                   rel="noopener noreferrer"
                 >

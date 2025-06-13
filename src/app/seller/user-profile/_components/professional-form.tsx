@@ -22,6 +22,7 @@ import {
   Loader2Icon,
   MapPin,
   PlusIcon,
+  TrophyIcon,
   X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -41,6 +42,7 @@ const formSchema = z.object({
     hours: z.string(),
   }),
   experience: z.coerce.number(),
+  licenseNumber: z.optional(z.string()),
   // specializations: z.array(z.string()),
   // languages: z.array(z.string()),
   // areasServed: z.array(z.string()).optional(),
@@ -58,6 +60,8 @@ export const ProfessionalForm = () => {
   const [newSpecialization, setNewSpecialization] = useState("");
   const [newLanguage, setNewLanguage] = useState("");
   const [newArea, setNewArea] = useState("");
+  const [newCertification, setNewCertification] = useState("");
+  const [newAward, setNewAward] = useState("");
 
   const user = currentUser?.user;
 
@@ -68,6 +72,7 @@ export const ProfessionalForm = () => {
       experience: 0,
       officeAddress: "",
       title: "",
+      licenseNumber: "",
       workingHours: {
         days: "",
         hours: "",
@@ -86,6 +91,7 @@ export const ProfessionalForm = () => {
         officeAddress: user.agentInfo?.officeAddress || "",
         experience: user.agentInfo?.experience || 0,
         title: user.agentInfo?.title || "",
+        licenseNumber: user.agentInfo?.licenseNumber || "",
         workingHours: user.agentInfo?.workingHours || {
           days: "",
           hours: "",
@@ -116,6 +122,7 @@ export const ProfessionalForm = () => {
         title: values.title,
         officeAddress: values.officeAddress,
         workingHours: values.workingHours,
+        licenseNumber: values.licenseNumber,
       });
 
       if (result.success) {
@@ -127,6 +134,7 @@ export const ProfessionalForm = () => {
           title: values.title,
           officeAddress: values.officeAddress,
           workingHours: values.workingHours,
+          licenseNumber: values.licenseNumber,
         });
       }
     } catch (error) {
@@ -237,6 +245,70 @@ export const ProfessionalForm = () => {
       toast.success(result.message);
     } catch (error) {
       toast.error("Failed to remove area");
+    }
+  };
+
+  const handleAddCertification = async () => {
+    if (!newCertification.trim()) return;
+
+    try {
+      const result = await addToAgentInfo({
+        field: "certifications",
+        value: newCertification.trim(),
+      });
+      setNewCertification("");
+      toast.success(result.message);
+    } catch (error) {
+      toast.error("Failed to add certification");
+    }
+  };
+
+  const handleRemoveCertification = async (index: number) => {
+    if (!user?.agentInfo?.certifications) return;
+
+    const updatedCertifications = user.agentInfo.certifications.filter(
+      (_, i) => i !== index
+    );
+
+    try {
+      const result = await removeFromAgentInfo({
+        field: "certifications",
+        values: updatedCertifications,
+      });
+      toast.success(result.message);
+    } catch (error) {
+      toast.error("Failed to remove certification");
+    }
+  };
+
+  const handleAddAward = async () => {
+    if (!newAward.trim()) return;
+
+    try {
+      const result = await addToAgentInfo({
+        field: "awards",
+        value: newAward.trim(),
+      });
+      setNewAward("");
+      toast.success(result.message);
+    } catch (error) {
+      toast.error("Failed to add award");
+    }
+  };
+
+  const handleRemoveAward = async (index: number) => {
+    if (!user?.agentInfo?.awards) return;
+
+    const updatedAwards = user.agentInfo.awards.filter((_, i) => i !== index);
+
+    try {
+      const result = await removeFromAgentInfo({
+        field: "awards",
+        values: updatedAwards,
+      });
+      toast.success(result.message);
+    } catch (error) {
+      toast.error("Failed to remove award");
     }
   };
 
@@ -367,6 +439,26 @@ export const ProfessionalForm = () => {
                   )}
                 />
               </div>
+
+              <div className="mt-5">
+                <FormField
+                  control={form.control}
+                  name="licenseNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>License Number</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter license number..."
+                          type="text"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </CardContent>
           </Card>
 
@@ -487,6 +579,74 @@ export const ProfessionalForm = () => {
                   <X
                     className="h-3 w-3 cursor-pointer"
                     onClick={() => handleRemoveArea(index)}
+                  />
+                </Badge>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <Label>Certifications</Label>
+            <div className="flex gap-2 mt-2">
+              <Input
+                value={newCertification}
+                onChange={(e) => setNewCertification(e.target.value)}
+                placeholder="Add certification (Tip: press enter when submitting)"
+                onKeyUp={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleAddCertification();
+                  }
+                }}
+              />
+              <Button
+                type="button"
+                onClick={handleAddCertification}
+                size="icon"
+              >
+                <PlusIcon className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="flex flex-wrap gap-2 mt-3">
+              {user?.agentInfo?.certifications?.map((cert, index) => (
+                <Badge key={index} variant="secondary" className="gap-1">
+                  <AwardIcon className="h-3 w-3" />
+                  {cert}
+                  <X
+                    className="h-3 w-3 cursor-pointer"
+                    onClick={() => handleRemoveCertification(index)}
+                  />
+                </Badge>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <Label>Awards & Recognition</Label>
+            <div className="flex gap-2 mt-2">
+              <Input
+                value={newAward}
+                onChange={(e) => setNewAward(e.target.value)}
+                placeholder="Add award (Tip: press enter when submitting)"
+                onKeyUp={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleAddAward();
+                  }
+                }}
+              />
+              <Button type="button" onClick={handleAddAward} size="icon">
+                <PlusIcon className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="flex flex-wrap gap-2 mt-3">
+              {user?.agentInfo?.awards?.map((award, index) => (
+                <Badge key={index} variant="secondary" className="gap-1">
+                  <TrophyIcon className="h-3 w-3" />
+                  {award}
+                  <X
+                    className="h-3 w-3 cursor-pointer"
+                    onClick={() => handleRemoveAward(index)}
                   />
                 </Badge>
               ))}

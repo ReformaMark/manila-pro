@@ -18,8 +18,8 @@ export default defineSchema({
     bio: v.optional(v.string()),
     agentInfo: v.optional(
       v.object({
-        title: v.string(), // "Senior Real Estate Agent"
-        agency: v.string(), ///Manila Premier Realty
+        title: v.optional(v.string()), // "Senior Real Estate Agent"
+        agency: v.optional(v.string()), ///Manila Premier Realty
         officeAddress: v.optional(v.string()), // "1234 Main St, Makati City, Philippines"
         workingHours: v.optional(
           v.object({
@@ -27,16 +27,17 @@ export default defineSchema({
             hours: v.string(), // "9am-5pm"
           })
         ),
-        bio: v.string(),
-        specializations: v.array(v.string()),
-        languages: v.array(v.string()),
-        experience: v.number(),
-        socialMedia: v.object({
-          facebook: v.optional(v.string()),
-          instagram: v.optional(v.string()),
-          linkedin: v.optional(v.string()),
-          twitter: v.optional(v.string()),
-        }),
+        // bio: v.string(),
+        specializations: v.optional(v.array(v.string())),
+        languages: v.optional(v.array(v.string())),
+        experience: v.optional(v.number()),
+        socialMedia: v.optional(
+          v.object({
+            facebook: v.optional(v.string()),
+            instagram: v.optional(v.string()),
+            linkedin: v.optional(v.string()),
+            twitter: v.optional(v.string()),
+          })),
         areasServed: v.optional(v.array(v.string())),
         licenseNumber: v.optional(v.string()),
         certifications: v.optional(v.array(v.string())), ///"Licensed Real Estate Broker", "Luxury Home Marketing Specialist", "Certified Residential Specialist",

@@ -1,93 +1,109 @@
-'use client'
-import React, { useState } from 'react'
-import {motion} from 'framer-motion'
-import { Card, CardContent } from '@/components/ui/card'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import Link from 'next/link'
-import { RatingStars } from '@/components/rating-stars'
-import { MapPin, MessageSquare, Phone, Users } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import Loading from '@/components/loading'
-import { Agent } from '@/lib/types'
-import AgentLoading from './agent-loading'
-import { useCurrentUser } from '@/hooks/use-current-user'
-import { useRouter } from 'next/navigation'
-import SendMessageDialog from '../../[propertyId]/_components/send-message-dialog'
-import CallDialog from './call-dialog'
+"use client";
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { Card, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Link from "next/link";
+import { RatingStars } from "@/components/rating-stars";
+import { MapPin, MessageSquare, Phone, Users } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import Loading from "@/components/loading";
+import { Agent } from "@/lib/types";
+import AgentLoading from "./agent-loading";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { useRouter } from "next/navigation";
+import SendMessageDialog from "../../[propertyId]/_components/send-message-dialog";
+import CallDialog from "./call-dialog";
 
 interface AgentListProps {
-    results: Agent[];
-    status: "CanLoadMore" | "LoadingMore" | "LoadingFirstPage" | "Exhausted";
-    handleReset: () => void;
-    loadMore: (numItems: number) => void;
+  results: Agent[];
+  status: "CanLoadMore" | "LoadingMore" | "LoadingFirstPage" | "Exhausted";
+  handleReset: () => void;
+  loadMore: (numItems: number) => void;
 }
 
-function AgentList({
-    results,
-    status,
-    handleReset,
-    loadMore
-}: AgentListProps) {
-  const {user, isLoading} = useCurrentUser()
-  const router = useRouter()
-  const [callDialog, setCallDialog] = useState<boolean>(false)
-  const [messageDialog, setMessageDialog] = useState<boolean>(false)
+function AgentList({ results, status, handleReset, loadMore }: AgentListProps) {
+  const { user, isLoading } = useCurrentUser();
+  const router = useRouter();
+  const [callDialog, setCallDialog] = useState<boolean>(false);
+  const [messageDialog, setMessageDialog] = useState<boolean>(false);
   return (
-    <div className='contents'>
-        
-          <div className="mb-6">
-            <p className="text-gray-700">
-            Found <span className="font-semibold">{results.length}</span> 
-            {status === "CanLoadMore" ? "+" : ""} agents matching your criteria
-            </p>
-        </div>
+    <div className="contents">
+      <div className="mb-6">
+        <p className="text-gray-700">
+          Found <span className="font-semibold">{results.length}</span>
+          {status === "CanLoadMore" ? "+" : ""} agents matching your criteria
+        </p>
+      </div>
 
-        {/* Agents Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {status === "LoadingFirstPage" && (
-            <AgentLoading number={10}/>
-        )}
-          {results.map((agent) => (
-            <motion.div
-              key={agent._id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Card className="border border-gray-200 shadow-sm h-full">
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <Avatar className="size-2o ">
-                      <AvatarImage src={agent.imageUrl} alt="Agent Image" />
-                      <AvatarFallback className="bg-gray-800 text-white uppercase">{agent?.fname.charAt(0)} {agent?.lname.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <Link href={`/properties/agents/${agent._id}`} className="hover:text-brand-orange">
-                        <h3 className="font-semibold text-gray-900 capitalize">{agent?.fname} {agent?.lname}</h3>
+      {/* Agents Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {status === "LoadingFirstPage" && <AgentLoading number={10} />}
+        {results.map((agent) => (
+          <motion.div
+            key={agent._id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Card className="border border-gray-200 shadow-sm h-full">
+              <CardContent className="p-6">
+                <div className="flex items-start gap-4">
+                  <Avatar className="size-2o ">
+                    <AvatarImage src={agent.imageUrl} alt="Agent Image" />
+                    <AvatarFallback className="bg-gray-800 text-white uppercase">
+                      {agent?.fname.charAt(0)} {agent?.lname.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1">
+                    <Link
+                      href={`/properties/agents/${agent._id}`}
+                      className="hover:text-brand-orange"
+                    >
+                      <h3 className="font-semibold text-gray-900 capitalize">
+                        {agent?.fname} {agent?.lname}
+                      </h3>
+                    </Link>
+                    <p className="text-sm text-gray-500">
+                      {agent.agentInfo?.title ?? "No title"}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {agent.agentInfo?.agency ?? "No agency"}
+                    </p>
+                    <div className="flex items-center mt-1">
+                      <Link
+                        href={`/properties/agents/${agent._id}/reviews`}
+                        className="flex hover:cursor-pointer"
+                      >
+                        <RatingStars
+                          edit={false}
+                          size={30}
+                          average={agent.rating}
+                        />
                       </Link>
-                      <p className="text-sm text-gray-500">{agent.agentInfo?.title ?? "No title"}</p>
-                      <p className="text-sm text-gray-500">{agent.agentInfo?.agency ?? "No agency"}</p>
-                      <div className="flex items-center mt-1">
-                        <Link href={`/properties/agents/${agent._id}/reviews`} className="flex hover:cursor-pointer">
-                          <RatingStars edit={false} size={30} average={agent.rating}/>
-                        </Link>
-                        <span className="text-xs text-gray-500 ml-1">({agent.reviews})</span>
-                      </div>
+                      <span className="text-xs text-gray-500 ml-1">
+                        ({agent.reviews})
+                      </span>
                     </div>
                   </div>
+                </div>
 
-                  <div className="mt-4 flex items-center text-sm text-gray-500">
-                    <MapPin className="h-4 w-4 mr-1" />
-                    <span>{agent.city}</span>
-                  </div>
+                <div className="mt-4 flex items-center text-sm text-gray-500">
+                  <MapPin className="h-4 w-4 mr-1" />
+                  <span>{agent.city}</span>
+                </div>
 
-                  <div className="mt-2">
-                    <p className="text-sm text-gray-700 line-clamp-2">{agent.agentInfo?.bio ?? "This agent has not added a bio yet."}</p>
-                  </div>
+                <div className="mt-2">
+                  <p className="text-sm text-gray-700 line-clamp-2">
+                    {agent.bio ?? "This agent has not added a bio yet."}
+                  </p>
+                </div>
 
-                  <div className="mt-3 flex flex-wrap gap-1">
-                    {agent.agentInfo?.specializations.slice(0, 2).map((specialization: string) => (
+                <div className="mt-3 flex flex-wrap gap-1">
+                  {agent.agentInfo?.specializations
+                    ?.slice(0, 2)
+                    .map((specialization: string) => (
                       <Badge
                         key={specialization}
                         variant="outline"
@@ -96,72 +112,87 @@ function AgentList({
                         {specialization}
                       </Badge>
                     ))}
-                    {agent.agentInfo && agent.agentInfo.specializations?.length > 2 && (
-                      <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-300">
-                        +{(agent.agentInfo?.specializations?.length ?? 0) - 2} more
+                  {agent.agentInfo?.specializations &&
+                    agent.agentInfo.specializations.length > 2 && (
+                      <Badge
+                        variant="outline"
+                        className="bg-gray-50 text-gray-700 border-gray-300"
+                      >
+                        +{(agent.agentInfo?.specializations?.length ?? 0) - 2}{" "}
+                        more
                       </Badge>
                     )}
-                  </div>
+                </div>
 
-                  <div className="mt-4 grid grid-cols-3 gap-2 text-center text-xs">
-                    <div className="bg-gray-50 p-2 rounded">
-                      <p className="font-semibold text-gray-900">{agent.agentInfo?.experience ?? 0} yrs</p>
-                      <p className="text-gray-500">Experience</p>
-                    </div>
-                    <div className="bg-gray-50 p-2 rounded">
-                      <p className="font-semibold text-gray-900">{agent.transactions}+</p>
-                      <p className="text-gray-500">Deals</p>
-                    </div>
-                    <div className="bg-gray-50 p-2 rounded">
-                      <p className="font-semibold text-gray-900">{agent.agentInfo?.languages.length ?? "No language added"}</p>
-                      <p className="text-gray-500">Languages</p>
-                    </div>
+                <div className="mt-4 grid grid-cols-3 gap-2 text-center text-xs">
+                  <div className="bg-gray-50 p-2 rounded">
+                    <p className="font-semibold text-gray-900">
+                      {agent.agentInfo?.experience ?? 0} yrs
+                    </p>
+                    <p className="text-gray-500">Experience</p>
                   </div>
-
-                  <div className="mt-4 flex gap-2">
-                    <CallDialog agent={agent} />
-                    <SendMessageDialog agentId={agent._id}/>
+                  <div className="bg-gray-50 p-2 rounded">
+                    <p className="font-semibold text-gray-900">
+                      {agent.transactions}+
+                    </p>
+                    <p className="text-gray-500">Deals</p>
                   </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
+                  <div className="bg-gray-50 p-2 rounded">
+                    <p className="font-semibold text-gray-900">
+                      {agent.agentInfo?.languages?.length ??
+                        "No language added"}
+                    </p>
+                    <p className="text-gray-500">Languages</p>
+                  </div>
+                </div>
 
-       
-         
+                <div className="mt-4 flex gap-2">
+                  <CallDialog agent={agent} />
+                  <SendMessageDialog agentId={agent._id} />
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* No Results */}
+      {results.length === 0 && (
+        <div className="text-center py-12 bg-gray-50 rounded-lg border border-gray-200">
+          <Users className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+          <h3 className="text-lg font-medium mb-2 text-gray-900">
+            No agents found
+          </h3>
+          <p className="text-gray-500 mb-4">
+            Try adjusting your filters to see more results
+          </p>
+          <Button
+            onClick={handleReset}
+            className="bg-brand-orange hover:bg-brand-orange/90 text-white"
+          >
+            Reset Filters
+          </Button>
         </div>
+      )}
 
-        {/* No Results */}
-        {results.length === 0 && (
-          <div className="text-center py-12 bg-gray-50 rounded-lg border border-gray-200">
-            <Users className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium mb-2 text-gray-900">No agents found</h3>
-            <p className="text-gray-500 mb-4">Try adjusting your filters to see more results</p>
+      {status === "LoadingMore" ? (
+        <Loading />
+      ) : (
+        status === "CanLoadMore" && (
+          <div className="mt-8 text-center">
             <Button
-              onClick={handleReset}
-              className="bg-brand-orange hover:bg-brand-orange/90 text-white"
+              onClick={() => loadMore(10)}
+              variant="outline"
+              className="border-gray-300 text-gray-700 hover:text-gray-900 hover:bg-gray-50"
             >
-              Reset Filters
+              Load More Agents
             </Button>
           </div>
-        )}
+        )
+      )}
 
-        {status === "LoadingMore" ?
-            <Loading/>
-         : status === "CanLoadMore" && (
-        <div className="mt-8 text-center">
-            <Button
-            onClick={() => loadMore(10)}
-            variant="outline"
-            className="border-gray-300 text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-            >
-            Load More Agents
-            </Button>
-        </div>
-        )}
-
-        {/* Become an Agent */}
-        {/* <div className="mt-12">
+      {/* Become an Agent */}
+      {/* <div className="mt-12">
           <Card className="border border-gray-200 shadow-sm bg-gray-50">
             <CardContent className="p-6">
               <div className="flex flex-col md:flex-row gap-6 items-center">
@@ -182,7 +213,7 @@ function AgentList({
           </Card>
         </div> */}
     </div>
-  )
+  );
 }
 
-export default AgentList
+export default AgentList;

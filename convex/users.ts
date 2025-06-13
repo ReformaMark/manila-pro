@@ -371,9 +371,7 @@ export const getAgents = query({
     let temp = agentsWithDetails;
     if (args.specialization !== "All Specializations") {
       temp = agentsWithDetails.filter((a) => {
-        const isSpecialized = a.agentInfo
-          ? a.agentInfo.specializations.includes(args.specialization)
-          : false;
+        const isSpecialized = a.agentInfo?.specializations?.includes(args.specialization) ?? false;
         return isSpecialized;
       });
     }
@@ -381,7 +379,7 @@ export const getAgents = query({
     if (args.language.length >= 1) {
       temp = agentsWithDetails.filter((a) => {
         args.language.some((language) =>
-          a.agentInfo?.languages.includes(language)
+          a.agentInfo?.languages?.includes(language)
         );
       });
     }

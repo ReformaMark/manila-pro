@@ -106,8 +106,8 @@ export const HistoryList = () => {
 
         {filteredDeals.length === 0 ? (
           <EmptyState
-            title="No active transactions at the moment"
-            description="Consider checking your requests or post a property!"
+            title="No Transaction History Yet"
+            description="You haven't completed or cancelled any transactions. Check your requests or post a new property to get started!"
           />
         ) : (
           <>

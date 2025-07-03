@@ -15,6 +15,7 @@ import { usePathname } from "next/navigation";
 import { sellerSidebarItems } from "./seller-sidebar";
 import Link from "next/link";
 import { useState } from "react";
+import SellerUserAvatar from "@/components/seller-user-avatar";
 
 export function SellerHeader() {
   const pathname = usePathname();
@@ -32,13 +33,13 @@ export function SellerHeader() {
           <HomeAvatar />
         </div>
 
-        {/* <div className="ml-auto items-center gap-4 mr-12 hidden lg:flex">
+        <div className="ml-auto items-center gap-4 mr-12 hidden lg:flex">
           {user ? (
-            <UserAvatar />
+            <SellerUserAvatar />
           ) : (
             <Loader2Icon className="w-6 h-6 animate-spin" />
           )}
-        </div> */}
+        </div>
 
         <div className="ml-auto mr-7 lg:hidden">
           <Sheet>

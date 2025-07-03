@@ -18,7 +18,7 @@ import { useCurrentUser } from "@/hooks/use-current-user";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { LogOut, MessageSquare, Settings, User } from "lucide-react";
 
-export default function UserAvatar() {
+export default function SellerUserAvatar() {
   const { user, isLoading } = useCurrentUser();
   const { signOut } = useAuthActions();
   isLoading && (
@@ -47,21 +47,25 @@ export default function UserAvatar() {
         align="end"
         className="w-56 bg-brand-black border-gray-800"
       >
-        {/* <DropdownMenuLabel className="text-white">My Account</DropdownMenuLabel>
-          <DropdownMenuSeparator className="bg-gray-800" />
-          <DropdownMenuItem className="text-gray-300 focus:text-white focus:bg-gray-800">
-            <User className="mr-2 h-4 w-4" />
-            <span>Profile</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem className="text-gray-300 focus:text-white focus:bg-gray-800">
+        <DropdownMenuLabel className="text-white">My Account</DropdownMenuLabel>
+        <DropdownMenuSeparator className="bg-gray-800" />
+        {/* <DropdownMenuItem className="text-gray-300 focus:text-white focus:bg-gray-800">
+          <User className="mr-2 h-4 w-4" />
+          <span>Profile</span>
+        </DropdownMenuItem> */}
+        <DropdownMenuItem className="text-gray-300 focus:text-white focus:bg-gray-800">
+          <Link href="/seller/messages" className="flex items-center gap-2">
             <MessageSquare className="mr-2 h-4 w-4" />
             <span>Messages</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem className="text-gray-300 focus:text-white focus:bg-gray-800">
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem className="text-gray-300 focus:text-white focus:bg-gray-800">
+          <Link href="/seller/user-profile" className="flex items-center gap-2">
             <Settings className="mr-2 h-4 w-4" />
             <span>Settings</span>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator className="bg-gray-800" /> */}
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator className="bg-gray-800" />
         <DropdownMenuItem
           onClick={async () => await signOut()}
           className="text-gray-300 focus:text-white focus:bg-gray-800"

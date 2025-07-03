@@ -25,6 +25,7 @@ import type * as nearby_places from "../nearby_places.js";
 import type * as property from "../property.js";
 import type * as ratings_reviews from "../ratings_reviews.js";
 import type * as saved_properties from "../saved_properties.js";
+import type * as seller from "../seller.js";
 import type * as users from "../users.js";
 
 /**
@@ -48,6 +49,7 @@ declare const fullApi: ApiFromModules<{
   property: typeof property;
   ratings_reviews: typeof ratings_reviews;
   saved_properties: typeof saved_properties;
+  seller: typeof seller;
   users: typeof users;
 }>;
 export declare const api: FilterApi<

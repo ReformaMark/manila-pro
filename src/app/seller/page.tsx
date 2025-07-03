@@ -1,5 +1,6 @@
 "use client";
 
+import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -7,30 +8,25 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Home, DollarSign, TrendingUp, Users, Eye } from "lucide-react";
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
+import { useQuery } from "convex/react";
+import { DollarSign, Home, TrendingUp, Users } from "lucide-react";
+import Link from "next/link";
 import {
-  LineChart,
-  Line,
-  AreaChart,
-  Area,
-  BarChart,
   Bar,
-  XAxis,
-  YAxis,
+  BarChart,
   CartesianGrid,
   ResponsiveContainer,
+  XAxis,
+  YAxis,
 } from "recharts";
-import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import Link from "next/link";
-import { cn } from "@/lib/utils";
 
 const SellerPage = () => {
   const sellerMetrics = useQuery(api.seller.getSellerMetrics);

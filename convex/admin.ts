@@ -45,3 +45,28 @@ export const countTransactions = query({
         }
     }
 })
+
+export const soldPropertiesByMonth = query({
+    handler: async (ctx) => {
+        const properties = await ctx.db
+            .query("property")
+            .filter(q => q.eq(q.field("status"), "sold"))
+            .collect()
+
+        const monthCounts: Record<string, number> = {};
+        properties.forEach((p) => {
+            const date = new Date(p.createdAt);
+            const month = date.toLocaleString("default", { month: "long" });
+            monthCounts[month] = (monthCounts[month] || 0) + 1;
+        });
+
+        const months = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+        return months.map(month => ({
+            month,
+            sold: monthCounts[month] || 0
+        }));
+    }
+})

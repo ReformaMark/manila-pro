@@ -1,7 +1,6 @@
-import { defineSchema, defineTable } from "convex/server";
 import { authTables } from "@convex-dev/auth/server";
+import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
-import { count, time } from "console";
 
 export default defineSchema({
   ...authTables,
@@ -132,6 +131,7 @@ export default defineSchema({
     travelTime: v.string(), // in minutes
     description: v.optional(v.string()),
   }).index("by_propertyId", ["propertyId"]),
+
   deal: defineTable({
     propertyId: v.id("property"),
     buyerId: v.id("users"),
@@ -174,6 +174,7 @@ export default defineSchema({
     .searchIndex("by_status", {
       searchField: "status",
     }),
+
   document: defineTable({
     dealId: v.id("deal"),
     documentType: v.string(),
@@ -181,6 +182,7 @@ export default defineSchema({
   }).searchIndex("by_deal", {
     searchField: "dealId",
   }),
+
   payment: defineTable({
     dealId: v.id("deal"), // maraming payment sa isang deal
     amount: v.number(),
@@ -200,22 +202,6 @@ export default defineSchema({
   }).searchIndex("by_deal", {
     searchField: "dealId",
   }),
-  historical_prices: defineTable({
-    propertyId: v.id("property"),
-    recordedAt: v.number(),
-    pricePerSqm: v.number(),
-    totalPrice: v.number(),
-  }).searchIndex("by_property", {
-    searchField: "propertyId",
-  }),
-  market_trends: defineTable({
-    city: v.string(),
-    recordedAt: v.number(),
-    avgPricePerSqm: v.number(),
-    demandIndex: v.optional(v.number()),
-  }).searchIndex("by_city", {
-    searchField: "city",
-  }),
 
   saved_properties: defineTable({
     propertyId: v.id("property"),
@@ -228,9 +214,11 @@ export default defineSchema({
     .searchIndex("by_user", {
       searchField: "userId",
     }),
+
   conversations: defineTable({
     participantsId: v.array(v.id("users")),
   }),
+
   messages: defineTable({
     conversationId: v.id("conversations"),
     senderId: v.id("users"),
@@ -238,4 +226,27 @@ export default defineSchema({
     content: v.string(),
     isRead: v.boolean(),
   }).index("by_conversationId", ["conversationId"]),
+
+  ml_models: defineTable({
+    modelType: v.string(),
+    version: v.string(),
+    weights: v.array(v.number()),
+    bias: v.number(),
+    trainingDate: v.number(),
+    samplesUsed: v.number(),
+    performance: v.object({
+      rmse: v.number(),
+      mae: v.optional(v.number()),
+      r2Score: v.optional(v.number()),
+    }),
+    features: v.array(v.string()), // Feature names for reference
+    isActive: v.boolean(), // Whether this model version is currently active
+    trainingMetadata: v.optional(v.object({
+      minPrice: v.number(),
+      maxPrice: v.number(),
+      avgPrice: v.number(),
+      totalProperties: v.number(),
+    })),
+  }).index("by_type_active", ["modelType", "isActive"]),
+
 });

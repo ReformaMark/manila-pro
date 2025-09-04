@@ -40,7 +40,6 @@ export const createAdmin = mutation({
       if (existingEmail) throw new ConvexError("Email already exists");
 
       const role = "admin";
-      // const password = "123456"  TODO: generate random password and send it to email
       const accountId = generateAdminId();
 
       const { email, password, ...userData } = args;
@@ -102,7 +101,6 @@ export const createSeller = mutation({
       if (existingEmail) throw new ConvexError("Email already exists");
 
       const role = "seller";
-      // const password = "123456"  TODO: generate random password and send it to email
       const accountId = generateSellerId();
 
       const { email, password, ...userData } = args;

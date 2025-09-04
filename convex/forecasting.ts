@@ -171,13 +171,16 @@ class LinearRegression {
 
 function preprocessPropertyData(properties: Doc<"property">[]) {
     const processedData: number[][] = [];
-    const prices: number[] = []
+    const prices: number[] = [];
 
     const unitTypes = ["apartment", "condominium", "duplex", "single attached house",
         "single detached house", "townhouse/detached row house"];
     const cities = ["Makati", "Pasay", "Taguig"];
 
     for (const property of properties) {
+        // 🔧 FIX: Only include "Buy" transactions for purchase price forecasting
+        if (property.transactionType !== "Buy") continue;
+
         if (!property.totalSellingPrice || property.totalSellingPrice <= 0) continue;
 
         const features: number[] = []

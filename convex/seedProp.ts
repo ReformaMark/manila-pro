@@ -100,8 +100,8 @@ export const createRealisticPropertyData = mutation({
                 suggestedTermInMonths: 180,
                 block: String.fromCharCode(65 + (index % 26)), // A-Z
                 lot: (index + 1).toString(),
-                displayImage: "kg29me75nxyynqzaaxfxd7ysvh7cpbsp",
-                otherImage: ["kg29me75nxyynqzaaxfxd7ysvh7cpbsp"],
+                displayImage: "kg214new51sg08hv01e54trejx7gxxk2",
+                otherImage: ["kg214new51sg08hv01e54trejx7gxxk2"],
                 address: `${index + 1} ${city} Street, ${city} City`,
                 coordinates: [
                     14.5 + (Math.random() - 0.5) * 0.1,

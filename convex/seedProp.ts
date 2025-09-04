@@ -3,7 +3,7 @@ import { mutation } from "./_generated/server";
 
 export const createRealisticPropertyData = mutation({
     handler: async (ctx) => {
-        const testSellerId = "kh77g93x36ndr7bqdqs9cpv7nn7cdbqg" as Id<"users">;
+        const testSellerId = "kh70pd6zvp7x85293nwbs47gvs7py4j5" as Id<"users">;
 
         const realisticProperties = [];
 

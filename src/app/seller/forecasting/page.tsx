@@ -352,25 +352,6 @@ const ForecastingPage = () => {
                 {marketInsights?.totalProperties || 0} / 50+
               </Badge>
             </div>
-            {(!marketInsights || (marketInsights.totalProperties ?? 0) < 5) && (
-              <div className="mt-3 p-3 bg-yellow-50 rounded-lg">
-                <p className="text-yellow-800 font-medium">
-                  ⚠️ Need more data?
-                </p>
-                <p className="text-yellow-700 text-xs mt-1">
-                  Use our data generator to create realistic properties for
-                  training.
-                </p>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="mt-2"
-                  onClick={() => window.open("/seller/seedit", "_blank")}
-                >
-                  Generate Sample Data
-                </Button>
-              </div>
-            )}
           </CardContent>
         </Card>
 

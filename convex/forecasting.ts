@@ -298,7 +298,10 @@ export const trainPredictiveModel = mutation({
             };
 
         } catch (error) {
-            throw new ConvexError(`Training failed: ${error}`);
+            console.error("Model training failed:", error);
+            throw new ConvexError(
+                "Failed to train the machine learning model. This might be due to invalid property data or a temporary system issue. Please try again, or contact support if the problem persists."
+            );
         }
     }
 });

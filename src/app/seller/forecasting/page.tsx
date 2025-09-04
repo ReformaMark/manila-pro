@@ -101,8 +101,45 @@ const ForecastingPage = () => {
     try {
       const result = await trainModel({});
       toast.success(result.message);
-    } catch (error) {
-      toast.error("Failed to train model:" + error);
+    } catch (error: any) {
+      console.error("Training error:", error);
+
+      let errorMessage =
+        "Failed to train the forecasting model. Please try again.";
+
+      if (error?.message) {
+        // Check if it's a ConvexError with our custom message
+        if (error.message.includes("Not enough properties")) {
+          errorMessage =
+            "❌ Insufficient Data: You need at least 5 properties to train the model. Please add more properties or use the seed data generator.";
+        } else if (error.message.includes("No valid property data")) {
+          errorMessage =
+            "❌ No Valid Data: Please ensure your properties have complete information (price, lot area, bedrooms, etc.) before training.";
+        } else if (error.message.includes("You must be logged in")) {
+          errorMessage =
+            "❌ Authentication Required: Please log in to train models.";
+        } else if (
+          error.message.includes("Failed to train the machine learning model")
+        ) {
+          errorMessage =
+            "❌ Training Failed: There was an issue with the model training process. Please try again or contact support.";
+        } else {
+          // If we have a custom error message from the server, use it
+          const customMessage = error.message.replace(/\[.*?\]/g, "").trim();
+          if (customMessage && !customMessage.includes("Server Error")) {
+            errorMessage = customMessage;
+          }
+        }
+      }
+
+      toast.error("Model Training Failed", {
+        description: errorMessage,
+        duration: 6000,
+        action: {
+          label: "Need Data?",
+          onClick: () => window.open("/seller/seedit", "_blank"),
+        },
+      });
     } finally {
       setIsTraining(false);
     }
@@ -141,7 +178,7 @@ const ForecastingPage = () => {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
-              <Brain className="h-8 w-8 text-blue-600" />
+              <Brain className="h-8 w-8 text-orange-600" />
               Property Forecasting
             </h1>
             <p className="text-gray-600 mt-1">
@@ -149,18 +186,32 @@ const ForecastingPage = () => {
               insights
             </p>
           </div>
-          <Button
-            onClick={handleTrainModel}
-            disabled={isTraining}
-            className="flex items-center gap-2"
-          >
-            {isTraining ? (
-              <RefreshCw className="h-4 w-4 animate-spin" />
-            ) : (
-              <Zap className="h-4 w-4" />
+          <div className="flex flex-col sm:flex-row gap-2 items-end">
+            <Button
+              onClick={handleTrainModel}
+              disabled={
+                isTraining ||
+                !marketInsights ||
+                (marketInsights?.totalProperties ?? 0) < 5
+              }
+              className="flex items-center gap-2"
+              size="lg"
+            >
+              {isTraining ? (
+                <RefreshCw className="h-4 w-4 animate-spin" />
+              ) : (
+                <Zap className="h-4 w-4" />
+              )}
+              {isTraining ? "Training Model..." : "Train New Model"}
+            </Button>
+            {(!marketInsights ||
+              (marketInsights?.totalProperties ?? 0) < 5) && (
+              <p className="text-xs text-red-600">
+                Need {5 - (marketInsights?.totalProperties ?? 0)} more
+                properties to train
+              </p>
             )}
-            {isTraining ? "Training..." : "Train New Model"}
-          </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -204,7 +255,7 @@ const ForecastingPage = () => {
               <CardTitle className="text-sm font-medium">
                 Model Accuracy
               </CardTitle>
-              <Target className="h-4 w-4 text-blue-500" />
+              <Target className="h-4 w-4 text-orange-500" />
             </CardHeader>
             <CardContent>
               {activeModel?.performance ? (
@@ -268,6 +319,60 @@ const ForecastingPage = () => {
             </CardContent>
           </Card>
         </div>
+
+        <Card className="border-l-4 border-l-orange-500">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-orange-600">
+              <Info className="h-5 w-5" />
+              Training Requirements
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm space-y-2">
+            <div className="flex items-center justify-between">
+              <span>Minimum properties needed:</span>
+              <Badge
+                variant={
+                  marketInsights && (marketInsights.totalProperties ?? 0) >= 5
+                    ? "default"
+                    : "destructive"
+                }
+              >
+                {marketInsights?.totalProperties || 0} / 5
+              </Badge>
+            </div>
+            <div className="flex items-center justify-between">
+              <span>Recommended for best accuracy:</span>
+              <Badge
+                variant={
+                  marketInsights && (marketInsights.totalProperties ?? 0) >= 50
+                    ? "default"
+                    : "secondary"
+                }
+              >
+                {marketInsights?.totalProperties || 0} / 50+
+              </Badge>
+            </div>
+            {(!marketInsights || (marketInsights.totalProperties ?? 0) < 5) && (
+              <div className="mt-3 p-3 bg-yellow-50 rounded-lg">
+                <p className="text-yellow-800 font-medium">
+                  ⚠️ Need more data?
+                </p>
+                <p className="text-yellow-700 text-xs mt-1">
+                  Use our data generator to create realistic properties for
+                  training.
+                </p>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="mt-2"
+                  onClick={() => window.open("/seller/seedit", "_blank")}
+                >
+                  Generate Sample Data
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Price Forecasting Tool */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -411,8 +516,8 @@ const ForecastingPage = () => {
             <CardContent>
               {forecastData && forecastData.forecastedPrice ? (
                 <div className="space-y-4">
-                  <div className="text-center p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg">
-                    <div className="text-3xl font-bold text-blue-600 mb-2">
+                  <div className="text-center p-6 bg-gradient-to-r from-orange-50 to-purple-50 rounded-lg">
+                    <div className="text-3xl font-bold text-orange-600 mb-2">
                       {formatPrice(forecastData.forecastedPrice)}
                     </div>
                     <p className="text-sm text-gray-600">
@@ -579,7 +684,7 @@ const ForecastingPage = () => {
                     key={model.id}
                     className={`p-4 border rounded-lg ${
                       model.isActive
-                        ? "border-blue-200 bg-blue-50"
+                        ? "border-orange-200 bg-orange-50"
                         : "border-gray-200"
                     }`}
                   >

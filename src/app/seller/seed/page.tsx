@@ -188,10 +188,7 @@ const SeeditPage = () => {
           </CardHeader>
           <CardContent className="text-sm space-y-2">
             <ol className="list-decimal list-inside space-y-2">
-              <li>
-                <strong>For Capstone:</strong> Use "100 Realistic Properties"
-                for best ML results
-              </li>
+              <li>Use "100 Realistic Properties" for best ML results</li>
               <li>
                 Go to{" "}
                 <code className="bg-gray-100 px-1 rounded">
@@ -204,17 +201,6 @@ const SeeditPage = () => {
               <li>Show market insights charts for presentation</li>
               <li>Compare model versions in history section</li>
             </ol>
-
-            <div className="mt-4 p-3 bg-yellow-50 rounded-lg">
-              <p className="font-medium text-yellow-800">
-                💡 Pro Tip for Defense:
-              </p>
-              <p className="text-yellow-700">
-                The 100-property dataset demonstrates proper ML methodology with
-                sufficient training data, realistic pricing patterns, and robust
-                validation capabilities.
-              </p>
-            </div>
           </CardContent>
         </Card>
       </div>

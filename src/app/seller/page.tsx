@@ -52,7 +52,7 @@ const SellerPage = () => {
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center gap-3">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
               Seller Dashboard
@@ -61,17 +61,30 @@ const SellerPage = () => {
               Manage your properties and track your sales performance
             </p>
           </div>
-          <Link
-            className={cn(
-              "flex items-center gap-2",
-              buttonVariants({
-                variant: "default",
-              })
-            )}
-            href="/seller/properties/new"
-          >
-            Add New Property
-          </Link>
+          <div className="flex flex-col md:flex-row gap-3">
+            <Link
+              className={cn(
+                "flex items-center gap-2",
+                buttonVariants({
+                  variant: "default",
+                })
+              )}
+              href="/seller/properties/new"
+            >
+              Add New Property
+            </Link>
+            <Link
+              className={cn(
+                "flex items-center gap-2",
+                buttonVariants({
+                  variant: "outline",
+                })
+              )}
+              href="/seller/forecasting"
+            >
+              Price Forcasting
+            </Link>
+          </div>
         </div>
 
         {/* Metrics Cards */}

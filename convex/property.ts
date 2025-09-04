@@ -424,6 +424,48 @@ export const getPropertyBySeller = query({
   },
 });
 
+export const getPropertiesBySeller = query({
+  args: { paginationOpts: paginationOptsValidator },
+  handler: async (ctx, args) => {
+    const id = await getAuthUserId(ctx);
+    if (!id) throw new ConvexError("Unauthorized");
+
+    const properties = await ctx.db
+      .query("property")
+      .filter((q) => q.eq(q.field("sellerId"), id))
+      .order("desc")
+      .paginate(args.paginationOpts);
+
+    const propertiesWithImages = await asyncMap(properties.page, async (property) => {
+      const displayImageUrl = property.displayImage
+        ? await ctx.storage.getUrl(property.displayImage)
+        : null;
+
+      const otherImageUrls = property.otherImage
+        ? await asyncMap(property.otherImage, async (image) => {
+          return await ctx.storage.getUrl(image);
+        })
+        : [];
+
+      const cleanOtherImageUrls = otherImageUrls.filter(
+        (url): url is string => url !== null && url !== undefined
+      );
+
+      return {
+        ...property,
+        displayImage: displayImageUrl as string,
+        otherImage: cleanOtherImageUrls,
+      };
+    });
+
+    return {
+      page: propertiesWithImages,
+      isDone: properties.isDone,
+      continueCursor: properties.continueCursor,
+    };
+  },
+});
+
 export const getPropertyBySellerWithNearbyPlaces = query({
   args: {},
   handler: async (ctx) => {

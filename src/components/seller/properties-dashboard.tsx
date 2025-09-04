@@ -1,21 +1,18 @@
-"use client"
+"use client";
+import { Card, CardContent } from "@/components/ui/card";
 import {
-    Card,
-    CardContent
-} from "@/components/ui/card";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import {
-    Sheet,
-    SheetContent,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
 } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatCurrency } from "@/lib/utils";
@@ -32,515 +29,1026 @@ import { Separator } from "../ui/separator";
 import { Slider } from "../ui/slider";
 import { PropertyDetailsModal } from "./property-details-modal";
 import { PropertyGrid } from "./property-grid";
-
+import { Loader2 } from "lucide-react";
 
 interface PropertiesDashboardProps {
-    initialProperties: Doc<"property">[]
+  initialProperties: Doc<"property">[];
+  loadMore: (numItems: number) => void;
+  isLoading: boolean;
+  hasMore: boolean;
 }
 
 export function PropertiesDashboard({
-    initialProperties
+  initialProperties,
+  loadMore,
+  isLoading,
+  hasMore,
 }: PropertiesDashboardProps) {
-    const [searchQuery, setSearchQuery] = useState("")
-    const [statusFilter, setStatusFilter] = useState("all")
-    const [sortBy, setSortBy] = useState("newest")
-    const [selectedCity, setSelectedCity] = useState("all")
-    const [priceRange, setPriceRange] = useState([0, 100000000])
-    const [selectedPropertyTypes, setSelectedPropertyTypes] = useState<string[]>([])
-    const [selectedProperty, setSelectedProperty] = useState<Doc<"property"> | null>(null)
-    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
-    const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false)
-    const [selectedAmenities, setSelectedAmenities] = useState<string[]>([])
-    const [selectedFacilities, setSelectedFacilities] = useState<string[]>([])
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("newest");
+  const [selectedCity, setSelectedCity] = useState("all");
+  const [priceRange, setPriceRange] = useState([0, 100000000]);
+  const [selectedPropertyTypes, setSelectedPropertyTypes] = useState<string[]>(
+    []
+  );
+  const [selectedProperty, setSelectedProperty] =
+    useState<Doc<"property"> | null>(null);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
+  const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
+  const [selectedFacilities, setSelectedFacilities] = useState<string[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 15;
 
-    const allPrices = initialProperties.map((p) => p.totalSellingPrice)
-    const minPrice = Math.min(...allPrices)
-    const maxPrice = Math.max(...allPrices)
+  const allPrices = initialProperties.map((p) => p.totalSellingPrice);
+  const minPrice = Math.min(...allPrices);
+  const maxPrice = Math.max(...allPrices);
 
-    const propertyTypes = useMemo(() => {
-        const types = new Set(initialProperties.map((p) => p.unitType))
-        return Array.from(types)
-    }, [initialProperties])
+  const propertyTypes = useMemo(() => {
+    const types = new Set(initialProperties.map((p) => p.unitType));
+    return Array.from(types);
+  }, [initialProperties]);
 
-    const cities = useMemo(() => {
-        const city = new Set(initialProperties.map((p) => p.city))
-        return Array.from(city)
-    }, [])
+  const cities = useMemo(() => {
+    const city = new Set(initialProperties.map((p) => p.city));
+    return Array.from(city);
+  }, []);
 
-    const togglePropertyType = (type: string) => {
-        setSelectedPropertyTypes((prev) => (prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]))
-    }
+  const togglePropertyType = (type: string) => {
+    setSelectedPropertyTypes((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+    );
+  };
 
-    const toggleAmenity = (amenity: string) => {
-        setSelectedAmenities((prev) => (prev.includes(amenity) ? prev.filter((a) => a !== amenity) : [...prev, amenity]))
-    }
+  const toggleAmenity = (amenity: string) => {
+    setSelectedAmenities((prev) =>
+      prev.includes(amenity)
+        ? prev.filter((a) => a !== amenity)
+        : [...prev, amenity]
+    );
+  };
 
-    const toggleFacility = (facility: string) => {
-        setSelectedFacilities((prev) =>
-            prev.includes(facility) ? prev.filter((f) => f !== facility) : [...prev, facility],
-        )
-    }
+  const toggleFacility = (facility: string) => {
+    setSelectedFacilities((prev) =>
+      prev.includes(facility)
+        ? prev.filter((f) => f !== facility)
+        : [...prev, facility]
+    );
+  };
 
-    const resetFilters = () => {
-        setPriceRange([minPrice, maxPrice])
-        setSelectedPropertyTypes([])
-        setSelectedAmenities([])
-        setSelectedFacilities([])
-        setSelectedCity("all")
-        setSearchQuery("")
-        setSortBy("newest")
-    }
+  const resetFilters = () => {
+    setPriceRange([minPrice, maxPrice]);
+    setSelectedPropertyTypes([]);
+    setSelectedAmenities([]);
+    setSelectedFacilities([]);
+    setSelectedCity("all");
+    setSearchQuery("");
+    setSortBy("newest");
+  };
 
-    const activeFilterCount = [
-        priceRange[0] > minPrice || priceRange[1] < maxPrice,
-        selectedPropertyTypes.length > 0,
-        selectedAmenities.length > 0,
-        selectedFacilities.length > 0,
-        selectedCity !== "all",
-        searchQuery.length > 0,
-    ].filter(Boolean).length
+  const activeFilterCount = [
+    priceRange[0] > minPrice || priceRange[1] < maxPrice,
+    selectedPropertyTypes.length > 0,
+    selectedAmenities.length > 0,
+    selectedFacilities.length > 0,
+    selectedCity !== "all",
+    searchQuery.length > 0,
+  ].filter(Boolean).length;
 
-    const filteredProperties = initialProperties.filter((property) => {
-        if (statusFilter !== "all" && property.status !== statusFilter) return false
+  const filteredProperties = initialProperties.filter((property) => {
+    if (statusFilter !== "all" && property.status !== statusFilter)
+      return false;
 
-        if (property.totalSellingPrice < priceRange[0] || property.totalSellingPrice > priceRange[1]) return false
-
-        if (selectedPropertyTypes.length > 0 && !selectedPropertyTypes.includes(property.unitType)) return false
-
-        if (selectedCity !== "all" && property.city !== selectedCity) return false
-
-        if (
-            searchQuery &&
-            !property.propertyName.toLowerCase().includes(searchQuery.toLowerCase()) &&
-            !property.address.toLowerCase().includes(searchQuery.toLowerCase())
-        ) {
-            return false
-        }
-
-        if (selectedAmenities.length > 0) {
-            const propertyAmenities = property.amenities?.map((a) => a.name) || []
-            if (!selectedAmenities.some((a) => propertyAmenities.includes(a))) return false
-        }
-
-        if (selectedFacilities.length > 0) {
-            const propertyFacilities = property.facilities?.map((f) => f.name) || []
-            if (!selectedFacilities.some((f) => propertyFacilities.includes(f))) return false
-        }
-
-
-        if (sortBy === "featured" && !property.featured) return false
-
-        return true
-    })
-
-    const sortedProperties = [...filteredProperties].sort((a, b) => {
-        if (sortBy === "newest") return b.createdAt - a.createdAt
-        if (sortBy === "oldest") return a.createdAt - b.createdAt
-        if (sortBy === "price-high") return b.totalSellingPrice - a.totalSellingPrice
-        if (sortBy === "price-low") return a.totalSellingPrice - b.totalSellingPrice
-        return 0
-    })
-
-    const allCount = initialProperties.length
-    const availableCount = initialProperties.filter((p) => p.status === "available").length
-    const reservedCount = initialProperties.filter((p) => p.status === "reserved").length
-    const soldCount = initialProperties.filter((p) => p.status === "sold").length
-
-    const handleViewDetails = (property: Doc<"property">) => {
-        setSelectedProperty(property)
-        setIsDetailsModalOpen(true)
-    }
-
-    return (
-        <>
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                <div className="space-y-1">
-                    <h1 className="text-3xl font-bold tracking-tight">My Properties</h1>
-                    <p className="text-muted-foreground">Manage and track your real estate listings</p>
-                </div>
-
-                <Button asChild variant="orange">
-                    <Link href="/seller/properties/new">
-                        <Plus className="mr-2 h-4 w-4" />
-                        Add New Property
-                    </Link>
-                </Button>
-            </div>
-
-            <div className="flex flex-col lg:flex-row gap-6 mb-6">
-                <div className="flex flex-col">
-                    <Card className="w-full lg:w-64 hidden lg:block">
-                        <CardContent className="p-6">
-                            <div className="space-y-6">
-                                <div>
-                                    <h3 className="font-medium mb-3">Price Range</h3>
-                                    <div className="flex justify-between mb-2">
-                                        <span className="text-sm text-muted-foreground">{formatCurrency(priceRange[0])}</span>
-                                        <span className="text-sm text-muted-foreground">{formatCurrency(priceRange[1])}</span>
-                                    </div>
-                                    <Slider
-                                        defaultValue={[minPrice, maxPrice]}
-                                        min={minPrice}
-                                        max={maxPrice}
-                                        step={100000}
-                                        value={priceRange}
-                                        onValueChange={(value) => setPriceRange(value)}
-                                        minStepsBetweenThumbs={1}
-                                    />
-                                </div>
-
-                                <Separator className="w-full" />
-
-                                <div>
-                                    <h3 className="font-medium mb-3">Property Type</h3>
-                                    <div className="space-y-2">
-                                        {propertyTypes.map((type) => (
-                                            <div key={type} className="flex items-center space-x-2">
-                                                <Checkbox
-                                                    id={`mobile-type-${type}`}
-                                                    checked={selectedPropertyTypes.includes(type)}
-                                                    onCheckedChange={() => togglePropertyType(type)}
-                                                    className="data-[state=checked]:bg-orange-500"
-                                                />
-                                                <Label htmlFor={`mobile-type-${type}`} className="capitalize">
-                                                    {type.replace(/-/g, " ")}
-                                                </Label>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <Separator className="w-full" />
-
-                                <div>
-
-                                </div>
-                            </div>
-
-
-                            <div>
-                                <h3 className="font-medium mb-3">City</h3>
-                                <Select value={selectedCity} onValueChange={setSelectedCity}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select city" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">All Cities</SelectItem>
-                                        {cities.map((city) => (
-                                            <SelectItem key={city} value={city}>
-                                                {city}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            <Separator className="w-full my-3" />
-
-                            <div>
-                                <h3 className="font-medium mb-3 text-orange-700 mt-3">Amenities & Facilities</h3>
-                                <div className="space-y-2">
-                                    <div className="flex items-center space-x-2">
-                                        <Checkbox
-                                            id="filter-pool"
-                                            checked={selectedAmenities.includes("Swimming Pool")}
-                                            onCheckedChange={() => toggleAmenity("Swimming Pool")}
-                                            className="border-orange-300 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
-                                        />
-                                        <Label htmlFor="filter-pool" className="cursor-pointer">
-                                            Swimming Pool
-                                        </Label>
-                                    </div>
-                                    <div className="flex items-center space-x-2">
-                                        <Checkbox
-                                            id="filter-gym"
-                                            checked={selectedAmenities.includes("Gym/Fitness Center")}
-                                            onCheckedChange={() => toggleAmenity("Gym/Fitness Center")}
-                                            className="border-orange-300 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
-                                        />
-                                        <Label htmlFor="filter-gym" className="cursor-pointer">
-                                            Gym/Fitness Center
-                                        </Label>
-                                    </div>
-                                    <div className="flex items-center space-x-2">
-                                        <Checkbox
-                                            id="filter-parking"
-                                            checked={selectedFacilities.includes("Parking")}
-                                            onCheckedChange={() => toggleFacility("Parking")}
-                                            className="border-orange-300 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
-                                        />
-                                        <Label htmlFor="filter-parking" className="cursor-pointer">
-                                            Parking
-                                        </Label>
-                                    </div>
-                                    <div className="flex items-center space-x-2">
-                                        <Checkbox
-                                            id="filter-security"
-                                            checked={selectedFacilities.includes("24/7 Security")}
-                                            onCheckedChange={() => toggleFacility("24/7 Security")}
-                                            className="border-orange-300 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
-                                        />
-                                        <Label htmlFor="filter-security" className="cursor-pointer">
-                                            24/7 Security
-                                        </Label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <Button variant="outline" className="mt-4 w-full" onClick={resetFilters}>
-                                Reset Filters
-                            </Button>
-                        </CardContent>
-                    </Card>
-                </div>
-
-                <div className="flex-1">
-                    <Tabs defaultValue="all" className="w-full" onValueChange={setStatusFilter}>
-                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                            <TabsList className="mb-4 sm:mb-0">
-                                <TabsTrigger value="all">
-                                    All
-                                    <Badge className="ml-2" variant="secondary">{allCount}</Badge>
-                                </TabsTrigger>
-                                <TabsTrigger value="available">
-                                    Available
-                                    <Badge className="ml-2" variant="secondary">
-                                        {availableCount}
-                                    </Badge>
-                                </TabsTrigger>
-                                <TabsTrigger value="reserved">
-                                    Reserved
-                                    <Badge className="ml-2" variant="secondary">
-                                        {reservedCount}
-                                    </Badge>
-                                </TabsTrigger>
-                                <TabsTrigger value="sold">
-                                    Sold
-                                    <Badge className="ml-2" variant="secondary">
-                                        {soldCount}
-                                    </Badge>
-                                </TabsTrigger>
-                            </TabsList>
-                        </div>
-
-                        <div className="flex flex-col sm:flex-row gap-2 mb-6">
-                            <div className="relative flex-1">
-                                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                                <Input
-                                    placeholder="Search properties..."
-                                    className="pl-8"
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                />
-                            </div>
-
-                            <Select value={sortBy} onValueChange={setSortBy}>
-                                <SelectTrigger className="w-full sm:w-[180px]">
-                                    <SelectValue placeholder="Sort by" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="newest">Newest First</SelectItem>
-                                    <SelectItem value="oldest">Oldest First</SelectItem>
-                                    <SelectItem value="featured">Featured</SelectItem>
-                                    <SelectItem value="price-high">Price: High to Low</SelectItem>
-                                    <SelectItem value="price-low">Price: Low to High</SelectItem>
-                                </SelectContent>
-                            </Select>
-
-                            <Sheet open={isFilterSheetOpen} onOpenChange={setIsFilterSheetOpen}>
-                                <SheetTrigger asChild>
-                                    <Button variant="outline" className="lg:hidden relative">
-                                        <Filter className="h-4 w-4 mr-2" />
-                                        Filters
-                                        {activeFilterCount > 0 && (
-                                            <Badge className="ml-1 h-5 w-5 p-0 flex items-center justify-center bg-orange-500">{activeFilterCount}</Badge>
-                                        )}
-                                    </Button>
-                                </SheetTrigger>
-                                <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-                                    <SheetHeader>
-                                        <SheetTitle>Filters</SheetTitle>
-                                    </SheetHeader>
-                                    <div className="py-4 space-y-6">
-                                        <div>
-                                            <h3 className="font-medium mb-3">Price Range</h3>
-                                            <div className="flex justify-between mb-2">
-                                                <span className="text-sm text-muted-foreground">{formatCurrency(priceRange[0])}</span>
-                                                <span className="text-sm text-muted-foreground">{formatCurrency(priceRange[1])}</span>
-                                            </div>
-                                            <Slider
-                                                defaultValue={[minPrice, maxPrice]}
-                                                min={minPrice}
-                                                max={maxPrice}
-                                                step={100000}
-                                                value={priceRange}
-                                                onValueChange={setPriceRange}
-                                            />
-                                        </div>
-
-                                        <Separator />
-
-                                        <div>
-                                            <h3 className="font-medium mb-3">Property Type</h3>
-                                            <div className="space-y-2">
-                                                {propertyTypes.map((type) => (
-                                                    <div key={type} className="flex items-center space-x-2">
-                                                        <Checkbox
-                                                            id={`mobile-type-${type}`}
-                                                            checked={selectedPropertyTypes.includes(type)}
-                                                            onCheckedChange={() => togglePropertyType(type)}
-                                                            className="data-[state=checked]:bg-orange-500"
-                                                        />
-                                                        <Label htmlFor={`mobile-type-${type}`} className="capitalize">
-                                                            {type.replace(/-/g, " ")}
-                                                        </Label>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-
-                                        <Separator />
-
-                                        <div>
-                                            <h3 className="font-medium mb-3">City</h3>
-                                            <Select value={selectedCity} onValueChange={setSelectedCity}>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Select city" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="all">All Cities</SelectItem>
-                                                    {cities.map((city) => (
-                                                        <SelectItem key={city} value={city}>
-                                                            {city}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-
-                                        <div className="flex gap-2 pt-4">
-                                            <Button variant="outline" className="flex-1" onClick={resetFilters}>
-                                                Reset
-                                            </Button>
-                                            <Button variant="orange" className="flex-1" onClick={() => setIsFilterSheetOpen(false)}>
-                                                Apply Filters
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </SheetContent>
-                            </Sheet>
-                        </div>
-
-                        {activeFilterCount > 0 && (
-                            <div className="flex flex-wrap gap-2 mb-4">
-                                {priceRange[0] > minPrice || priceRange[1] < maxPrice ? (
-                                    <Badge variant="outline" className="rounded-full py-2">
-                                        Price: {formatCurrency(priceRange[0])} - {formatCurrency(priceRange[1])}
-                                        <Button variant="ghost" className="h-4 w-4 p-0 ml-1" size="icon" onClick={() => setPriceRange([minPrice, maxPrice])}>
-                                            <X className="h-3 w-3" />
-                                            <span className="sr-only">Remove price filter</span>
-                                        </Button>
-                                    </Badge>
-                                ) : null}
-
-                                {selectedPropertyTypes.map((type) => (
-                                    <Badge variant="outline" key={type} className="rounded-full py-2">
-                                        {type}
-                                        <Button variant="ghost" className="h-4 w-4 p-0 ml-1" size="icon" onClick={() => togglePropertyType(type)}>
-                                            <X className="h-3 w-3" />
-                                            <span className="sr-only">Remove {type} filter</span>
-                                        </Button>
-                                    </Badge>
-                                ))}
-
-                                {selectedCity !== "all" && (
-                                    <Badge variant="outline" className="flex items-center gap-1">
-                                        {selectedCity}
-                                        <Button variant="ghost" size="icon" className="h-4 w-4 p-0 ml-1" onClick={() => setSelectedCity("all")}>
-                                            <X className="h-3 w-3" />
-                                            <span className="sr-only">Remove city filter</span>
-                                        </Button>
-                                    </Badge>
-                                )}
-
-                                {selectedAmenities.map((amenity) => (
-                                    <Badge
-                                        key={`amenity-${amenity}`}
-                                        variant="outline"
-                                        className="flex items-center gap-1 "
-                                    >
-                                        Amenity: {amenity}
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            className="h-4 w-4 p-0 ml-1 "
-                                            onClick={() => toggleAmenity(amenity)}
-                                        >
-                                            <X className="h-3 w-3" />
-                                            <span className="sr-only">Remove {amenity} filter</span>
-                                        </Button>
-                                    </Badge>
-                                ))}
-
-                                {selectedFacilities.map((facility) => (
-                                    <Badge
-                                        key={`facility-${facility}`}
-                                        variant="outline"
-                                        className="flex items-center gap-1"
-                                    >
-                                        Facility: {facility}
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            className="h-4 w-4 p-0 ml-1"
-                                            onClick={() => toggleFacility(facility)}
-                                        >
-                                            <X className="h-3 w-3" />
-                                            <span className="sr-only">Remove {facility} filter</span>
-                                        </Button>
-                                    </Badge>
-                                ))}
-
-                                {searchQuery && (
-                                    <Badge variant="outline" className="flex items-center gap-1">
-                                        Search: {searchQuery}
-                                        <Button variant="ghost" size="icon" className="h-4 w-4 p-0 ml-1" onClick={() => setSearchQuery("")}>
-                                            <X className="h-3 w-3" />
-                                            <span className="sr-only">Clear search</span>
-                                        </Button>
-                                    </Badge>
-                                )}
-
-                                <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={resetFilters}>
-                                    Clear All
-                                </Button>
-                            </div>
-                        )}
-
-
-                        <TabsContent value="all" className="mt-0">
-                            <PropertyGrid properties={sortedProperties} onViewDetails={handleViewDetails} />
-                        </TabsContent>
-                        <TabsContent value="available" className="mt-0">
-                            <PropertyGrid properties={sortedProperties} onViewDetails={handleViewDetails} />
-                        </TabsContent>
-                        <TabsContent value="reserved" className="mt-0">
-                            <PropertyGrid properties={sortedProperties} onViewDetails={handleViewDetails} />
-                        </TabsContent>
-                        <TabsContent value="sold" className="mt-0">
-                            <PropertyGrid properties={sortedProperties} onViewDetails={handleViewDetails} />
-                        </TabsContent>
-                    </Tabs>
-                </div>
-            </div>
-
-            {selectedProperty && (
-                <PropertyDetailsModal
-                    property={selectedProperty}
-                    isOpen={isDetailsModalOpen}
-                    onClose={() => setIsDetailsModalOpen(false)}
-                />
-            )}
-        </>
+    if (
+      property.totalSellingPrice < priceRange[0] ||
+      property.totalSellingPrice > priceRange[1]
     )
+      return false;
+
+    if (
+      selectedPropertyTypes.length > 0 &&
+      !selectedPropertyTypes.includes(property.unitType)
+    )
+      return false;
+
+    if (selectedCity !== "all" && property.city !== selectedCity) return false;
+
+    if (
+      searchQuery &&
+      !property.propertyName
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) &&
+      !property.address.toLowerCase().includes(searchQuery.toLowerCase())
+    ) {
+      return false;
+    }
+
+    if (selectedAmenities.length > 0) {
+      const propertyAmenities = property.amenities?.map((a) => a.name) || [];
+      if (!selectedAmenities.some((a) => propertyAmenities.includes(a)))
+        return false;
+    }
+
+    if (selectedFacilities.length > 0) {
+      const propertyFacilities = property.facilities?.map((f) => f.name) || [];
+      if (!selectedFacilities.some((f) => propertyFacilities.includes(f)))
+        return false;
+    }
+
+    if (sortBy === "featured" && !property.featured) return false;
+
+    return true;
+  });
+
+  const sortedProperties = [...filteredProperties].sort((a, b) => {
+    if (sortBy === "newest") return b.createdAt - a.createdAt;
+    if (sortBy === "oldest") return a.createdAt - b.createdAt;
+    if (sortBy === "price-high")
+      return b.totalSellingPrice - a.totalSellingPrice;
+    if (sortBy === "price-low")
+      return a.totalSellingPrice - b.totalSellingPrice;
+    return 0;
+  });
+
+  const allCount = initialProperties.length;
+  const availableCount = initialProperties.filter(
+    (p) => p.status === "available"
+  ).length;
+  const reservedCount = initialProperties.filter(
+    (p) => p.status === "reserved"
+  ).length;
+  const soldCount = initialProperties.filter((p) => p.status === "sold").length;
+
+  const handleViewDetails = (property: Doc<"property">) => {
+    setSelectedProperty(property);
+    setIsDetailsModalOpen(true);
+  };
+
+  // Pagination
+  const totalFilteredItems = sortedProperties.length;
+  const totalPages = Math.ceil(totalFilteredItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentPageProperties = sortedProperties.slice(startIndex, endIndex);
+
+  // Reset to page 1 when filters change
+  const resetToFirstPage = () => {
+    setCurrentPage(1);
+  };
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    resetToFirstPage();
+  };
+
+  const handleStatusFilterChange = (value: string) => {
+    setStatusFilter(value);
+    resetToFirstPage();
+  };
+
+  const handleSortChange = (value: string) => {
+    setSortBy(value);
+    resetToFirstPage();
+  };
+
+  const handleCityChange = (value: string) => {
+    setSelectedCity(value);
+    resetToFirstPage();
+  };
+
+  const handlePriceRangeChange = (value: number[]) => {
+    setPriceRange(value);
+    resetToFirstPage();
+  };
+
+  return (
+    <>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+        <div className="space-y-1">
+          <h1 className="text-3xl font-bold tracking-tight">My Properties</h1>
+          <p className="text-muted-foreground">
+            Manage and track your real estate listings
+          </p>
+        </div>
+
+        <Button asChild variant="orange">
+          <Link href="/seller/properties/new">
+            <Plus className="mr-2 h-4 w-4" />
+            Add New Property
+          </Link>
+        </Button>
+      </div>
+
+      <div className="flex flex-col lg:flex-row gap-6 mb-6">
+        <div className="flex flex-col">
+          <Card className="w-full lg:w-64 hidden lg:block">
+            <CardContent className="p-6">
+              <div className="space-y-6">
+                <div>
+                  <h3 className="font-medium mb-3">Price Range</h3>
+                  <div className="flex justify-between mb-2">
+                    <span className="text-sm text-muted-foreground">
+                      {formatCurrency(priceRange[0])}
+                    </span>
+                    <span className="text-sm text-muted-foreground">
+                      {formatCurrency(priceRange[1])}
+                    </span>
+                  </div>
+                  <Slider
+                    defaultValue={[minPrice, maxPrice]}
+                    min={minPrice}
+                    max={maxPrice}
+                    step={100000}
+                    value={priceRange}
+                    onValueChange={(value) => setPriceRange(value)}
+                    minStepsBetweenThumbs={1}
+                  />
+                </div>
+
+                <Separator className="w-full" />
+
+                <div>
+                  <h3 className="font-medium mb-3">Property Type</h3>
+                  <div className="space-y-2">
+                    {propertyTypes.map((type) => (
+                      <div key={type} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`mobile-type-${type}`}
+                          checked={selectedPropertyTypes.includes(type)}
+                          onCheckedChange={() => togglePropertyType(type)}
+                          className="data-[state=checked]:bg-orange-500"
+                        />
+                        <Label
+                          htmlFor={`mobile-type-${type}`}
+                          className="capitalize"
+                        >
+                          {type.replace(/-/g, " ")}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <Separator className="w-full" />
+
+                <div></div>
+              </div>
+
+              <div>
+                <h3 className="font-medium mb-3">City</h3>
+                <Select value={selectedCity} onValueChange={setSelectedCity}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select city" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Cities</SelectItem>
+                    {cities.map((city) => (
+                      <SelectItem key={city} value={city}>
+                        {city}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <Separator className="w-full my-3" />
+
+              <div>
+                <h3 className="font-medium mb-3 text-orange-700 mt-3">
+                  Amenities & Facilities
+                </h3>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="filter-pool"
+                      checked={selectedAmenities.includes("Swimming Pool")}
+                      onCheckedChange={() => toggleAmenity("Swimming Pool")}
+                      className="border-orange-300 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
+                    />
+                    <Label htmlFor="filter-pool" className="cursor-pointer">
+                      Swimming Pool
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="filter-gym"
+                      checked={selectedAmenities.includes("Gym/Fitness Center")}
+                      onCheckedChange={() =>
+                        toggleAmenity("Gym/Fitness Center")
+                      }
+                      className="border-orange-300 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
+                    />
+                    <Label htmlFor="filter-gym" className="cursor-pointer">
+                      Gym/Fitness Center
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="filter-parking"
+                      checked={selectedFacilities.includes("Parking")}
+                      onCheckedChange={() => toggleFacility("Parking")}
+                      className="border-orange-300 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
+                    />
+                    <Label htmlFor="filter-parking" className="cursor-pointer">
+                      Parking
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="filter-security"
+                      checked={selectedFacilities.includes("24/7 Security")}
+                      onCheckedChange={() => toggleFacility("24/7 Security")}
+                      className="border-orange-300 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
+                    />
+                    <Label htmlFor="filter-security" className="cursor-pointer">
+                      24/7 Security
+                    </Label>
+                  </div>
+                </div>
+              </div>
+
+              <Button
+                variant="outline"
+                className="mt-4 w-full"
+                onClick={resetFilters}
+              >
+                Reset Filters
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="flex-1">
+          <Tabs
+            defaultValue="all"
+            className="w-full"
+            onValueChange={handleStatusFilterChange}
+          >
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+              <TabsList className="mb-4 sm:mb-0">
+                <TabsTrigger value="all">
+                  All
+                  <Badge className="ml-2" variant="secondary">
+                    {allCount}
+                  </Badge>
+                </TabsTrigger>
+                <TabsTrigger value="available">
+                  Available
+                  <Badge className="ml-2" variant="secondary">
+                    {availableCount}
+                  </Badge>
+                </TabsTrigger>
+                <TabsTrigger value="reserved">
+                  Reserved
+                  <Badge className="ml-2" variant="secondary">
+                    {reservedCount}
+                  </Badge>
+                </TabsTrigger>
+                <TabsTrigger value="sold">
+                  Sold
+                  <Badge className="ml-2" variant="secondary">
+                    {soldCount}
+                  </Badge>
+                </TabsTrigger>
+              </TabsList>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-2 mb-6">
+              <div className="relative flex-1">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search properties..."
+                  className="pl-8"
+                  value={searchQuery}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                />
+              </div>
+
+              <Select value={sortBy} onValueChange={handleSortChange}>
+                <SelectTrigger className="w-full sm:w-[180px]">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="newest">Newest First</SelectItem>
+                  <SelectItem value="oldest">Oldest First</SelectItem>
+                  <SelectItem value="featured">Featured</SelectItem>
+                  <SelectItem value="price-high">Price: High to Low</SelectItem>
+                  <SelectItem value="price-low">Price: Low to High</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Sheet
+                open={isFilterSheetOpen}
+                onOpenChange={setIsFilterSheetOpen}
+              >
+                <SheetTrigger asChild>
+                  <Button variant="outline" className="lg:hidden relative">
+                    <Filter className="h-4 w-4 mr-2" />
+                    Filters
+                    {activeFilterCount > 0 && (
+                      <Badge className="ml-1 h-5 w-5 p-0 flex items-center justify-center bg-orange-500">
+                        {activeFilterCount}
+                      </Badge>
+                    )}
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+                  <SheetHeader>
+                    <SheetTitle>Filters</SheetTitle>
+                  </SheetHeader>
+                  <div className="py-4 space-y-6">
+                    <div>
+                      <h3 className="font-medium mb-3">Price Range</h3>
+                      <div className="flex justify-between mb-2">
+                        <span className="text-sm text-muted-foreground">
+                          {formatCurrency(priceRange[0])}
+                        </span>
+                        <span className="text-sm text-muted-foreground">
+                          {formatCurrency(priceRange[1])}
+                        </span>
+                      </div>
+                      <Slider
+                        defaultValue={[minPrice, maxPrice]}
+                        min={minPrice}
+                        max={maxPrice}
+                        step={100000}
+                        value={priceRange}
+                        onValueChange={setPriceRange}
+                      />
+                    </div>
+
+                    <Separator />
+
+                    <div>
+                      <h3 className="font-medium mb-3">Property Type</h3>
+                      <div className="space-y-2">
+                        {propertyTypes.map((type) => (
+                          <div
+                            key={type}
+                            className="flex items-center space-x-2"
+                          >
+                            <Checkbox
+                              id={`mobile-type-${type}`}
+                              checked={selectedPropertyTypes.includes(type)}
+                              onCheckedChange={() => togglePropertyType(type)}
+                              className="data-[state=checked]:bg-orange-500"
+                            />
+                            <Label
+                              htmlFor={`mobile-type-${type}`}
+                              className="capitalize"
+                            >
+                              {type.replace(/-/g, " ")}
+                            </Label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <Separator />
+
+                    <div>
+                      <h3 className="font-medium mb-3">City</h3>
+                      <Select
+                        value={selectedCity}
+                        onValueChange={setSelectedCity}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select city" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Cities</SelectItem>
+                          {cities.map((city) => (
+                            <SelectItem key={city} value={city}>
+                              {city}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="flex gap-2 pt-4">
+                      <Button
+                        variant="outline"
+                        className="flex-1"
+                        onClick={resetFilters}
+                      >
+                        Reset
+                      </Button>
+                      <Button
+                        variant="orange"
+                        className="flex-1"
+                        onClick={() => setIsFilterSheetOpen(false)}
+                      >
+                        Apply Filters
+                      </Button>
+                    </div>
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
+
+            {activeFilterCount > 0 && (
+              <div className="flex flex-wrap gap-2 mb-4">
+                {priceRange[0] > minPrice || priceRange[1] < maxPrice ? (
+                  <Badge variant="outline" className="rounded-full py-2">
+                    Price: {formatCurrency(priceRange[0])} -{" "}
+                    {formatCurrency(priceRange[1])}
+                    <Button
+                      variant="ghost"
+                      className="h-4 w-4 p-0 ml-1"
+                      size="icon"
+                      onClick={() => setPriceRange([minPrice, maxPrice])}
+                    >
+                      <X className="h-3 w-3" />
+                      <span className="sr-only">Remove price filter</span>
+                    </Button>
+                  </Badge>
+                ) : null}
+
+                {selectedPropertyTypes.map((type) => (
+                  <Badge
+                    variant="outline"
+                    key={type}
+                    className="rounded-full py-2"
+                  >
+                    {type}
+                    <Button
+                      variant="ghost"
+                      className="h-4 w-4 p-0 ml-1"
+                      size="icon"
+                      onClick={() => togglePropertyType(type)}
+                    >
+                      <X className="h-3 w-3" />
+                      <span className="sr-only">Remove {type} filter</span>
+                    </Button>
+                  </Badge>
+                ))}
+
+                {selectedCity !== "all" && (
+                  <Badge variant="outline" className="flex items-center gap-1">
+                    {selectedCity}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-4 w-4 p-0 ml-1"
+                      onClick={() => setSelectedCity("all")}
+                    >
+                      <X className="h-3 w-3" />
+                      <span className="sr-only">Remove city filter</span>
+                    </Button>
+                  </Badge>
+                )}
+
+                {selectedAmenities.map((amenity) => (
+                  <Badge
+                    key={`amenity-${amenity}`}
+                    variant="outline"
+                    className="flex items-center gap-1 "
+                  >
+                    Amenity: {amenity}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-4 w-4 p-0 ml-1 "
+                      onClick={() => toggleAmenity(amenity)}
+                    >
+                      <X className="h-3 w-3" />
+                      <span className="sr-only">Remove {amenity} filter</span>
+                    </Button>
+                  </Badge>
+                ))}
+
+                {selectedFacilities.map((facility) => (
+                  <Badge
+                    key={`facility-${facility}`}
+                    variant="outline"
+                    className="flex items-center gap-1"
+                  >
+                    Facility: {facility}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-4 w-4 p-0 ml-1"
+                      onClick={() => toggleFacility(facility)}
+                    >
+                      <X className="h-3 w-3" />
+                      <span className="sr-only">Remove {facility} filter</span>
+                    </Button>
+                  </Badge>
+                ))}
+
+                {searchQuery && (
+                  <Badge variant="outline" className="flex items-center gap-1">
+                    Search: {searchQuery}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-4 w-4 p-0 ml-1"
+                      onClick={() => setSearchQuery("")}
+                    >
+                      <X className="h-3 w-3" />
+                      <span className="sr-only">Clear search</span>
+                    </Button>
+                  </Badge>
+                )}
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 px-2 text-xs"
+                  onClick={resetFilters}
+                >
+                  Clear All
+                </Button>
+              </div>
+            )}
+
+            <TabsContent value="all" className="mt-0">
+              <div className="space-y-6">
+                <PropertyGrid
+                  properties={currentPageProperties}
+                  onViewDetails={handleViewDetails}
+                />
+
+                {/* Pagination Controls */}
+                {totalFilteredItems > 0 && (
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8">
+                    <div className="text-sm text-muted-foreground">
+                      Showing {startIndex + 1}-
+                      {Math.min(endIndex, totalFilteredItems)} of{" "}
+                      {totalFilteredItems} properties
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          setCurrentPage(Math.max(1, currentPage - 1))
+                        }
+                        disabled={currentPage === 1}
+                      >
+                        Previous
+                      </Button>
+
+                      <div className="flex space-x-1">
+                        {Array.from(
+                          { length: Math.min(5, totalPages) },
+                          (_, i) => {
+                            const pageNumber =
+                              Math.max(
+                                1,
+                                Math.min(totalPages - 4, currentPage - 2)
+                              ) + i;
+                            if (pageNumber > totalPages) return null;
+
+                            return (
+                              <Button
+                                key={pageNumber}
+                                variant={
+                                  currentPage === pageNumber
+                                    ? "default"
+                                    : "outline"
+                                }
+                                size="sm"
+                                className={
+                                  currentPage === pageNumber
+                                    ? "bg-orange-500 hover:bg-orange-600"
+                                    : ""
+                                }
+                                onClick={() => setCurrentPage(pageNumber)}
+                              >
+                                {pageNumber}
+                              </Button>
+                            );
+                          }
+                        )}
+                      </div>
+
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          setCurrentPage(Math.min(totalPages, currentPage + 1))
+                        }
+                        disabled={currentPage === totalPages}
+                      >
+                        Next
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Load More from Database (if needed) */}
+                {hasMore && totalFilteredItems === initialProperties.length && (
+                  <div className="flex justify-center mt-8">
+                    <Button
+                      variant="outline"
+                      onClick={() => loadMore(15)}
+                      disabled={isLoading}
+                      className="min-w-[120px]"
+                    >
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Loading...
+                        </>
+                      ) : (
+                        "Load More Properties"
+                      )}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </TabsContent>
+
+            {/* Repeat similar pattern for other TabsContent */}
+            <TabsContent value="available" className="mt-0">
+              <div className="space-y-6">
+                <PropertyGrid
+                  properties={currentPageProperties}
+                  onViewDetails={handleViewDetails}
+                />
+                {/* Same pagination controls */}
+                {totalFilteredItems > 0 && (
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8">
+                    <div className="text-sm text-muted-foreground">
+                      Showing {startIndex + 1}-
+                      {Math.min(endIndex, totalFilteredItems)} of{" "}
+                      {totalFilteredItems} properties
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          setCurrentPage(Math.max(1, currentPage - 1))
+                        }
+                        disabled={currentPage === 1}
+                      >
+                        Previous
+                      </Button>
+
+                      <div className="flex space-x-1">
+                        {Array.from(
+                          { length: Math.min(5, totalPages) },
+                          (_, i) => {
+                            const pageNumber =
+                              Math.max(
+                                1,
+                                Math.min(totalPages - 4, currentPage - 2)
+                              ) + i;
+                            if (pageNumber > totalPages) return null;
+
+                            return (
+                              <Button
+                                key={pageNumber}
+                                variant={
+                                  currentPage === pageNumber
+                                    ? "default"
+                                    : "outline"
+                                }
+                                size="sm"
+                                className={
+                                  currentPage === pageNumber
+                                    ? "bg-orange-500 hover:bg-orange-600"
+                                    : ""
+                                }
+                                onClick={() => setCurrentPage(pageNumber)}
+                              >
+                                {pageNumber}
+                              </Button>
+                            );
+                          }
+                        )}
+                      </div>
+
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          setCurrentPage(Math.min(totalPages, currentPage + 1))
+                        }
+                        disabled={currentPage === totalPages}
+                      >
+                        Next
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="reserved" className="mt-0">
+              <div className="space-y-6">
+                <PropertyGrid
+                  properties={currentPageProperties}
+                  onViewDetails={handleViewDetails}
+                />
+
+                {/* Pagination Controls */}
+                {totalFilteredItems > 0 && (
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8">
+                    <div className="text-sm text-muted-foreground">
+                      Showing {startIndex + 1}-
+                      {Math.min(endIndex, totalFilteredItems)} of{" "}
+                      {totalFilteredItems} properties
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          setCurrentPage(Math.max(1, currentPage - 1))
+                        }
+                        disabled={currentPage === 1}
+                      >
+                        Previous
+                      </Button>
+
+                      <div className="flex space-x-1">
+                        {Array.from(
+                          { length: Math.min(5, totalPages) },
+                          (_, i) => {
+                            const pageNumber =
+                              Math.max(
+                                1,
+                                Math.min(totalPages - 4, currentPage - 2)
+                              ) + i;
+                            if (pageNumber > totalPages) return null;
+
+                            return (
+                              <Button
+                                key={pageNumber}
+                                variant={
+                                  currentPage === pageNumber
+                                    ? "default"
+                                    : "outline"
+                                }
+                                size="sm"
+                                className={
+                                  currentPage === pageNumber
+                                    ? "bg-orange-500 hover:bg-orange-600"
+                                    : ""
+                                }
+                                onClick={() => setCurrentPage(pageNumber)}
+                              >
+                                {pageNumber}
+                              </Button>
+                            );
+                          }
+                        )}
+                      </div>
+
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          setCurrentPage(Math.min(totalPages, currentPage + 1))
+                        }
+                        disabled={currentPage === totalPages}
+                      >
+                        Next
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Load More from Database (if needed) */}
+                {hasMore && totalFilteredItems === initialProperties.length && (
+                  <div className="flex justify-center mt-8">
+                    <Button
+                      variant="outline"
+                      onClick={() => loadMore(15)}
+                      disabled={isLoading}
+                      className="min-w-[120px]"
+                    >
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Loading...
+                        </>
+                      ) : (
+                        "Load More Properties"
+                      )}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="sold" className="mt-0">
+              <div className="space-y-6">
+                <PropertyGrid
+                  properties={currentPageProperties}
+                  onViewDetails={handleViewDetails}
+                />
+
+                {/* Pagination Controls */}
+                {totalFilteredItems > 0 && (
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8">
+                    <div className="text-sm text-muted-foreground">
+                      Showing {startIndex + 1}-
+                      {Math.min(endIndex, totalFilteredItems)} of{" "}
+                      {totalFilteredItems} properties
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          setCurrentPage(Math.max(1, currentPage - 1))
+                        }
+                        disabled={currentPage === 1}
+                      >
+                        Previous
+                      </Button>
+
+                      <div className="flex space-x-1">
+                        {Array.from(
+                          { length: Math.min(5, totalPages) },
+                          (_, i) => {
+                            const pageNumber =
+                              Math.max(
+                                1,
+                                Math.min(totalPages - 4, currentPage - 2)
+                              ) + i;
+                            if (pageNumber > totalPages) return null;
+
+                            return (
+                              <Button
+                                key={pageNumber}
+                                variant={
+                                  currentPage === pageNumber
+                                    ? "default"
+                                    : "outline"
+                                }
+                                size="sm"
+                                className={
+                                  currentPage === pageNumber
+                                    ? "bg-orange-500 hover:bg-orange-600"
+                                    : ""
+                                }
+                                onClick={() => setCurrentPage(pageNumber)}
+                              >
+                                {pageNumber}
+                              </Button>
+                            );
+                          }
+                        )}
+                      </div>
+
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          setCurrentPage(Math.min(totalPages, currentPage + 1))
+                        }
+                        disabled={currentPage === totalPages}
+                      >
+                        Next
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Load More from Database (if needed) */}
+                {hasMore && totalFilteredItems === initialProperties.length && (
+                  <div className="flex justify-center mt-8">
+                    <Button
+                      variant="outline"
+                      onClick={() => loadMore(15)}
+                      disabled={isLoading}
+                      className="min-w-[120px]"
+                    >
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Loading...
+                        </>
+                      ) : (
+                        "Load More Properties"
+                      )}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
+
+      {selectedProperty && (
+        <PropertyDetailsModal
+          property={selectedProperty}
+          isOpen={isDetailsModalOpen}
+          onClose={() => setIsDetailsModalOpen(false)}
+        />
+      )}
+    </>
+  );
 }

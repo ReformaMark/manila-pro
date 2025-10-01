@@ -15,6 +15,8 @@ export default defineSchema({
     contact: v.string(),
     houseNumber: v.string(),
     bio: v.optional(v.string()),
+    phone: v.optional(v.string()),
+    phoneVerified: v.optional(v.boolean()),
     agentInfo: v.optional(
       v.object({
         title: v.optional(v.string()), // "Senior Real Estate Agent"
@@ -36,7 +38,8 @@ export default defineSchema({
             instagram: v.optional(v.string()),
             linkedin: v.optional(v.string()),
             X: v.optional(v.string()),
-          })),
+          })
+        ),
         areasServed: v.optional(v.array(v.string())),
         licenseNumber: v.optional(v.string()),
         certifications: v.optional(v.array(v.string())), ///"Licensed Real Estate Broker", "Luxury Home Marketing Specialist", "Certified Residential Specialist",
@@ -47,7 +50,7 @@ export default defineSchema({
     barangay: v.string(),
     city: v.string(),
     role: v.union(v.literal("admin"), v.literal("buyer"), v.literal("seller")),
-  }),
+  }).index("by_phone", ["phone"]),
 
   ratings_reviews: defineTable({
     agentId: v.id("users"),
@@ -241,12 +244,13 @@ export default defineSchema({
     }),
     features: v.array(v.string()), // Feature names for reference
     isActive: v.boolean(), // Whether this model version is currently active
-    trainingMetadata: v.optional(v.object({
-      minPrice: v.number(),
-      maxPrice: v.number(),
-      avgPrice: v.number(),
-      totalProperties: v.number(),
-    })),
+    trainingMetadata: v.optional(
+      v.object({
+        minPrice: v.number(),
+        maxPrice: v.number(),
+        avgPrice: v.number(),
+        totalProperties: v.number(),
+      })
+    ),
   }).index("by_type_active", ["modelType", "isActive"]),
-
 });

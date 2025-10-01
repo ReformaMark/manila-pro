@@ -1,9 +1,9 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
-import { RatingsAndReviews } from "./types"
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+import { RatingsAndReviews } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 export function formatPrice(price: number, transactionType?: string) {
@@ -11,15 +11,15 @@ export function formatPrice(price: number, transactionType?: string) {
     style: "currency",
     currency: "PHP",
     maximumFractionDigits: 0,
-  })
+  });
 
-  const formattedPrice = formatter.format(price)
+  const formattedPrice = formatter.format(price);
 
   if (transactionType === "Rent" || transactionType === "Lease") {
-    return `${formattedPrice}/month`
+    return `${formattedPrice}/month`;
   }
 
-  return formattedPrice
+  return formattedPrice;
 }
 export function generateBuyerId(): string {
   const prefix = "B-";
@@ -42,7 +42,7 @@ export function generateAdminId(): string {
 export function getConvexErrorMessage(error: Error): string {
   try {
     // If it's not a string, return default message
-    if (typeof error.message !== 'string') {
+    if (typeof error.message !== "string") {
       return "Something went wrong";
     }
 
@@ -63,7 +63,7 @@ export function getConvexErrorMessage(error: Error): string {
       }
 
       // Clean up any remaining artifacts
-      return errorMessage.replace(/\s+/g, ' ').trim();
+      return errorMessage.replace(/\s+/g, " ").trim();
     }
 
     // If no ConvexError found, return the original message or default
@@ -79,7 +79,7 @@ export function formatDate(timestamp: number) {
     year: "numeric",
     month: "short",
     day: "numeric",
-  })
+  });
 }
 
 export function formatCurrency(amount: number) {
@@ -87,31 +87,31 @@ export function formatCurrency(amount: number) {
     style: "currency",
     currency: "PHP",
     maximumFractionDigits: 0,
-  }).format(amount)
+  }).format(amount);
 }
 
 export const formatPriceInput = (value: string): string => {
   // Remove non-numeric characters
-  const numericValue = value.replace(/[^0-9]/g, "")
+  const numericValue = value.replace(/[^0-9]/g, "");
 
   // Convert to number and format with commas
   if (numericValue) {
-    const number = Number.parseInt(numericValue, 10)
+    const number = Number.parseInt(numericValue, 10);
     return new Intl.NumberFormat("en-PH", {
       style: "currency",
       currency: "PHP",
       maximumFractionDigits: 0,
-    }).format(number)
+    }).format(number);
   }
 
-  return ""
-}
+  return "";
+};
 
 export const parsePriceInput = (formattedValue: string): number => {
   // Remove currency symbol, commas, and other non-numeric characters
-  const numericValue = formattedValue.replace(/[^0-9]/g, "")
-  return numericValue ? Number.parseInt(numericValue, 10) : 0
-}
+  const numericValue = formattedValue.replace(/[^0-9]/g, "");
+  return numericValue ? Number.parseInt(numericValue, 10) : 0;
+};
 
 export function formattedAmortization(amort: number) {
   return new Intl.NumberFormat("en-PH", {
@@ -119,7 +119,7 @@ export function formattedAmortization(amort: number) {
     currency: "PHP",
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(amort)
+  }).format(amort);
 }
 
 export const scrollToSection = (id: string) => {
@@ -130,30 +130,34 @@ export const scrollToSection = (id: string) => {
   }
 };
 
-
 export function formatDateListed(convexDate: number) {
   const roundedTimestamp = Math.floor(convexDate);
   const readableDate = new Date(roundedTimestamp);
   const now = new Date();
   const diffInSeconds = (now.getTime() - readableDate.getTime()) / 1000;
 
-  if (diffInSeconds < 60) return 'just now';
+  if (diffInSeconds < 60) return "just now";
   if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} mins ago`;
-  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
-  if (diffInSeconds < 172800) return 'yesterday';
+  if (diffInSeconds < 86400)
+    return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+  if (diffInSeconds < 172800) return "yesterday";
 
   return readableDate.toDateString();
 }
 
-export function calculateRatingsAve(ratings_reviews: RatingsAndReviews[] | undefined): number {
+export function calculateRatingsAve(
+  ratings_reviews: RatingsAndReviews[] | undefined
+): number {
   if (!ratings_reviews) return 0;
 
-  const total = ratings_reviews.reduce((sum, review) => sum + review.ratings, 0);
+  const total = ratings_reviews.reduce(
+    (sum, review) => sum + review.ratings,
+    0
+  );
   const average = total / ratings_reviews.length;
 
   return parseFloat(average.toFixed(1)); // Return average rounded to 2 decimal places
 }
-
 
 export function calculateLoanDetails(
   propertyPrice: number,
@@ -184,5 +188,9 @@ export const formatStatus = (status: string) => {
   return status
     .split("_")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ")
-}
+    .join(" ");
+};
+
+export const generateOtp = () => {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+};

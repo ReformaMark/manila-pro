@@ -1,7 +1,11 @@
 import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { createAccount, getAuthUserId } from "@convex-dev/auth/server";
-import { generateAdminId, generateSellerId } from "@/lib/utils";
+import {
+  generateAdminId,
+  generateBuyerId,
+  generateSellerId,
+} from "@/lib/utils";
 import { paginationOptsValidator } from "convex/server";
 import { asyncMap } from "convex-helpers";
 import { Id } from "./_generated/dataModel";
@@ -130,6 +134,68 @@ export const createSeller = mutation({
   },
 });
 
+export const createBuyer = mutation({
+  args: {
+    fname: v.string(),
+    lname: v.string(),
+    email: v.string(),
+    password: v.string(),
+    contact: v.string(),
+    houseNumber: v.string(),
+    street: v.string(),
+    barangay: v.string(),
+    city: v.string(),
+    phoneVerified: v.boolean(),
+    phone: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const existingEmail = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("email"), args.email))
+      .first();
+
+    if (existingEmail) {
+      throw new ConvexError({
+        code: "EMAIL_EXISTS",
+        message: "Email already exists",
+      });
+    }
+
+    const existingPhone = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("phone"), args.phone))
+      .first();
+    if (existingPhone) {
+      throw new ConvexError({
+        code: "PHONE_EXIST",
+        message: "Phone number already exists",
+      });
+    }
+    const role = "buyer";
+    const accountId = generateBuyerId();
+    const { email, password, ...userData } = args;
+
+    // @ts-expect-error - type error in convex auth
+    const create = await createAccount(ctx, {
+      provider: "password",
+      account: {
+        id: email,
+        secret: password,
+      },
+      profile: {
+        email,
+        role,
+        accountId,
+        ...userData,
+      },
+    });
+
+    if (!create?.user._id) throw new ConvexError("Failed to create account");
+
+    return { success: true };
+  },
+});
+
 export const current = query({
   args: {},
   handler: async (ctx) => {
@@ -145,15 +211,16 @@ export const currentWithDisplayImage = query({
     const userId = await getAuthUserId(ctx);
     if (!userId) return null;
 
-    const user = await ctx.db.get(userId)
+    const user = await ctx.db.get(userId);
 
-    const userDisplayImage = user?.image ?
-      await ctx.storage.getUrl(user.image as Id<"_storage">) : undefined
+    const userDisplayImage = user?.image
+      ? await ctx.storage.getUrl(user.image as Id<"_storage">)
+      : undefined;
 
     return {
       user,
-      displayImage: userDisplayImage
-    }
+      displayImage: userDisplayImage,
+    };
   },
 });
 
@@ -369,7 +436,8 @@ export const getAgents = query({
     let temp = agentsWithDetails;
     if (args.specialization !== "All Specializations") {
       temp = agentsWithDetails.filter((a) => {
-        const isSpecialized = a.agentInfo?.specializations?.includes(args.specialization) ?? false;
+        const isSpecialized =
+          a.agentInfo?.specializations?.includes(args.specialization) ?? false;
         return isSpecialized;
       });
     }
@@ -408,7 +476,7 @@ export const getAgents = query({
 
 export const featuredAgents = query({
   args: {},
-  handler: async (ctx, args) => {
+  handler: async (ctx) => {
     const agents = await ctx.db
       .query("users")
       .filter((q) => q.eq(q.field("role"), "seller"))
@@ -496,7 +564,7 @@ export const updateProfile = mutation({
 
 export const getImageUrl = query({
   args: {},
-  handler: async (ctx, args) => {
+  handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) return null;
     const user = await ctx.db.get(userId);
@@ -522,12 +590,36 @@ export const saveImage = mutation({
 
 export const agentCount = query({
   args: {},
-  handler: async (ctx, args) => {
+  handler: async (ctx) => {
     const agent = await ctx.db
       .query("users")
       .filter((q) => q.eq(q.field("role"), "seller"))
       .collect();
 
     return agent.length;
+  },
+});
+
+export const verifyPhone = mutation({
+  handler: async (ctx) => {
+    const currentUserId = await getAuthUserId(ctx);
+    if (!currentUserId) {
+      return { success: false, message: "Not authenticated" };
+    }
+
+    // ✅ mark user as verified
+    const user = await ctx.db.get(currentUserId);
+    if (user && user.phoneVerified) {
+      return { success: false, message: "Phone number already verified" };
+    }
+    if (user && user.phoneVerified === false) {
+      await ctx.db.patch(user._id, { phoneVerified: true });
+    }
+
+    if (user && user.phoneVerified === undefined) {
+      await ctx.db.patch(user._id, { phoneVerified: true });
+    }
+
+    return { success: true };
   },
 });

@@ -36,6 +36,7 @@ interface PropertiesDashboardProps {
   loadMore: (numItems: number) => void;
   isLoading: boolean;
   hasMore: boolean;
+  onPropertyDeleted?: () => void;
 }
 
 export function PropertiesDashboard({
@@ -43,6 +44,7 @@ export function PropertiesDashboard({
   loadMore,
   isLoading,
   hasMore,
+  onPropertyDeleted,
 }: PropertiesDashboardProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -669,6 +671,7 @@ export function PropertiesDashboard({
                 <PropertyGrid
                   properties={currentPageProperties}
                   onViewDetails={handleViewDetails}
+                  onPropertyDeleted={onPropertyDeleted}
                 />
 
                 {/* Pagination Controls */}
@@ -769,6 +772,7 @@ export function PropertiesDashboard({
                 <PropertyGrid
                   properties={currentPageProperties}
                   onViewDetails={handleViewDetails}
+                  onPropertyDeleted={onPropertyDeleted}
                 />
                 {/* Same pagination controls */}
                 {totalFilteredItems > 0 && (
@@ -846,6 +850,7 @@ export function PropertiesDashboard({
                 <PropertyGrid
                   properties={currentPageProperties}
                   onViewDetails={handleViewDetails}
+                  onPropertyDeleted={onPropertyDeleted}
                 />
 
                 {/* Pagination Controls */}
@@ -945,6 +950,7 @@ export function PropertiesDashboard({
                 <PropertyGrid
                   properties={currentPageProperties}
                   onViewDetails={handleViewDetails}
+                  onPropertyDeleted={onPropertyDeleted}
                 />
 
                 {/* Pagination Controls */}

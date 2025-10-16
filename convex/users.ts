@@ -65,6 +65,20 @@ export const createAdmin = mutation({
 
       if (!create?.user._id) throw new ConvexError("Failed to create account");
 
+      // Log the activity
+      await ctx.db.insert("admin_activity_logs", {
+        adminId: adminId,
+        action: "created_admin",
+        actionType: "create",
+        description: `Created new admin account: ${args.fname} ${args.lname}`,
+        targetType: "user",
+        targetId: create.user._id,
+        metadata: {
+          userName: `${args.fname} ${args.lname}`,
+        },
+        timestamp: Date.now(),
+      });
+
       return create.user;
     } catch (error) {
       console.error("Error in createAdmin:", error);
@@ -125,6 +139,20 @@ export const createSeller = mutation({
       });
 
       if (!create?.user._id) throw new ConvexError("Failed to create account");
+
+      // Log the activity
+      await ctx.db.insert("admin_activity_logs", {
+        adminId: adminId,
+        action: "created_seller",
+        actionType: "create",
+        description: `Created new seller account: ${args.fname} ${args.lname}`,
+        targetType: "user",
+        targetId: create.user._id,
+        metadata: {
+          userName: `${args.fname} ${args.lname}`,
+        },
+        timestamp: Date.now(),
+      });
 
       return create.user;
     } catch (error) {

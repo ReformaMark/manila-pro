@@ -215,15 +215,15 @@ export const ViewRequestModal = ({
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-3 w-full">
-                <Button
+              <div className="grid grid-cols-1 gap-3 w-full">
+                {/* <Button
                   disabled={isPending}
                   onClick={() => {
                     handleAccept(deal._id, deal.property._id, "active");
                   }}
                 >
                   Accept Offer
-                </Button>
+                </Button> */}
                 <Button
                   variant="destructive"
                   disabled={isPending}

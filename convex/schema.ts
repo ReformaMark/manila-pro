@@ -256,6 +256,37 @@ export default defineSchema({
     ),
   }).index("by_type_active", ["modelType", "isActive"]),
 
+  admin_activity_logs: defineTable({
+    adminId: v.id("users"),
+    action: v.string(), // "exported_data", "created_user", "updated_property", etc.
+    actionType: v.union(
+      v.literal("export"),
+      v.literal("create"),
+      v.literal("update"),
+      v.literal("delete"),
+      v.literal("approve"),
+      v.literal("reject"),
+      v.literal("login"),
+      v.literal("other")
+    ),
+    targetType: v.optional(v.string()), // "property", "user", "transaction", "report"
+    targetId: v.optional(v.string()), // ID of the affected item
+    description: v.string(), // Human-readable description
+    metadata: v.optional(
+      v.object({
+        reportType: v.optional(v.string()),
+        propertyName: v.optional(v.string()),
+        userName: v.optional(v.string()),
+        changes: v.optional(v.string()),
+      })
+    ),
+    timestamp: v.number(),
+    ipAddress: v.optional(v.string()),
+  })
+    .index("by_adminId", ["adminId"])
+    .index("by_timestamp", ["timestamp"])
+    .index("by_actionType", ["actionType"]),
+
   passwordResetTokens: defineTable({
     userId: v.id("users"),
     token: v.string(),

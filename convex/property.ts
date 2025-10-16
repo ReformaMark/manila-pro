@@ -37,6 +37,64 @@ export const remove = mutation({
   },
 });
 
+export const removePropertyBySeller = mutation({
+  args: {
+    propertyId: v.id("property"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new ConvexError("Not authenticated");
+
+    const user = await ctx.db.get(userId);
+    if (!user || user.role !== "seller") throw new ConvexError("Unauthorized - Only sellers can delete their properties");
+
+    // Check if the property exists and belongs to the seller
+    const property = await ctx.db.get(args.propertyId);
+    if (!property) throw new ConvexError("Property not found");
+
+    if (property.sellerId !== userId) {
+      throw new ConvexError("Unauthorized - You can only delete your own properties");
+    }
+
+    // Check if property has active deals
+    const activeDeals = await ctx.db
+      .query("deal")
+      .filter((q) => q.eq(q.field("propertyId"), args.propertyId))
+      .filter((q) => q.neq(q.field("status"), "rejected"))
+      .filter((q) => q.neq(q.field("status"), "cancelled"))
+      .filter((q) => q.neq(q.field("status"), "completed"))
+      .collect();
+
+    if (activeDeals.length > 0) {
+      throw new ConvexError("Cannot delete property with active deals. Please complete or cancel all deals first.");
+    }
+
+    // Remove related data first
+    const savedProperties = await ctx.db
+      .query("saved_properties")
+      .filter((q) => q.eq(q.field("propertyId"), args.propertyId))
+      .collect();
+
+    for (const saved of savedProperties) {
+      await ctx.db.delete(saved._id);
+    }
+
+    const nearbyPlaces = await ctx.db
+      .query("nearby_places")
+      .withIndex("by_propertyId", (q) => q.eq("propertyId", args.propertyId))
+      .collect();
+
+    for (const place of nearbyPlaces) {
+      await ctx.db.delete(place._id);
+    }
+
+    // Finally delete the property
+    await ctx.db.delete(args.propertyId);
+
+    return { success: true, message: "Property deleted successfully" };
+  },
+});
+
 export const getProperties = query({
   args: {},
   handler: async (ctx) => {

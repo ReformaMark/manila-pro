@@ -11,7 +11,15 @@ import useViewModal from "@/store/modals";
 import { dealStatusColorMap, dealStatusDisplayMap } from "@/types/constants";
 import { useQuery } from "convex/react";
 import { FunctionReturnType } from "convex/server";
-import { CheckIcon, EyeIcon } from "lucide-react";
+import {
+  CheckIcon,
+  EyeIcon,
+  FileText,
+  Upload,
+  CheckCircle2,
+  MoreVertical,
+  XCircle,
+} from "lucide-react";
 import Image from "next/image";
 import { Dispatch, SetStateAction, useState } from "react";
 import { api } from "../../../../../convex/_generated/api";
@@ -41,8 +49,17 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Textarea } from "@/components/ui/textarea";
 import { ViewActiveModal } from "./view-active-modal";
+import { ContractUpload } from "@/components/seller/contract-upload";
+import { ContractList } from "@/components/seller/contract-list";
 
 type GetPropertiesReturnType = FunctionReturnType<
   typeof api.property.getPropertyByAcceptedDeals
@@ -54,6 +71,9 @@ export const ActiveList = () => {
   const [search, setSearch] = useState<string>("");
   const [selectedDeal, setSelectedDeal] = useState<PropertyType | null>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isUploadOpen, setIsUploadOpen] = useState<boolean>(false);
+  const [isContractListOpen, setIsContractListOpen] = useState<boolean>(false);
+  const [isCompleteOpen, setIsCompleteOpen] = useState<boolean>(false);
   const activeDeals = useQuery(api.property.getPropertyByAcceptedDeals);
   const { toggleModal } = useViewModal();
 
@@ -94,6 +114,21 @@ export const ActiveList = () => {
     }
   };
 
+  const handleUploadContract = (deal: (typeof activeDeals)[number]) => {
+    setSelectedDeal(deal);
+    setIsUploadOpen(true);
+  };
+
+  const handleViewContracts = (deal: (typeof activeDeals)[number]) => {
+    setSelectedDeal(deal);
+    setIsContractListOpen(true);
+  };
+
+  const handleComplete = (deal: (typeof activeDeals)[number]) => {
+    setSelectedDeal(deal);
+    setIsCompleteOpen(true);
+  };
+
   return (
     <>
       <div className="mt-7">
@@ -124,9 +159,20 @@ export const ActiveList = () => {
               return (
                 <div
                   key={deal._id}
-                  className="border border-gray-300 rounded-md p-4 mt-6"
+                  className="border border-gray-300 rounded-md p-4 mt-6 relative"
                 >
-                  <div className="flex flex-row items-center gap-3">
+                  {/* Contracts button in top-right corner */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleViewContracts(deal)}
+                    className="absolute top-4 right-4"
+                  >
+                    <FileText className="w-4 h-4 mr-2" />
+                    Contracts
+                  </Button>
+
+                  <div className="flex flex-row items-center gap-3 pr-28">
                     <div className="w-[90px]">
                       <AspectRatio ratio={4 / 4}>
                         <Image
@@ -229,22 +275,50 @@ export const ActiveList = () => {
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 mt-5 max-w-[500px]">
-                    {/* <Button variant="default">Accept</Button> */}
+                  <div className="flex gap-2 mt-5">
                     <Button
                       variant="outline"
-                      className="hover:bg-zinc-100 hover:text-black"
+                      size="sm"
                       onClick={() => handleView(deal)}
+                      className="flex-1"
                     >
-                      <EyeIcon className="w-5 h-5" />
-                      View
+                      <EyeIcon className="w-4 h-4 mr-2" />
+                      View Details
                     </Button>
                     <Button
-                      variant="destructive"
-                      onClick={() => handleCancel(deal)}
+                      variant="default"
+                      size="sm"
+                      className="bg-green-600 hover:bg-green-700 flex-1"
+                      onClick={() => handleComplete(deal)}
                     >
-                      Cancel
+                      <CheckCircle2 className="w-4 h-4 mr-2" />
+                      Complete
                     </Button>
+
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm">
+                          <MoreVertical className="w-4 h-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-48">
+                        <DropdownMenuItem
+                          onClick={() => handleUploadContract(deal)}
+                          className="text-black"
+                        >
+                          <Upload className="w-4 h-4 mr-2" />
+                          Upload Contract
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={() => handleCancel(deal)}
+                          className="text-red-600 focus:text-red-600"
+                        >
+                          <XCircle className="w-4 h-4 mr-2" />
+                          Cancel Deal
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </div>
               );
@@ -256,6 +330,31 @@ export const ActiveList = () => {
       {selectedDeal && (
         <ViewActiveModal
           requestDeal={selectedDeal}
+          setSelectedDeal={setSelectedDeal}
+        />
+      )}
+
+      {selectedDeal && (
+        <ContractUpload
+          dealId={selectedDeal._id}
+          isOpen={isUploadOpen}
+          onClose={() => setIsUploadOpen(false)}
+        />
+      )}
+
+      {selectedDeal && (
+        <ContractList
+          dealId={selectedDeal._id}
+          isOpen={isContractListOpen}
+          onClose={() => setIsContractListOpen(false)}
+        />
+      )}
+
+      {selectedDeal && (
+        <CompleteDealDialog
+          isOpen={isCompleteOpen}
+          setIsOpen={setIsCompleteOpen}
+          deal={selectedDeal}
           setSelectedDeal={setSelectedDeal}
         />
       )}
@@ -367,7 +466,7 @@ const CancelFormDialog = ({
                 />
 
                 <Button type="submit" variant="default" disabled={isPending}>
-                  {isPending ? "Accepting..." : "Accept"}
+                  {isPending ? "Cancelling..." : "Confirm Cancel"}
                 </Button>
               </form>
             </Form>
@@ -380,6 +479,145 @@ const CancelFormDialog = ({
       )}
 
       <CancelDialog />
+    </>
+  );
+};
+
+const CompleteDealDialog = ({
+  isOpen,
+  setIsOpen,
+  deal,
+  setSelectedDeal,
+}: {
+  isOpen: boolean;
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
+  deal: PropertyType | null;
+  setSelectedDeal: Dispatch<SetStateAction<PropertyType | null>>;
+}) => {
+  const { mutate: completeDeal, isPending } = useMutation({
+    mutationFn: useConvexMutation(api.deal.markDealAsCompleted),
+    onSuccess: () => {
+      setIsOpen(false);
+      form.reset();
+      return toast.success("Deal marked as completed successfully!");
+    },
+  });
+
+  const [CompleteDialog, confirmComplete] = useConfirm(
+    "Complete Deal",
+    `Are you sure you want to mark this deal as completed? The property will be marked as sold.`
+  );
+
+  const form = useForm<CancelDealSchemaType>({
+    resolver: zodResolver(CancelDealSchema),
+    defaultValues: {
+      remarks: "",
+    },
+  });
+
+  const onSubmit = async (
+    dealId: Id<"deal">,
+    propertyId: Id<"property">,
+    values: CancelDealSchemaType
+  ) => {
+    const confirmed = await confirmComplete();
+
+    if (confirmed) {
+      try {
+        await completeDeal({
+          dealId,
+          propertyId,
+          remarks: values.remarks,
+        });
+      } catch (error) {
+        console.error("Error:", error);
+        toast.error(
+          error instanceof Error
+            ? error.message.replace("Error: ", "")
+            : "Failed to complete deal"
+        );
+      }
+    }
+  };
+
+  const onOpenChange = () => {
+    setIsOpen(false);
+    setSelectedDeal(null);
+    form.reset();
+  };
+
+  return (
+    <>
+      {deal ? (
+        <Dialog open={isOpen} onOpenChange={onOpenChange}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Complete Deal</DialogTitle>
+              <DialogDescription className="text-green-600">
+                You are marking this deal as completed:{" "}
+                <span className="font-semibold">
+                  {deal.property.propertyName}
+                </span>
+              </DialogDescription>
+            </DialogHeader>
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit((data) =>
+                  onSubmit(deal._id, deal.property._id, data)
+                )}
+                className="space-y-8"
+              >
+                <FormField
+                  control={form.control}
+                  name="remarks"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Final Remarks (Optional)</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Add any final notes or comments about the completed transaction..."
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        This deal will be marked as completed and the property
+                        will be set to sold.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={onOpenChange}
+                    disabled={isPending}
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="default"
+                    disabled={isPending}
+                    className="flex-1 bg-green-600 hover:bg-green-700"
+                  >
+                    {isPending ? "Completing..." : "Complete Deal"}
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
+      ) : (
+        <Dialog open={isOpen} onOpenChange={onOpenChange}>
+          <DialogContent>Loading Deals...</DialogContent>
+        </Dialog>
+      )}
+
+      <CompleteDialog />
     </>
   );
 };

@@ -235,3 +235,143 @@ export const getTransactions = query({
     return transactions;
   },
 });
+
+// Contract/Document Management
+export const uploadContract = mutation({
+  args: {
+    dealId: v.id("deal"),
+    storageId: v.id("_storage"),
+    documentType: v.string(), // "contract", "payment_record", "agreement", etc.
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new ConvexError("Not authenticated");
+
+    const user = await ctx.db.get(userId);
+    if (!user || user.role !== "seller") {
+      throw new ConvexError("Only sellers can upload contracts");
+    }
+
+    // Verify the deal exists and belongs to the seller
+    const deal = await ctx.db.get(args.dealId);
+    if (!deal) throw new ConvexError("Deal not found");
+
+    if (deal.sellerId !== userId) {
+      throw new ConvexError("You can only upload contracts for your own deals");
+    }
+
+    // Insert the document record
+    const documentId = await ctx.db.insert("document", {
+      dealId: args.dealId,
+      documentType: args.documentType,
+      file: args.storageId,
+    });
+
+    return documentId;
+  },
+});
+
+export const getContractsByDeal = query({
+  args: {
+    dealId: v.id("deal"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new ConvexError("Not authenticated");
+
+    const deal = await ctx.db.get(args.dealId);
+    if (!deal) throw new ConvexError("Deal not found");
+
+    // Allow both buyer and seller to view contracts
+    if (deal.buyerId !== userId && deal.sellerId !== userId) {
+      throw new ConvexError("You can only view contracts for your own deals");
+    }
+
+    const documents = await ctx.db
+      .query("document")
+      .filter((q) => q.eq(q.field("dealId"), args.dealId))
+      .collect();
+
+    // Get URLs for all documents
+    const documentsWithUrls = await asyncMap(documents, async (doc) => {
+      const url = await ctx.storage.getUrl(doc.file as Id<"_storage">);
+      return {
+        ...doc,
+        fileUrl: url,
+      };
+    });
+
+    return documentsWithUrls;
+  },
+});
+
+export const deleteContract = mutation({
+  args: {
+    documentId: v.id("document"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new ConvexError("Not authenticated");
+
+    const document = await ctx.db.get(args.documentId);
+    if (!document) throw new ConvexError("Document not found");
+
+    const deal = await ctx.db.get(document.dealId);
+    if (!deal) throw new ConvexError("Deal not found");
+
+    // Only seller can delete contracts
+    if (deal.sellerId !== userId) {
+      throw new ConvexError("Only the seller can delete contracts");
+    }
+
+    // Delete the file from storage
+    await ctx.storage.delete(document.file as Id<"_storage">);
+
+    // Delete the document record
+    await ctx.db.delete(args.documentId);
+
+    return { success: true };
+  },
+});
+
+// Mark deal as completed
+export const markDealAsCompleted = mutation({
+  args: {
+    dealId: v.id("deal"),
+    propertyId: v.id("property"),
+    remarks: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new ConvexError("Not authenticated");
+
+    const user = await ctx.db.get(userId);
+    if (!user || user.role !== "seller") {
+      throw new ConvexError("Only sellers can mark deals as completed");
+    }
+
+    const deal = await ctx.db.get(args.dealId);
+    if (!deal) throw new ConvexError("Deal not found");
+
+    if (deal.sellerId !== userId) {
+      throw new ConvexError("You can only complete your own deals");
+    }
+
+    if (deal.status !== "active") {
+      throw new ConvexError("Only active deals can be marked as completed");
+    }
+
+    // Update deal status to completed
+    await ctx.db.patch(args.dealId, {
+      status: "completed",
+      remarks: args.remarks,
+    });
+
+    // Update property status to sold
+    await ctx.db.patch(args.propertyId, {
+      status: "sold",
+    });
+
+    return { success: true, message: "Deal marked as completed successfully" };
+  },
+});

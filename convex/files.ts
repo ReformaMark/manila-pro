@@ -8,6 +8,14 @@ export const generateUploadUrl = mutation({
     },
 });
 
+export const generateDocumentUploadUrl = mutation({
+    args: {},
+    handler: async (ctx) => {
+        // This can have additional auth checks if needed
+        return await ctx.storage.generateUploadUrl();
+    },
+});
+
 export const saveImageUrl = mutation({
     args: {
         propertyId: v.id("property"),

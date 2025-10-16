@@ -226,3 +226,90 @@ export const getRegionalMarketAnalysis = query({
         return Object.values(regionalData);
     }
 })
+
+// DAR-05: Data Export - Get all properties for export
+export const getAllPropertiesForExport = query({
+    handler: async (ctx) => {
+        const properties = await ctx.db.query("property").collect();
+        const users = await ctx.db.query("users").collect();
+
+        return properties.map(prop => {
+            const seller = users.find(u => u._id === prop.sellerId);
+            return {
+                id: prop._id,
+                propertyName: prop.propertyName,
+                city: prop.city,
+                address: prop.address,
+                status: prop.status,
+                unitType: prop.unitType,
+                bedrooms: prop.bedrooms || 0,
+                bathrooms: prop.bathrooms || 0,
+                lotArea: prop.lotArea,
+                pricePerSqm: prop.pricePerSqm,
+                totalSellingPrice: prop.totalSellingPrice,
+                netContractPrice: prop.netContractPrice,
+                featured: prop.featured ? "Yes" : "No",
+                sellerName: seller ? `${seller.fname} ${seller.lname}` : "Unknown",
+                sellerEmail: seller?.email || "N/A",
+                createdAt: new Date(prop.createdAt).toLocaleDateString(),
+                updatedAt: new Date(prop.updatedAt).toLocaleDateString(),
+            };
+        });
+    }
+})
+
+// DAR-05: Data Export - Get all transactions for export
+export const getAllTransactionsForExport = query({
+    handler: async (ctx) => {
+        const deals = await ctx.db.query("deal").collect();
+        const properties = await ctx.db.query("property").collect();
+        const users = await ctx.db.query("users").collect();
+
+        return deals.map(deal => {
+            const property = properties.find(p => p._id === deal.propertyId);
+            const buyer = users.find(u => u._id === deal.buyerId);
+            const seller = users.find(u => u._id === deal.sellerId);
+
+            return {
+                id: deal._id,
+                propertyName: property?.propertyName || "Unknown",
+                propertyCity: property?.city || "N/A",
+                propertyAddress: property?.address || "N/A",
+                buyerName: buyer ? `${buyer.fname} ${buyer.lname}` : "Unknown",
+                buyerEmail: buyer?.email || "N/A",
+                sellerName: seller ? `${seller.fname} ${seller.lname}` : "Unknown",
+                sellerEmail: seller?.email || "N/A",
+                status: deal.status,
+                offerPrice: deal.proposal.offer,
+                finalDealPrice: deal.finalDealPrice || 0,
+                downPayment: deal.downPayment || 0,
+                monthlyAmortization: deal.agreedMonthlyAmortization || 0,
+                termInMonths: deal.agreedTermInMonths || 0,
+                requestDate: new Date(deal.requestDate).toLocaleDateString(),
+                approvalDate: deal.approvalDate ? new Date(deal.approvalDate).toLocaleDateString() : "N/A",
+                remarks: deal.remarks || "N/A",
+            };
+        });
+    }
+})
+
+// DAR-05: Data Export - Get all users for export
+export const getAllUsersForExport = query({
+    handler: async (ctx) => {
+        const users = await ctx.db.query("users").collect();
+
+        return users.map(user => ({
+            id: user._id,
+            firstName: user.fname,
+            lastName: user.lname,
+            email: user.email,
+            contact: user.contact,
+            role: user.role,
+            address: `${user.houseNumber} ${user.street}, ${user.barangay}, ${user.city}`,
+            phoneVerified: user.phoneVerified ? "Yes" : "No",
+            agency: user.agentInfo?.agency || "N/A",
+            experience: user.agentInfo?.experience ? `${user.agentInfo.experience} years` : "N/A",
+            licenseNumber: user.agentInfo?.licenseNumber || "N/A",
+        }));
+    }
+})

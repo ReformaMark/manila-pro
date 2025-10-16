@@ -3,6 +3,7 @@ import { SoldPropertiesChart } from "./_components/sold-properties-chart";
 import { UserDistributionChart } from "./_components/user-distribution-chart";
 import { HotspotAnalysis } from "./_components/hotspot-analysis";
 import { RegionalMarketAnalysis } from "./_components/regional-market-analysis";
+import { DataExport } from "./_components/data-export";
 
 function AdminPage() {
   return (
@@ -26,6 +27,9 @@ function AdminPage() {
 
       {/* DAR-03: Regional Market Analysis */}
       <RegionalMarketAnalysis />
+
+      {/* DAR-05: Data Export */}
+      <DataExport />
     </div>
   );
 }

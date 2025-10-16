@@ -23,6 +23,8 @@ import type * as forecasting from "../forecasting.js";
 import type * as http from "../http.js";
 import type * as messsages from "../messsages.js";
 import type * as nearby_places from "../nearby_places.js";
+import type * as passwordReset from "../passwordReset.js";
+import type * as passwordResetActions from "../passwordResetActions.js";
 import type * as property from "../property.js";
 import type * as ratings_reviews from "../ratings_reviews.js";
 import type * as saved_properties from "../saved_properties.js";
@@ -49,6 +51,8 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   messsages: typeof messsages;
   nearby_places: typeof nearby_places;
+  passwordReset: typeof passwordReset;
+  passwordResetActions: typeof passwordResetActions;
   property: typeof property;
   ratings_reviews: typeof ratings_reviews;
   saved_properties: typeof saved_properties;

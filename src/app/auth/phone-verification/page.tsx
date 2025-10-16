@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { toast, Toaster } from "sonner";
 import { AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -96,7 +96,7 @@ function Page() {
     onResendOtp();
   };
 
-  const onResendOtp = React.useCallback(() => {
+  const onResendOtp = useCallback(() => {
     try {
       if (!currentUser.user?.phone) {
         setError("User phone number is missing");

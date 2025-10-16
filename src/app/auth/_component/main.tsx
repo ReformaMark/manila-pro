@@ -1,16 +1,14 @@
-'use client'
-import { Header } from '@/components/header'
-import React from 'react'
+"use client";
+import React from "react";
 interface MainProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
-function Main({children}:MainProps) {
+function Main({ children }: MainProps) {
   return (
-    <div className='relative'>
-        <Header/>
-        <main className="flex-1">{children}</main>
+    <div className="relative bg-orange-500">
+      <main className="flex-1">{children}</main>
     </div>
-  )
+  );
 }
 
-export default Main
+export default Main;

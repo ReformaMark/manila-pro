@@ -14,9 +14,9 @@ const CustomPassword = Password({
       barangay: params.barangay as string,
       city: params.city as string,
       role: params.role as "admin" | "buyer" | "seller",
-    }
-  }
-})
+    };
+  },
+});
 
 export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
   providers: [CustomPassword],

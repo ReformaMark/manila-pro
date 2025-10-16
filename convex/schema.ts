@@ -50,7 +50,9 @@ export default defineSchema({
     barangay: v.string(),
     city: v.string(),
     role: v.union(v.literal("admin"), v.literal("buyer"), v.literal("seller")),
-  }).index("by_phone", ["phone"]),
+  })
+    .index("by_phone", ["phone"])
+    .index("by_email", ["email"]),
 
   ratings_reviews: defineTable({
     agentId: v.id("users"),
@@ -253,4 +255,13 @@ export default defineSchema({
       })
     ),
   }).index("by_type_active", ["modelType", "isActive"]),
+
+  passwordResetTokens: defineTable({
+    userId: v.id("users"),
+    token: v.string(),
+    expiresAt: v.number(),
+    used: v.optional(v.boolean()),
+  })
+    .index("by_token", ["token"])
+    .index("by_user", ["userId"]),
 });

@@ -7,7 +7,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 
 import {
@@ -63,35 +62,6 @@ export const SignUpCard = ({
       setErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
-  //   const newPassword = e.target.value;
-  //   setPassword(newPassword);
-
-  //   if (newPassword.length > 0 && newPassword.length < 8) {
-  //     setPasswordError("Password must be at least 8 characters long");
-  //   } else {
-  //     setPasswordError("");
-  //   }
-
-  //   // Check confirm password match if confirm password exists
-  //   if (confirmPassword && newPassword !== confirmPassword) {
-  //     setConfirmPasswordError("Passwords do not match");
-  //   } else {
-  //     setConfirmPasswordError("");
-  //   }
-  // };
-
-  // const handleConfirmPasswordChange = (
-  //   e: React.ChangeEvent<HTMLInputElement>
-  // ) => {
-  //   const newConfirmPassword = e.target.value;
-  //   setConfirmPassword(newConfirmPassword);
-
-  //   if (password && newConfirmPassword !== password) {
-  //     setConfirmPasswordError("Passwords do not match");
-  //   } else {
-  //     setConfirmPasswordError("");
-  //   }
-  // };
 
   const onSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -195,10 +165,14 @@ export const SignUpCard = ({
   };
 
   return (
-    <Card className="w-full h-full p-8">
-      <CardHeader className="px-0 pt-0">
-        <CardTitle className="text-primary">Sign up to continue</CardTitle>
-        <CardDescription>All fields are required to continue</CardDescription>
+    <Card className="w-full h-full md:p-8  bg-transparent shadow-none rounded-none  border-none">
+      <CardHeader className="px-0 pt-0  text-center">
+        <CardTitle className="text-primary text-3xl md:text-5xl font-bold  mb-4">
+          Sign up to continue
+        </CardTitle>
+        <CardDescription className="text-lg md:text-xl text-gray-700">
+          All fields are required to continue
+        </CardDescription>
       </CardHeader>
       {!!error && (
         <div className="bg-destructive/15 p-3 rounded-md flex items-center gap-x-2 text-sm text-destructive mb-6">
@@ -220,13 +194,13 @@ export const SignUpCard = ({
               </Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <Input
+                <input
                   id="email"
                   type="email"
                   placeholder="your.email@example.com"
                   value={formData.email}
                   onChange={(e) => handleChange("email", e.target.value)}
-                  className={`pl-10 h-12 ${errors.email ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                  className={`pl-10 h-12 w-full  rounded-xl border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-shadow shadow-sm hover:shadow bg-white ${errors.email ? "border-red-500 focus-visible:ring-red-500" : ""}`}
                 />
               </div>
               {errors.email && (
@@ -247,13 +221,13 @@ export const SignUpCard = ({
               </Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <Input
+                <input
                   id="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Create a strong password"
                   value={formData.password}
                   onChange={(e) => handleChange("password", e.target.value)}
-                  className={`pl-10 pr-10 h-12 ${errors.password ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                  className={`pl-10 pr-10 h-12 w-full rounded-xl bg-white border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-shadow shadow-sm hover:shadow ${errors.password ? "border-red-500 focus-visible:ring-red-500" : ""}`}
                 />
                 <button
                   type="button"
@@ -285,7 +259,7 @@ export const SignUpCard = ({
               </Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <Input
+                <input
                   id="confirmPassword"
                   type={showConfirmPassword ? "text" : "password"}
                   placeholder="Re-enter your password"
@@ -293,7 +267,7 @@ export const SignUpCard = ({
                   onChange={(e) =>
                     handleChange("confirmPassword", e.target.value)
                   }
-                  className={`pl-10 pr-10 h-12 ${errors.confirmPassword ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                  className={`pl-10 pr-10 h-12 w-full rounded-xl bg-white border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-shadow shadow-sm hover:shadow ${errors.confirmPassword ? "border-red-500 focus-visible:ring-red-500" : ""}`}
                 />
                 <button
                   type="button"
@@ -326,13 +300,13 @@ export const SignUpCard = ({
                 </Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                  <Input
+                  <input
                     id="firstName"
                     type="text"
                     placeholder="John"
                     value={formData.firstName}
                     onChange={(e) => handleChange("firstName", e.target.value)}
-                    className={`pl-10 h-12 ${errors.firstName ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                    className={`pl-10 h-12 w-full rounded-xl bg-white border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-shadow shadow-sm hover:shadow ${errors.firstName ? "border-red-500 focus-visible:ring-red-500" : ""}`}
                   />
                 </div>
                 {errors.firstName && (
@@ -352,13 +326,13 @@ export const SignUpCard = ({
                 </Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                  <Input
+                  <input
                     id="lastName"
                     type="text"
                     placeholder="Doe"
                     value={formData.lastName}
                     onChange={(e) => handleChange("lastName", e.target.value)}
-                    className={`pl-10 h-12 ${errors.lastName ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                    className={`pl-10 h-12 w-full rounded-xl bg-white border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-shadow shadow-sm hover:shadow ${errors.lastName ? "border-red-500 focus-visible:ring-red-500" : ""}`}
                   />
                 </div>
                 {errors.lastName && (
@@ -382,7 +356,7 @@ export const SignUpCard = ({
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none">
                   (+63)
                 </span>
-                <Input
+                <input
                   id="phone"
                   type="tel"
                   inputMode="numeric"
@@ -394,7 +368,7 @@ export const SignUpCard = ({
                     const value = e.target.value.replace(/\D/g, "");
                     handleChange("phone", value);
                   }}
-                  className={`pl-16 h-12 ${errors.phone ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                  className={`pl-16 h-12 w-full rounded-xl bg-white border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-shadow shadow-sm hover:shadow ${errors.phone ? "border-red-500 focus-visible:ring-red-500" : ""}`}
                 />
               </div>
               {errors.phone && (
@@ -415,13 +389,13 @@ export const SignUpCard = ({
               </Label>
               <div className="relative">
                 <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <Input
+                <input
                   id="city"
                   type="text"
                   placeholder="Manila"
                   value={formData.city}
                   onChange={(e) => handleChange("city", e.target.value)}
-                  className={`pl-10 h-12 ${errors.city ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                  className={`pl-10 h-12 w-full rounded-xl bg-white border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-shadow shadow-sm hover:shadow ${errors.city ? "border-red-500 focus-visible:ring-red-500" : ""}`}
                 />
               </div>
               {errors.city && (
@@ -442,8 +416,8 @@ export const SignUpCard = ({
           </Button>
         </form>
         <Separator />
-        <div className="space-y-1">
-          <p className="text-sm text-muted-foreground">
+        <div className="space-y-1 text-center">
+          <p className="text-sm  text-muted-foreground">
             Already have an account?{" "}
             <span
               className="text-primary hover:underline cursor-pointer"

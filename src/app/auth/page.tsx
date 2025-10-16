@@ -6,11 +6,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { RoleCheck } from "@/components/auth/logged-in";
 import { SignInCard } from "@/components/auth/sign-in-card";
 import { SignUpCard } from "@/components/auth/sign-up-card";
-import { Card } from "@/components/ui/card";
-import Image from "next/image";
-import Bg from "@/../public/images/makati.jpg";
-import Agent from "@/../public/images/agent.jpg";
-import { Toaster } from "@/components/ui/sonner";
 
 export type AuthFlow = "signIn" | "signUp";
 
@@ -28,33 +23,33 @@ const cardVariants = {
   },
 };
 
-const imageVariantsLeft = {
-  initial: { x: "-100%", opacity: 0 },
-  animate: {
-    x: "0%",
-    opacity: 1,
-    transition: { duration: 0.8, ease: "easeInOut" },
-  },
-  exit: {
-    x: "-100%",
-    opacity: 0,
-    transition: { duration: 0.8, ease: "easeInOut" },
-  },
-};
+// const imageVariantsLeft = {
+//   initial: { x: "-100%", opacity: 0 },
+//   animate: {
+//     x: "0%",
+//     opacity: 1,
+//     transition: { duration: 0.8, ease: "easeInOut" },
+//   },
+//   exit: {
+//     x: "-100%",
+//     opacity: 0,
+//     transition: { duration: 0.8, ease: "easeInOut" },
+//   },
+// };
 
-const imageVariantsRight = {
-  initial: { x: "100%", opacity: 0 },
-  animate: {
-    x: "0%",
-    opacity: 1,
-    transition: { duration: 0.8, ease: "easeInOut" },
-  },
-  exit: {
-    x: "100%",
-    opacity: 0,
-    transition: { duration: 0.8, ease: "easeInOut" },
-  },
-};
+// const imageVariantsRight = {
+//   initial: { x: "100%", opacity: 0 },
+//   animate: {
+//     x: "0%",
+//     opacity: 1,
+//     transition: { duration: 0.8, ease: "easeInOut" },
+//   },
+//   exit: {
+//     x: "100%",
+//     opacity: 0,
+//     transition: { duration: 0.8, ease: "easeInOut" },
+//   },
+// };
 
 export default function AuthScreen() {
   const [state, setState] = useState<AuthFlow>("signIn");
@@ -65,29 +60,28 @@ export default function AuthScreen() {
   const isSignIn = state === "signIn";
 
   return (
-    <div className="absolute inset-0 h-screen w-full flex items-center justify-center ">
-      <Card className="bg-none shadow-none rounded-none  border-none relative size-full flex overflow-hidden">
-        {/* Layout: conditionally flip image and form order */}
-        {isSignIn ? (
-          <>
-            {/* Form */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key="signInForm"
-                variants={cardVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                className="w-full lg:w-1/2 flex items-center justify-center bg-white z-10"
-              >
-                <div className="w-full lg:w-3/4 container">
-                  <SignInCard setState={setState} />
-                </div>
-              </motion.div>
-            </AnimatePresence>
+    <div className="bg-none shadow-none rounded-none  border-none relative flex min-h-[calc(100vh-64px)] items-center justify-center px-4 py-12 bg-gray-50">
+      {/* Layout: conditionally flip image and form order */}
+      {isSignIn ? (
+        <>
+          {/* Form */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key="signInForm"
+              variants={cardVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              className="w-full lg:w-full  bg-gray-50 z-10"
+            >
+              <div className="max-w-full md:max-w-2xl lg:max-w-4xl container bg-gray-50">
+                <SignInCard setState={setState} />
+              </div>
+            </motion.div>
+          </AnimatePresence>
 
-            {/* Image on the right */}
-            <AnimatePresence mode="wait">
+          {/* Image on the right */}
+          {/* <AnimatePresence mode="wait">
               <motion.div
                 key="signInImage"
                 variants={imageVariantsRight}
@@ -133,12 +127,12 @@ export default function AuthScreen() {
                   </div>
                 </motion.div>
               </motion.div>
-            </AnimatePresence>
-          </>
-        ) : (
-          <>
-            {/* Image on the left */}
-            <AnimatePresence mode="wait">
+            </AnimatePresence> */}
+        </>
+      ) : (
+        <>
+          {/* Image on the left */}
+          {/* <AnimatePresence mode="wait">
               <motion.div
                 key="signUpImage"
                 variants={imageVariantsLeft}
@@ -188,28 +182,26 @@ export default function AuthScreen() {
                   </div>
                 </motion.div>
               </motion.div>
-            </AnimatePresence>
+            </AnimatePresence> */}
 
-            {/* Form */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key="signUpForm"
-                variants={cardVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                transition={{ type: "spring" }}
-                className="w-full lg:w-1/2 flex items-center justify-center bg-white z-10"
-              >
-                <div className=" w-full lg:w-3/4">
-                  <SignUpCard setState={setState} />
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </>
-        )}
-      </Card>
-      <Toaster />
+          {/* Form */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key="signUpForm"
+              variants={cardVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={{ type: "spring" }}
+              className="w-full lg:w-full flex items-center justify-center bg-transparent z-10"
+            >
+              <div className="max-w-full md:max-w-2xl lg:max-w-4xl container bg-gray-50">
+                <SignUpCard setState={setState} />
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </>
+      )}
     </div>
   );
 }

@@ -6,18 +6,9 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Bell,
-  Menu,
-  User,
-  LogOut,
-  Settings,
-  MessageSquare,
-} from "lucide-react";
+import { Bell, LogOut } from "lucide-react";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import Loading from "./loading";
@@ -26,11 +17,6 @@ import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-
-interface HeaderProps {
-  setIsOpen?: (isOpen: boolean) => void;
-  isOpen?: boolean;
-}
 
 export function Header() {
   const { user, isLoading } = useCurrentUser();
@@ -42,16 +28,21 @@ export function Header() {
   return (
     <header
       className={cn(
-        pathname === "/auth" ? "relative pt-10" : "sticky bg-brand-black py-2",
+        pathname === "/auth"
+          ? "relative bg-brand-black"
+          : "sticky bg-brand-black py-2",
         " text-white top-0  z-40  "
       )}
       style={{ height: "var(--header-height)" }}
     >
       <div className=" px-10  h-full ">
         <div className="flex items-center justify-between h-full transition-all duration-500 ease-in-out">
-          {isMobile && pathname !== "/auth" && (
-            <div className="opacity-0">iiiii</div>
-          )}
+          {isMobile &&
+            pathname !== "/auth" &&
+            pathname !== "/auth/forgot-password" &&
+            pathname !== "/auth/phone-verification" && (
+              <div className="opacity-0">iiiii</div>
+            )}
           <div className="flex items-center gap-4 ">
             <Link href="/" className="flex items-center gap-2 text-center">
               <h1
@@ -127,7 +118,8 @@ export function Header() {
                 </DropdownMenu>
               </div>
             ) : (
-              pathname !== "/auth" && (
+              pathname !== "/auth" &&
+              pathname !== "/auth/forgot-password" && (
                 <Link href={"/auth"} className="">
                   <Button variant={"orange"} size={"sm"} className="h-10">
                     Sign In

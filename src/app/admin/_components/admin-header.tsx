@@ -15,6 +15,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { adminSidebarItems } from "./admin-sidebar";
+import { AdminNotificationBell } from "./admin-notification-bell";
 
 export function AdminHeader() {
   const pathname = usePathname();
@@ -34,7 +35,8 @@ export function AdminHeader() {
           <HomeAvatar />
         </div>
 
-        <div className="ml-auto items-center gap-4 mr-12 hidden lg:flex">
+        <div className="ml-auto hidden lg:flex items-center gap-2 mr-12">
+          <AdminNotificationBell />
           {user ? (
             <UserAvatar />
           ) : (

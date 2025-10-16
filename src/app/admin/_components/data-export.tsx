@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import {
   Download,
@@ -31,7 +31,14 @@ export function DataExport() {
   const hotspotData = useQuery(api.admin.getHotspotAnalysis);
   const regionalData = useQuery(api.admin.getRegionalMarketAnalysis);
 
-  const exportToExcel = (data: any[], filename: string, sheetName: string) => {
+  const logActivity = useMutation(api.admin_activity.logActivity);
+
+  const exportToExcel = async (
+    data: any[],
+    filename: string,
+    sheetName: string,
+    reportType?: string
+  ) => {
     setIsExporting(filename);
 
     try {
@@ -61,6 +68,23 @@ export function DataExport() {
       );
 
       toast.success(`${sheetName} exported successfully!`);
+
+      // Log the export activity
+      try {
+        await logActivity({
+          action: `exported_${reportType || filename}`,
+          actionType: "export",
+          description: `Exported ${sheetName} report (${data.length} records)`,
+          targetType: "report",
+          metadata: {
+            reportType: sheetName,
+          },
+        });
+        console.log("Activity logged successfully");
+      } catch (logError) {
+        console.error("Failed to log activity:", logError);
+        // Don't show error to user, export was successful
+      }
     } catch (error) {
       console.error("Export error:", error);
       toast.error("Failed to export data");
@@ -74,7 +98,7 @@ export function DataExport() {
       toast.error("No properties data to export");
       return;
     }
-    exportToExcel(properties, "properties_report", "Properties");
+    exportToExcel(properties, "properties_report", "Properties", "properties");
   };
 
   const exportTransactionsReport = () => {
@@ -82,7 +106,12 @@ export function DataExport() {
       toast.error("No transactions data to export");
       return;
     }
-    exportToExcel(transactions, "transactions_report", "Transactions");
+    exportToExcel(
+      transactions,
+      "transactions_report",
+      "Transactions",
+      "transactions"
+    );
   };
 
   const exportUsersReport = () => {
@@ -90,7 +119,7 @@ export function DataExport() {
       toast.error("No users data to export");
       return;
     }
-    exportToExcel(users, "users_report", "Users");
+    exportToExcel(users, "users_report", "Users", "users");
   };
 
   const exportHotspotReport = () => {
@@ -110,7 +139,12 @@ export function DataExport() {
       "Supply/Demand Ratio": city.supplyDemandRatio,
     }));
 
-    exportToExcel(formattedData, "hotspot_analysis_report", "Hotspot Analysis");
+    exportToExcel(
+      formattedData,
+      "hotspot_analysis_report",
+      "Hotspot Analysis",
+      "hotspot_analysis"
+    );
   };
 
   const exportRegionalReport = () => {
@@ -134,10 +168,15 @@ export function DataExport() {
       "Inventory Months": region.inventoryMonths,
     }));
 
-    exportToExcel(formattedData, "regional_market_report", "Regional Market");
+    exportToExcel(
+      formattedData,
+      "regional_market_report",
+      "Regional Market",
+      "regional_market"
+    );
   };
 
-  const exportAllReports = () => {
+  const exportAllReports = async () => {
     if (
       !properties ||
       !transactions ||
@@ -201,6 +240,17 @@ export function DataExport() {
       );
 
       toast.success("All reports exported successfully!");
+
+      // Log the export activity
+      await logActivity({
+        action: "exported_complete_package",
+        actionType: "export",
+        description: `Exported complete report package (5 sheets, ${properties.length + transactions.length + users.length} total records)`,
+        targetType: "report",
+        metadata: {
+          reportType: "Complete Package",
+        },
+      });
     } catch (error) {
       console.error("Export error:", error);
       toast.error("Failed to export all reports");

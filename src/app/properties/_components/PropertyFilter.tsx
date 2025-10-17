@@ -1,24 +1,33 @@
-"use client"
-import { Button } from "@/components/ui/button"
-import { Slider } from "@/components/ui/slider"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import type { FilterOptions } from "@/types/property"
-import { useFilterStore } from "../store/useFilter"
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
+import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import type { FilterOptions } from "@/types/property";
+import { useFilterStore } from "../store/useFilter";
+import { Eraser, Save } from "lucide-react";
 
 interface PropertyFilterProps {
-  filters: FilterOptions
-  onFilterChange: (key: string, value: any) => void
-  onToggleAmenity: (amenity: string) => void
-  onToggleFacility: (facility: string) => void
-  onReset: () => void
-  locations: string[]
-  transactionTypes: string[]
-  unitTypes: string[]
-  amenities: string[]
-  facilities: string[]
-  formatPrice: (price: number, type: string) => string
+  filters: FilterOptions;
+  onFilterChange: (key: string, value: any) => void;
+  onToggleAmenity: (amenity: string) => void;
+  onToggleFacility: (facility: string) => void;
+  onReset: () => void;
+  locations: string[];
+  transactionTypes: string[];
+  unitTypes: string[];
+  amenities: string[];
+  facilities: string[];
+  formatPrice: (price: number, type: string) => string;
+  onSaveSearchFilter: () => void;
 }
 
 export function PropertyFilter({
@@ -33,35 +42,54 @@ export function PropertyFilter({
   amenities,
   facilities,
   formatPrice,
+  onSaveSearchFilter,
 }: PropertyFilterProps) {
-  const {setLocation, setTransactionType, setUnitType} = useFilterStore()
+  const { setTransactionType, setUnitType } = useFilterStore();
   return (
     <div className="z-[9999] rounded-lg  p-4 space-y-6 text-black bg-white shadow-md ">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold">Filters</h3>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onReset}
-          className="text-black hover:text-white hover:bg-gray-800"
-        >
-          Reset All
-        </Button>
+        <div className="flex gap-x-3">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onReset}
+            className="text-black hover:text-white hover:bg-gray-800"
+          >
+            <Eraser className="lg:hidden block" />
+            <span className="lg:block ">Reset All</span>
+          </Button>
+          <Button
+            variant="orange"
+            size="sm"
+            onClick={onSaveSearchFilter}
+            className=" hover:text-white hover:bg-gray-800"
+          >
+            <Save className="lg:hidden block" />
+            <span className="lg:block ">Save Filters</span>
+          </Button>
+        </div>
       </div>
 
       <div className="space-y-4">
         <div>
           <label className="text-sm font-medium text-black">Location</label>
-          <Select value={filters.location} onValueChange={(value) => {
-              onFilterChange("location", value)
-              
-            }}>
+          <Select
+            value={filters.location}
+            onValueChange={(value) => {
+              onFilterChange("location", value);
+            }}
+          >
             <SelectTrigger className=" text-black">
               <SelectValue placeholder="Select location" />
             </SelectTrigger>
             <SelectContent className=" text-black">
               {locations.map((location) => (
-                <SelectItem key={location} value={location} className="focus:bg-gray-800 focus:text-white">
+                <SelectItem
+                  key={location}
+                  value={location}
+                  className="focus:bg-gray-800 focus:text-white"
+                >
                   {location}
                 </SelectItem>
               ))}
@@ -70,17 +98,26 @@ export function PropertyFilter({
         </div>
 
         <div>
-          <label className="text-sm font-medium text-black">Transaction Type</label>
-          <Select value={filters.transactionType} onValueChange={(value) =>{ 
-              setTransactionType(value)
-              onFilterChange("transactionType", value)
-            }}>
+          <label className="text-sm font-medium text-black">
+            Transaction Type
+          </label>
+          <Select
+            value={filters.transactionType}
+            onValueChange={(value) => {
+              setTransactionType(value);
+              onFilterChange("transactionType", value);
+            }}
+          >
             <SelectTrigger className=" text-black">
               <SelectValue placeholder="Select transaction type" />
             </SelectTrigger>
             <SelectContent className=" text-black">
               {transactionTypes.map((type) => (
-                <SelectItem key={type} value={type} className="focus:bg-gray-800 focus:text-white">
+                <SelectItem
+                  key={type}
+                  value={type}
+                  className="focus:bg-gray-800 focus:text-white"
+                >
                   {type}
                 </SelectItem>
               ))}
@@ -90,16 +127,23 @@ export function PropertyFilter({
 
         <div>
           <label className="text-sm font-medium text-black">Unit Type</label>
-          <Select value={filters.unitType} onValueChange={(value) => {
-              setUnitType(value)
-              onFilterChange("unitType", value)
-            }}>
+          <Select
+            value={filters.unitType}
+            onValueChange={(value) => {
+              setUnitType(value);
+              onFilterChange("unitType", value);
+            }}
+          >
             <SelectTrigger className=" text-black">
               <SelectValue placeholder="Select unit type" />
             </SelectTrigger>
             <SelectContent className=" text-black">
               {unitTypes.map((type) => (
-                <SelectItem key={type} value={type} className="focus:bg-gray-800 focus:text-white">
+                <SelectItem
+                  key={type}
+                  value={type}
+                  className="focus:bg-gray-800 focus:text-white"
+                >
                   {type}
                 </SelectItem>
               ))}
@@ -108,7 +152,9 @@ export function PropertyFilter({
         </div>
 
         <div>
-          <label className="text-sm font-medium text-black">Price Range (PHP)</label>
+          <label className="text-sm font-medium text-black">
+            Price Range (PHP)
+          </label>
           <div className="pt-6 pb-2">
             <Slider
               defaultValue={filters.priceRange}
@@ -120,8 +166,12 @@ export function PropertyFilter({
             />
           </div>
           <div className="flex justify-between text-xs text-black">
-            <span>{formatPrice(filters.priceRange[0], "Buy").replace("₱", "₱ ")}</span>
-            <span>{formatPrice(filters.priceRange[1], "Buy").replace("₱", "₱ ")}</span>
+            <span>
+              {formatPrice(filters.priceRange[0], "Buy").replace("₱", "₱ ")}
+            </span>
+            <span>
+              {formatPrice(filters.priceRange[1], "Buy").replace("₱", "₱ ")}
+            </span>
           </div>
         </div>
 
@@ -130,28 +180,48 @@ export function PropertyFilter({
             <label className="text-sm font-medium text-black">Bedrooms</label>
             <Select
               value={filters.bedrooms.toString()}
-              onValueChange={(value) => onFilterChange("bedrooms", Number.parseInt(value))}
+              onValueChange={(value) =>
+                onFilterChange("bedrooms", Number.parseInt(value))
+              }
             >
               <SelectTrigger className="text-black">
                 <SelectValue placeholder="Any" />
               </SelectTrigger>
               <SelectContent className="text-black">
-                <SelectItem value="0" className="focus:bg-gray-800 focus:text-white">
+                <SelectItem
+                  value="0"
+                  className="focus:bg-gray-800 focus:text-white"
+                >
                   Any
                 </SelectItem>
-                <SelectItem value="1" className="focus:bg-gray-800 focus:text-white">
+                <SelectItem
+                  value="1"
+                  className="focus:bg-gray-800 focus:text-white"
+                >
                   1+
                 </SelectItem>
-                <SelectItem value="2" className="focus:bg-gray-800 focus:text-white">
+                <SelectItem
+                  value="2"
+                  className="focus:bg-gray-800 focus:text-white"
+                >
                   2+
                 </SelectItem>
-                <SelectItem value="3" className="focus:bg-gray-800 focus:text-white">
+                <SelectItem
+                  value="3"
+                  className="focus:bg-gray-800 focus:text-white"
+                >
                   3+
                 </SelectItem>
-                <SelectItem value="4" className="focus:bg-gray-800 focus:text-white">
+                <SelectItem
+                  value="4"
+                  className="focus:bg-gray-800 focus:text-white"
+                >
                   4+
                 </SelectItem>
-                <SelectItem value="5" className="focus:bg-gray-800 focus:text-white">
+                <SelectItem
+                  value="5"
+                  className="focus:bg-gray-800 focus:text-white"
+                >
                   5+
                 </SelectItem>
               </SelectContent>
@@ -162,28 +232,48 @@ export function PropertyFilter({
             <label className="text-sm font-medium text-black">Bathrooms</label>
             <Select
               value={filters.bathrooms.toString()}
-              onValueChange={(value) => onFilterChange("bathrooms", Number.parseInt(value))}
+              onValueChange={(value) =>
+                onFilterChange("bathrooms", Number.parseInt(value))
+              }
             >
               <SelectTrigger className="text-black">
                 <SelectValue placeholder="Any" />
               </SelectTrigger>
               <SelectContent className="text-black">
-                <SelectItem value="0" className="focus:bg-gray-800 focus:text-white">
+                <SelectItem
+                  value="0"
+                  className="focus:bg-gray-800 focus:text-white"
+                >
                   Any
                 </SelectItem>
-                <SelectItem value="1" className="focus:bg-gray-800 focus:text-white">
+                <SelectItem
+                  value="1"
+                  className="focus:bg-gray-800 focus:text-white"
+                >
                   1+
                 </SelectItem>
-                <SelectItem value="2" className="focus:bg-gray-800 focus:text-white">
+                <SelectItem
+                  value="2"
+                  className="focus:bg-gray-800 focus:text-white"
+                >
                   2+
                 </SelectItem>
-                <SelectItem value="3" className="focus:bg-gray-800 focus:text-white">
+                <SelectItem
+                  value="3"
+                  className="focus:bg-gray-800 focus:text-white"
+                >
                   3+
                 </SelectItem>
-                <SelectItem value="4" className="focus:bg-gray-800 focus:text-white">
+                <SelectItem
+                  value="4"
+                  className="focus:bg-gray-800 focus:text-white"
+                >
                   4+
                 </SelectItem>
-                <SelectItem value="5" className="focus:bg-gray-800 focus:text-white">
+                <SelectItem
+                  value="5"
+                  className="focus:bg-gray-800 focus:text-white"
+                >
                   5+
                 </SelectItem>
               </SelectContent>
@@ -203,7 +293,10 @@ export function PropertyFilter({
                     onCheckedChange={() => onToggleAmenity(amenity)}
                     className="border-gray-600 data-[state=checked]:bg-brand-orange data-[state=checked]:border-brand-orange"
                   />
-                  <label htmlFor={`amenity-${amenity}`} className="text-sm text-black">
+                  <label
+                    htmlFor={`amenity-${amenity}`}
+                    className="text-sm text-black"
+                  >
                     {amenity}
                   </label>
                 </div>
@@ -224,7 +317,10 @@ export function PropertyFilter({
                     onCheckedChange={() => onToggleFacility(facility)}
                     className="border-gray-600 data-[state=checked]:bg-brand-orange data-[state=checked]:border-brand-orange"
                   />
-                  <label htmlFor={`facility-${facility}`} className="text-sm text-black">
+                  <label
+                    htmlFor={`facility-${facility}`}
+                    className="text-sm text-black"
+                  >
                     {facility}
                   </label>
                 </div>
@@ -234,6 +330,5 @@ export function PropertyFilter({
         </div>
       </div>
     </div>
-  )
+  );
 }
-

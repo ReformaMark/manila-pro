@@ -295,4 +295,18 @@ export default defineSchema({
   })
     .index("by_token", ["token"])
     .index("by_user", ["userId"]),
+
+  saved_searches: defineTable({
+    userId: v.id("users"),
+    query: v.string(),
+    name: v.string(),
+    transactionType: v.string(),
+    unitType: v.string(),
+    location: v.string(),
+    bedrooms: v.number(),
+    bathrooms: v.number(),
+    priceRange: v.array(v.number()),
+    amenities: v.array(v.string()),
+    facilities: v.array(v.string()),
+  }).index("by_userId", ["userId"]),
 });

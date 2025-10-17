@@ -194,3 +194,9 @@ export const formatStatus = (status: string) => {
 export const generateOtp = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
 };
+
+export const formatPriceRange = (priceRange: number[]): [number, number] => {
+  return priceRange.length === 2
+    ? [priceRange[0], priceRange[1]]
+    : [0, 100000000];
+};

@@ -8,11 +8,6 @@
  * @module
  */
 
-import type {
-  ApiFromModules,
-  FilterApi,
-  FunctionReference,
-} from "convex/server";
 import type * as admin from "../admin.js";
 import type * as admin_activity from "../admin_activity.js";
 import type * as agentprofile from "../agentprofile.js";
@@ -29,9 +24,16 @@ import type * as passwordResetActions from "../passwordResetActions.js";
 import type * as property from "../property.js";
 import type * as ratings_reviews from "../ratings_reviews.js";
 import type * as saved_properties from "../saved_properties.js";
+import type * as saved_searches from "../saved_searches.js";
 import type * as seedProp from "../seedProp.js";
 import type * as seller from "../seller.js";
 import type * as users from "../users.js";
+
+import type {
+  ApiFromModules,
+  FilterApi,
+  FunctionReference,
+} from "convex/server";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -58,15 +60,20 @@ declare const fullApi: ApiFromModules<{
   property: typeof property;
   ratings_reviews: typeof ratings_reviews;
   saved_properties: typeof saved_properties;
+  saved_searches: typeof saved_searches;
   seedProp: typeof seedProp;
   seller: typeof seller;
   users: typeof users;
 }>;
+declare const fullApiWithMounts: typeof fullApi;
+
 export declare const api: FilterApi<
-  typeof fullApi,
+  typeof fullApiWithMounts,
   FunctionReference<any, "public">
 >;
 export declare const internal: FilterApi<
-  typeof fullApi,
+  typeof fullApiWithMounts,
   FunctionReference<any, "internal">
 >;
+
+export declare const components: {};

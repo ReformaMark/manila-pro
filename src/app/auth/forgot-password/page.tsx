@@ -82,7 +82,6 @@ export default function ForgotPasswordForm() {
         return;
       }
       if (phoneNumber) {
-        console.log("phone number:", phoneNumber);
         handleUserDataChange("phone", phoneNumber);
 
         const isSuccess = await onResendOtp(phoneNumber);

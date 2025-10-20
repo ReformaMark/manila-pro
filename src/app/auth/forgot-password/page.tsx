@@ -75,7 +75,7 @@ export default function ForgotPasswordForm() {
       inputRefs.current[0]?.focus();
 
       const phoneNumber = await getUserPhone({ email: userData.email });
-
+      console.log("Retrieved phone number:", phoneNumber);
       if (phoneNumber === null) {
         handleUserDataChange("error", "Invalid Email");
         setIsLoading(false);

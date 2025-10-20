@@ -661,9 +661,9 @@ export const getUserPhoneUsingEmail = mutation({
       .query("users")
       .withIndex("by_email", (q) => q.eq("email", args.email))
       .first();
+    console.log("user phone query:", user);
 
     if (!user) return null;
-
     return user.phone;
   },
 });

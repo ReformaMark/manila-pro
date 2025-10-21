@@ -77,7 +77,10 @@ export default function ForgotPasswordForm() {
       const phoneNumber = await getUserPhone({ email: userData.email });
       console.log("Retrieved phone number:", phoneNumber);
       if (phoneNumber === null) {
-        handleUserDataChange("error", "Invalid Email");
+        handleUserDataChange(
+          "error",
+          "Email does not have an associated phone."
+        );
         setIsLoading(false);
         return;
       }
@@ -133,7 +136,7 @@ export default function ForgotPasswordForm() {
   }, []);
 
   useEffect(() => {
-    if (step === "email" && resendTimer > 0) {
+    if (resendTimer > 0) {
       const timer = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
       return () => clearTimeout(timer);
     } else {

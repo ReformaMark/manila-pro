@@ -165,7 +165,13 @@ function Page() {
 
   useEffect(() => {
     if (currentUser.user?.phone) onResendOtp();
-  }, [onResendOtp, currentUser.user?.phone]);
+    if (
+      currentUser.isLoading === false &&
+      (currentUser.user?.phone === "" || currentUser.user?.phone === undefined)
+    ) {
+      router.push("/auth/add-phone");
+    }
+  }, [onResendOtp, currentUser.user?.phone, currentUser.isLoading, router]);
 
   return (
     <div className="min-h-screen bg-neutral-50">

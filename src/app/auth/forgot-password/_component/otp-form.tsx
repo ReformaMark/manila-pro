@@ -159,7 +159,7 @@ function OtpForm({
     : "";
 
   useEffect(() => {
-    if (step === "otp" && resendTimer > 0) {
+    if (resendTimer > 0) {
       const timer = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
       return () => clearTimeout(timer);
     } else {

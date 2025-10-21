@@ -88,7 +88,7 @@ export default function CompareModal({ isOpen, onClose }: CompareModalProps) {
 
         <div className="mt-6 flex gap-3">
           <Button
-            onClick={() => onClose}
+            onClick={() => onClose(false)}
             className="flex-1 bg-orange-500 hover:bg-orange-600 text-white"
           >
             Done Comparing

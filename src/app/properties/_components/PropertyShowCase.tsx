@@ -104,7 +104,6 @@ export default function PropertyShowcase({
     amenities: amen,
     facilities: facil,
     setSearchTerm,
-    setLocation,
     resetFiltersStore,
   } = useFilterStore();
 
@@ -180,6 +179,7 @@ export default function PropertyShowcase({
 
   const resetFilters = () => {
     resetFiltersStore();
+    setSearchTerm("");
     setFilters({
       location: "All Locations",
       transactionType: "All Types",
@@ -421,7 +421,6 @@ export default function PropertyShowcase({
                   value={filters.searchTerm}
                   onChange={(e) => {
                     handleFilterChange("searchTerm", e.target.value);
-                    setLocation(e.target.value);
                     setSearchTerm(e.target.value);
                   }}
                   className="pl-10 pr-4 py-2 w-full bg-white text-brand-black placeholder:text-gray-500 focus-visible:ring-brand-orange focus-visible:border-brand-orange"
@@ -633,7 +632,7 @@ export default function PropertyShowcase({
               {activeView === "list" && (
                 <>
                   <div className="space-y-6">
-                    {filteredProperties.map((property) => (
+                    {displayedProperties.map((property) => (
                       <motion.div
                         key={property._id}
                         initial={{ opacity: 0, y: 20 }}

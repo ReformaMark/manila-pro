@@ -309,4 +309,16 @@ export default defineSchema({
     amenities: v.array(v.string()),
     facilities: v.array(v.string()),
   }).index("by_userId", ["userId"]),
+
+  viewings: defineTable({
+    propertyId: v.id("properties"),
+    agentId: v.id("users"),
+    buyerName: v.string(),
+    buyerEmail: v.string(),
+    buyerPhone: v.optional(v.string()),
+    startTime: v.string(), // ISO date string, e.g. "2025-10-21T10:00:00Z"
+    endTime: v.string(), // ISO date string
+    status: v.string(), // pending | confirmed | declined
+    createdAt: v.number(),
+  }),
 });

@@ -667,3 +667,18 @@ export const getUserPhoneUsingEmail = mutation({
     return user.phone;
   },
 });
+
+export const updateUserPhone = mutation({
+  args: {
+    phone: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const currentUserId = await getAuthUserId(ctx);
+    if (!currentUserId) {
+      return { success: false, message: "Not authenticated" };
+    }
+    // ✅ update user phone number
+    await ctx.db.patch(currentUserId, { phone: args.phone });
+    return { success: true };
+  },
+});
